@@ -5,8 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static net.minecraft.commands.builder.CommandBuilder.command;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
@@ -20,16 +22,16 @@ public class CommandDispatcherTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDuplicateCommand() throws Exception {
-        subject.createCommand("foo").executes(runnable).finish();
-        subject.createCommand("foo").executes(runnable).finish();
+        subject.register(command("foo").executes(runnable));
+        subject.register(command("foo").executes(runnable));
     }
 
     @Test
     public void testCreateAndExecuteCommand() throws Exception {
-        subject.createCommand("foo").executes(runnable).finish();
+        subject.register(command("foo").executes(runnable));
 
         subject.execute("foo");
-        Mockito.verify(runnable).run();
+        verify(runnable).run();
     }
 
     @Test(expected = UnknownCommandException.class)

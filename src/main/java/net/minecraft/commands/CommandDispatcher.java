@@ -10,16 +10,11 @@ import java.util.Map;
 public class CommandDispatcher {
     private final Map<String, Runnable> commands = Maps.newHashMap();
 
-    public CommandBuilder createCommand(final String name) {
-        return new CommandBuilder() {
-            @Override
-            public void onFinish() {
-                if (commands.containsKey(name)) {
-                    throw new IllegalArgumentException("New command " + name + " conflicts with existing command " + name);
-                }
-                commands.put(name, getCommandExecutor());
-            }
-        };
+    public void register(CommandBuilder command) {
+        if (commands.containsKey(command.getName())) {
+            throw new IllegalArgumentException("New command " + command.getName() + " conflicts with existing command " + command.getName());
+        }
+        commands.put(command.getName(), command.getExecutor());
     }
 
     public void execute(String command) throws CommandException {

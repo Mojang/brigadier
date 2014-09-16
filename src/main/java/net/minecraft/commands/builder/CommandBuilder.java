@@ -1,28 +1,27 @@
 package net.minecraft.commands.builder;
 
-public abstract class CommandBuilder {
-    private boolean finished;
-    private Runnable commandExecutor;
+public class CommandBuilder {
+    private final String name;
+    private Runnable executor;
 
-    public void finish() {
-        if (finished) {
-            throw new IllegalStateException("Cannot finish() multiple times!");
-        }
-        if (commandExecutor == null) {
-            throw new IllegalStateException("Cannot finish() without a command executor!");
-        }
-        onFinish();
-        finished = true;
+    protected CommandBuilder(String name) {
+        this.name = name;
     }
 
-    protected abstract void onFinish();
+    public static CommandBuilder command(String name) {
+        return new CommandBuilder(name);
+    }
 
-    public CommandBuilder executes(Runnable runnable) {
-        this.commandExecutor = runnable;
+    public String getName() {
+        return name;
+    }
+
+    public CommandBuilder executes(Runnable executor) {
+        this.executor = executor;
         return this;
     }
 
-    public Runnable getCommandExecutor() {
-        return commandExecutor;
+    public Runnable getExecutor() {
+        return executor;
     }
 }
