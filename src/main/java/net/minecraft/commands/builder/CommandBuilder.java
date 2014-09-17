@@ -1,7 +1,12 @@
 package net.minecraft.commands.builder;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+
 public class CommandBuilder {
     private final String name;
+    private final List<ArgumentBuilder> arguments = Lists.newArrayList();
     private Runnable executor;
 
     protected CommandBuilder(String name) {
@@ -23,5 +28,14 @@ public class CommandBuilder {
 
     public Runnable getExecutor() {
         return executor;
+    }
+
+    public CommandBuilder then(ArgumentBuilder argument) {
+        arguments.add(argument);
+        return this;
+    }
+
+    public List<ArgumentBuilder> getArguments() {
+        return arguments;
     }
 }
