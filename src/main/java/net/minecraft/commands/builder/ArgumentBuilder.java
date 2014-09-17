@@ -1,6 +1,7 @@
 package net.minecraft.commands.builder;
 
 import com.google.common.collect.Lists;
+import net.minecraft.commands.tree.CommandNode;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public abstract class ArgumentBuilder {
     public List<ArgumentBuilder> getArguments() {
         return arguments;
     }
+
+    public abstract CommandNode build();
 }

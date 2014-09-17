@@ -1,5 +1,6 @@
 package net.minecraft.commands.builder;
 
+import net.minecraft.commands.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +15,12 @@ public class ArgumentBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        builder = new ArgumentBuilder() {};
+        builder = new ArgumentBuilder() {
+            @Override
+            public CommandNode build() {
+                return null;
+            }
+        };
     }
 
     @Test

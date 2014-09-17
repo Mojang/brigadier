@@ -1,6 +1,7 @@
 package net.minecraft.commands.builder;
 
 import com.google.common.collect.Lists;
+import net.minecraft.commands.tree.LiteralCommandNode;
 
 import java.util.List;
 
@@ -37,5 +38,15 @@ public class CommandBuilder {
 
     public List<ArgumentBuilder> getArguments() {
         return arguments;
+    }
+
+    public LiteralCommandNode build() {
+        LiteralCommandNode result = new LiteralCommandNode(getName());
+
+        for (ArgumentBuilder argument : arguments) {
+            result.addChild(argument.build());
+        }
+
+        return result;
     }
 }
