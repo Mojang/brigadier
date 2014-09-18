@@ -41,7 +41,7 @@ public class CommandBuilder {
     }
 
     public LiteralCommandNode build() {
-        LiteralCommandNode result = new LiteralCommandNode(getName());
+        LiteralCommandNode result = new LiteralCommandNode(getName(), getExecutor());
 
         for (ArgumentBuilder argument : arguments) {
             result.addChild(argument.build());
