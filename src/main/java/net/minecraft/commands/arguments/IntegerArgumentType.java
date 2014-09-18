@@ -1,6 +1,8 @@
 package net.minecraft.commands.arguments;
 
-public class IntegerArgumentType implements CommandArgumentType {
+import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+
+public class IntegerArgumentType implements CommandArgumentType<Integer> {
     private final int minimum;
     private final int maximum;
 
@@ -19,5 +21,23 @@ public class IntegerArgumentType implements CommandArgumentType {
 
     public static IntegerArgumentType integer(int min, int max) {
         return new IntegerArgumentType(min, max);
+    }
+
+    @Override
+    public Integer parse(String command) throws IllegalCommandArgumentException {
+        try {
+            int value = Integer.parseInt(command);
+
+            if (value < minimum) {
+                throw new IllegalCommandArgumentException();
+            }
+            if (value > maximum) {
+                throw new IllegalCommandArgumentException();
+            }
+
+            return value;
+        } catch (NumberFormatException ignored) {
+            throw new IllegalCommandArgumentException();
+        }
     }
 }

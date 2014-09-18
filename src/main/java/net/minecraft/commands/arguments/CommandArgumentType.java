@@ -1,4 +1,7 @@
 package net.minecraft.commands.arguments;
 
-public interface CommandArgumentType {
+import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+
+public interface CommandArgumentType<T> {
+    T parse(String command) throws IllegalCommandArgumentException;
 }

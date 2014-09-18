@@ -13,8 +13,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RequiredArgumentBuilderTest {
-    @Mock CommandArgumentType type;
-    RequiredArgumentBuilder builder;
+    @Mock CommandArgumentType<Integer> type;
+    RequiredArgumentBuilder<Integer> builder;
 
     @Before
     public void setUp() throws Exception {
@@ -23,7 +23,7 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuild() throws Exception {
-        ArgumentCommandNode node = builder.build();
+        ArgumentCommandNode<Integer> node = builder.build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
