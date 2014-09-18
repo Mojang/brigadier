@@ -18,7 +18,10 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(type.parse("50"), is(50));
+        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("50");
+
+        assertThat(result.getRaw(), is("50"));
+        assertThat(result.getResult(), is(50));
     }
 
     @Test(expected = IllegalCommandArgumentException.class)
@@ -33,7 +36,10 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseLowerLimit() throws Exception {
-        assertThat(type.parse("-100"), is(-100));
+        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("-100");
+
+        assertThat(result.getRaw(), is("-100"));
+        assertThat(result.getResult(), is(-100));
     }
 
     @Test(expected = IllegalCommandArgumentException.class)
@@ -43,6 +49,9 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseHigherLimit() throws Exception {
-        assertThat(type.parse("100"), is(100));
+        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("100");
+
+        assertThat(result.getRaw(), is("100"));
+        assertThat(result.getResult(), is(100));
     }
 }

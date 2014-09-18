@@ -1,8 +1,11 @@
 package net.minecraft.commands.arguments;
 
+import com.google.common.base.Splitter;
 import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
 
 public class IntegerArgumentType implements CommandArgumentType<Integer> {
+    private static final Splitter SPLITTER = Splitter.on(' ').limit(2);
+
     private final int minimum;
     private final int maximum;
 
@@ -24,9 +27,11 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     }
 
     @Override
-    public Integer parse(String command) throws IllegalCommandArgumentException {
+    public CommandArgumentParseResult<Integer> parse(String command) throws IllegalCommandArgumentException {
+        String raw = SPLITTER.split(command).iterator().next();
+
         try {
-            int value = Integer.parseInt(command);
+            int value = Integer.parseInt(raw);
 
             if (value < minimum) {
                 throw new IllegalCommandArgumentException();
@@ -35,7 +40,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
                 throw new IllegalCommandArgumentException();
             }
 
-            return value;
+            return new CommandArgumentParseResult<Integer>(raw, value);
         } catch (NumberFormatException ignored) {
             throw new IllegalCommandArgumentException();
         }
