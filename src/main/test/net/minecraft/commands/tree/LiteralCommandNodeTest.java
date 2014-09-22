@@ -38,6 +38,13 @@ public class LiteralCommandNodeTest {
     }
 
     @Test(expected = IllegalCommandArgumentException.class)
+    public void testParseInvalidChild() throws Exception {
+        node.addChild(argument("bar", integer()).build());
+
+        node.parse("foo bar");
+    }
+
+    @Test(expected = IllegalCommandArgumentException.class)
     public void testParseNoChildren() throws Exception {
         node.parse("foo 123");
     }

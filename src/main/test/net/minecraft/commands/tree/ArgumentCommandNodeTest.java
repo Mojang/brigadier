@@ -37,6 +37,13 @@ public class ArgumentCommandNodeTest {
     }
 
     @Test(expected = IllegalCommandArgumentException.class)
+    public void testParseInvalidChild() throws Exception {
+        node.addChild(argument("bar", integer()).build());
+
+        node.parse("123 bar");
+    }
+
+    @Test(expected = IllegalCommandArgumentException.class)
     public void testParseNoChildren() throws Exception {
         node.parse("123 123");
     }
