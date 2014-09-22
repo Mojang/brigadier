@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import static net.minecraft.commands.arguments.IntegerArgumentType.integer;
 import static net.minecraft.commands.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 public class ArgumentCommandNodeTest {
     ArgumentCommandNode node;
@@ -17,7 +19,7 @@ public class ArgumentCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        node.parse("123");
+        assertThat((ArgumentCommandNode) node.parse("123"), is(node));
     }
 
     @Test(expected = IllegalCommandArgumentException.class)
@@ -27,9 +29,11 @@ public class ArgumentCommandNodeTest {
 
     @Test
     public void testParseChild() throws Exception {
-        node.addChild(argument("bar", integer()).build());
+        CommandNode child = argument("bar", integer()).build();
 
-        node.parse("123 123");
+        node.addChild(child);
+
+        assertThat(node.parse("123 123"), is(child));
     }
 
     @Test(expected = IllegalCommandArgumentException.class)

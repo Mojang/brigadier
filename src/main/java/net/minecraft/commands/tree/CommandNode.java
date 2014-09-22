@@ -16,5 +16,5 @@ public abstract class CommandNode {
         children.add(node);
     }
 
-    public abstract void parse(String command) throws IllegalCommandArgumentException;
+    public abstract CommandNode parse(String command) throws IllegalCommandArgumentException;
 }

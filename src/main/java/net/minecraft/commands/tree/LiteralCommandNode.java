@@ -20,7 +20,7 @@ public class LiteralCommandNode extends CommandNode {
     }
 
     @Override
-    public void parse(String command) throws IllegalCommandArgumentException {
+    public CommandNode parse(String command) throws IllegalCommandArgumentException {
         if (command.startsWith(literal)) {
             int start = literal.length() + 1;
 
@@ -28,11 +28,15 @@ public class LiteralCommandNode extends CommandNode {
                 String result = command.substring(start);
 
                 for (CommandNode node : getChildren()) {
-                    node.parse(result);
-                    return;
+                    try {
+                        return node.parse(result);
+                    } catch (IllegalCommandArgumentException ignored) {
+                    }
                 }
 
                 throw new IllegalCommandArgumentException();
+            } else {
+                return this;
             }
         } else {
             throw new IllegalCommandArgumentException();
