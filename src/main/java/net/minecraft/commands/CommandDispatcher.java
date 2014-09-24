@@ -1,32 +1,51 @@
 package net.minecraft.commands;
 
-import com.google.common.collect.Maps;
 import net.minecraft.commands.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.context.CommandContext;
-import net.minecraft.commands.context.ParsedArgument;
+import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.CommandException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import net.minecraft.commands.exceptions.UnknownCommandException;
-import net.minecraft.commands.tree.LiteralCommandNode;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.commands.tree.CommandNode;
+import net.minecraft.commands.tree.RootCommandNode;
 
 public class CommandDispatcher {
-    private final Map<String, LiteralCommandNode> commands = Maps.newHashMap();
+    private final RootCommandNode root = new RootCommandNode();
 
     public void register(LiteralArgumentBuilder command) {
-        if (commands.containsKey(command.getLiteral())) {
-            throw new IllegalArgumentException("New command " + command.getLiteral() + " conflicts with existing command " + command.getLiteral());
-        }
-        commands.put(command.getLiteral(), command.build());
+        root.addChild(command.build());
     }
 
     public void execute(String command) throws CommandException {
-        LiteralCommandNode node = commands.get(command);
-        if (node == null) {
+        CommandContextBuilder contextBuilder = new CommandContextBuilder();
+        CommandNode node = root;
+
+        while (command.length() > 0 && !node.getChildren().isEmpty()) {
+            IllegalArgumentSyntaxException exception = null;
+
+            for (CommandNode child : node.getChildren()) {
+                try {
+                    command = child.parse(command, contextBuilder);
+                    if (child.getCommand() != null) {
+                        contextBuilder.withCommand(child.getCommand());
+                    }
+                    node = child;
+                    break;
+                } catch (IllegalArgumentSyntaxException ex) {
+                    exception = ex;
+                }
+            }
+
+            if (exception != null) {
+                break;
+            }
+        }
+
+        if (command.length() > 0) {
             throw new UnknownCommandException();
         }
 
-        node.getCommand().run(new CommandContext(new HashMap<String, ParsedArgument<?>>()));
+        CommandContext context = contextBuilder.build();
+        context.getCommand().run(context);
     }
 }

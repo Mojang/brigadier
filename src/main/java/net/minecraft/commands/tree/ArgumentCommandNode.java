@@ -2,6 +2,7 @@ package net.minecraft.commands.tree;
 
 import net.minecraft.commands.Command;
 import net.minecraft.commands.arguments.CommandArgumentType;
+import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
@@ -25,23 +26,16 @@ public class ArgumentCommandNode<T> extends CommandNode {
     }
 
     @Override
-    public CommandNode parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
+    public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         ParsedArgument<T> parsed = type.parse(command);
-        int start = parsed.getRaw().length() + 1;
+        int start = parsed.getRaw().length();
 
-        if (start < command.length()) {
-            String result = command.substring(start);
+        contextBuilder.withArgument(name, parsed);
 
-            for (CommandNode node : getChildren()) {
-                try {
-                    return node.parse(result);
-                } catch (IllegalArgumentSyntaxException ignored) {
-                }
-            }
-
-            throw new IllegalArgumentSyntaxException();
+        if (command.length() > start) {
+            return command.substring(start + 1);
         } else {
-            return this;
+            return "";
         }
     }
 }

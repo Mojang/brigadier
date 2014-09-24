@@ -1,14 +1,21 @@
 package net.minecraft.commands.context;
 
 import com.google.common.primitives.Primitives;
+import net.minecraft.commands.Command;
 
 import java.util.Map;
 
 public class CommandContext {
     private final Map<String, ParsedArgument<?>> arguments;
+    private final Command command;
 
-    public CommandContext(Map<String, ParsedArgument<?>> arguments) {
+    public CommandContext(Map<String, ParsedArgument<?>> arguments, Command command) {
         this.arguments = arguments;
+        this.command = command;
+    }
+
+    public Command getCommand() {
+        return command;
     }
 
     @SuppressWarnings("unchecked")
