@@ -1,13 +1,14 @@
 package net.minecraft.commands.builder;
 
 import com.google.common.collect.Lists;
+import net.minecraft.commands.Command;
 import net.minecraft.commands.tree.CommandNode;
 
 import java.util.List;
 
 public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
     private final List<ArgumentBuilder> arguments = Lists.newArrayList();
-    private Runnable executor;
+    private Command command;
 
     protected abstract T getThis();
 
@@ -20,13 +21,13 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
         return arguments;
     }
 
-    public T executes(Runnable executor) {
-        this.executor = executor;
+    public T executes(Command command) {
+        this.command = command;
         return getThis();
     }
 
-    public Runnable getExecutor() {
-        return executor;
+    public Command getCommand() {
+        return command;
     }
 
     public abstract CommandNode build();

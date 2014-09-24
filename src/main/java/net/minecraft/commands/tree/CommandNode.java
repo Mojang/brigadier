@@ -1,21 +1,22 @@
 package net.minecraft.commands.tree;
 
 import com.google.common.collect.Lists;
+import net.minecraft.commands.Command;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
 import java.util.List;
 
 public abstract class CommandNode {
-    private final Runnable executor;
+    private final Command command;
     private final List<CommandNode> children = Lists.newArrayList();
 
-    protected CommandNode(Runnable executor) {
-        this.executor = executor;
+    protected CommandNode(Command command) {
+        this.command = command;
     }
 
-    public Runnable getExecutor() {
-        return executor;
+    public Command getCommand() {
+        return command;
     }
 
     public List<CommandNode> getChildren() {

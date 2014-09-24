@@ -1,5 +1,6 @@
 package net.minecraft.commands.builder;
 
+import net.minecraft.commands.Command;
 import net.minecraft.commands.arguments.CommandArgumentType;
 import net.minecraft.commands.tree.ArgumentCommandNode;
 import org.junit.Before;
@@ -15,7 +16,8 @@ import static org.junit.Assert.assertThat;
 public class RequiredArgumentBuilderTest {
     @Mock CommandArgumentType<Integer> type;
     RequiredArgumentBuilder<Integer> builder;
-    @Mock Runnable executor;
+    @Mock
+    Command command;
 
     @Before
     public void setUp() throws Exception {
@@ -32,11 +34,11 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuildWithExecutor() throws Exception {
-        ArgumentCommandNode<Integer> node = builder.executes(executor).build();
+        ArgumentCommandNode<Integer> node = builder.executes(command).build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
-        assertThat(node.getExecutor(), is(executor));
+        assertThat(node.getCommand(), is(command));
     }
 
     @Test

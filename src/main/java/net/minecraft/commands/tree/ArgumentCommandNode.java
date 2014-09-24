@@ -1,5 +1,6 @@
 package net.minecraft.commands.tree;
 
+import net.minecraft.commands.Command;
 import net.minecraft.commands.arguments.CommandArgumentType;
 import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
@@ -9,8 +10,8 @@ public class ArgumentCommandNode<T> extends CommandNode {
     private final String name;
     private final CommandArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Runnable executor) {
-        super(executor);
+    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command command) {
+        super(command);
         this.name = name;
         this.type = type;
     }

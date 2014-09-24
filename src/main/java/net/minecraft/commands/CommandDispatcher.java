@@ -2,10 +2,13 @@ package net.minecraft.commands;
 
 import com.google.common.collect.Maps;
 import net.minecraft.commands.builder.LiteralArgumentBuilder;
+import net.minecraft.commands.context.CommandContext;
+import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.CommandException;
 import net.minecraft.commands.exceptions.UnknownCommandException;
 import net.minecraft.commands.tree.LiteralCommandNode;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class CommandDispatcher {
@@ -24,6 +27,6 @@ public class CommandDispatcher {
             throw new UnknownCommandException();
         }
 
-        node.getExecutor().run();
+        node.getCommand().run(new CommandContext(new HashMap<String, ParsedArgument<?>>()));
     }
 }
