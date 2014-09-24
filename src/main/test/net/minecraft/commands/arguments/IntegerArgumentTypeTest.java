@@ -1,6 +1,7 @@
 package net.minecraft.commands.arguments;
 
-import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+import net.minecraft.commands.exceptions.ArgumentValidationException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,12 +25,12 @@ public class IntegerArgumentTypeTest {
         assertThat(result.getResult(), is(50));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalid() throws Exception {
         type.parse("fifty");
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = ArgumentValidationException.class)
     public void testParseTooLow() throws Exception {
         type.parse("-101");
     }
@@ -42,7 +43,7 @@ public class IntegerArgumentTypeTest {
         assertThat(result.getResult(), is(-100));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = ArgumentValidationException.class)
     public void testParseTooHigh() throws Exception {
         type.parse("101");
     }

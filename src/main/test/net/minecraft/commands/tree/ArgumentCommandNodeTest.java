@@ -1,6 +1,6 @@
 package net.minecraft.commands.tree;
 
-import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class ArgumentCommandNodeTest {
         assertThat((ArgumentCommandNode) node.parse("123"), is(node));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalid() throws Exception {
         node.parse("bar");
     }
@@ -36,14 +36,14 @@ public class ArgumentCommandNodeTest {
         assertThat(node.parse("123 123"), is(child));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalidChild() throws Exception {
         node.addChild(argument("bar", integer()).build());
 
         node.parse("123 bar");
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseNoChildren() throws Exception {
         node.parse("123 123");
     }

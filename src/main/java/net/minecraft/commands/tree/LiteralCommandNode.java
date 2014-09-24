@@ -1,6 +1,7 @@
 package net.minecraft.commands.tree;
 
-import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+import net.minecraft.commands.exceptions.ArgumentValidationException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
 public class LiteralCommandNode extends CommandNode {
     private final String literal;
@@ -20,7 +21,7 @@ public class LiteralCommandNode extends CommandNode {
     }
 
     @Override
-    public CommandNode parse(String command) throws IllegalCommandArgumentException {
+    public CommandNode parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         if (command.startsWith(literal)) {
             int start = literal.length() + 1;
 
@@ -30,16 +31,16 @@ public class LiteralCommandNode extends CommandNode {
                 for (CommandNode node : getChildren()) {
                     try {
                         return node.parse(result);
-                    } catch (IllegalCommandArgumentException ignored) {
+                    } catch (IllegalArgumentSyntaxException ignored) {
                     }
                 }
 
-                throw new IllegalCommandArgumentException();
+                throw new IllegalArgumentSyntaxException();
             } else {
                 return this;
             }
         } else {
-            throw new IllegalCommandArgumentException();
+            throw new IllegalArgumentSyntaxException();
         }
     }
 }

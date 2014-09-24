@@ -1,6 +1,6 @@
 package net.minecraft.commands.tree;
 
-import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class LiteralCommandNodeTest {
         assertThat((LiteralCommandNode) node.parse("foo"), is(node));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalid() throws Exception {
         node.parse("bar");
     }
@@ -37,14 +37,14 @@ public class LiteralCommandNodeTest {
         assertThat(node.parse("foo 123"), is(child));
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalidChild() throws Exception {
         node.addChild(argument("bar", integer()).build());
 
         node.parse("foo bar");
     }
 
-    @Test(expected = IllegalCommandArgumentException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseNoChildren() throws Exception {
         node.parse("foo 123");
     }

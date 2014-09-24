@@ -1,7 +1,8 @@
 package net.minecraft.commands.tree;
 
 import com.google.common.collect.Lists;
-import net.minecraft.commands.exceptions.IllegalCommandArgumentException;
+import net.minecraft.commands.exceptions.ArgumentValidationException;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public abstract class CommandNode {
         children.add(node);
     }
 
-    public abstract CommandNode parse(String command) throws IllegalCommandArgumentException;
+    public abstract CommandNode parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException;
 }
