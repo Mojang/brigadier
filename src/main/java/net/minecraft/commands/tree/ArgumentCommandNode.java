@@ -8,7 +8,8 @@ public class ArgumentCommandNode<T> extends CommandNode {
     private final String name;
     private final CommandArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, CommandArgumentType<T> type) {
+    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Runnable executor) {
+        super(executor);
         this.name = name;
         this.type = type;
     }

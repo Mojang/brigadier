@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 public class RequiredArgumentBuilderTest {
     @Mock CommandArgumentType<Integer> type;
     RequiredArgumentBuilder<Integer> builder;
+    @Mock Runnable executor;
 
     @Before
     public void setUp() throws Exception {
@@ -27,6 +28,15 @@ public class RequiredArgumentBuilderTest {
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
+    }
+
+    @Test
+    public void testBuildWithExecutor() throws Exception {
+        ArgumentCommandNode<Integer> node = builder.executes(executor).build();
+
+        assertThat(node.getName(), is("foo"));
+        assertThat(node.getType(), is(type));
+        assertThat(node.getExecutor(), is(executor));
     }
 
     @Test
