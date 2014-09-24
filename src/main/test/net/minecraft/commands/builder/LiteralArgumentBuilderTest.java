@@ -6,27 +6,16 @@ import org.junit.Test;
 
 import static net.minecraft.commands.arguments.IntegerArgumentType.integer;
 import static net.minecraft.commands.builder.RequiredArgumentBuilder.argument;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class CommandBuilderTest {
-    CommandBuilder builder;
+public class LiteralArgumentBuilderTest {
+    LiteralArgumentBuilder builder;
 
     @Before
     public void setUp() throws Exception {
-        builder = new CommandBuilder("foo");
-    }
-
-    @Test
-    public void testArguments() throws Exception {
-        RequiredArgumentBuilder argument = argument("bar", integer());
-
-        builder.then(argument);
-
-        assertThat(builder.getArguments(), hasSize(1));
-        assertThat(builder.getArguments(), hasItems((ArgumentBuilder) argument));
+        builder = new LiteralArgumentBuilder("foo");
     }
 
     @Test

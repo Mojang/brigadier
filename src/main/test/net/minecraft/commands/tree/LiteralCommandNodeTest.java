@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static net.minecraft.commands.arguments.IntegerArgumentType.integer;
-import static net.minecraft.commands.builder.CommandBuilder.command;
+import static net.minecraft.commands.builder.LiteralArgumentBuilder.literal;
 import static net.minecraft.commands.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -15,7 +15,7 @@ public class LiteralCommandNodeTest {
 
     @Before
     public void setUp() throws Exception {
-        node = command("foo").build();
+        node = literal("foo").build();
     }
 
     @Test

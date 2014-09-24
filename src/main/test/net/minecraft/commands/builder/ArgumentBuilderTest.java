@@ -11,16 +11,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 public class ArgumentBuilderTest {
-    ArgumentBuilder builder;
+    TestableArgumentBuilder builder;
 
     @Before
     public void setUp() throws Exception {
-        builder = new ArgumentBuilder() {
-            @Override
-            public CommandNode build() {
-                return null;
-            }
-        };
+        builder = new TestableArgumentBuilder();
     }
 
     @Test
@@ -31,5 +26,17 @@ public class ArgumentBuilderTest {
 
         assertThat(builder.getArguments(), hasSize(1));
         assertThat(builder.getArguments(), hasItems((ArgumentBuilder) argument));
+    }
+
+    private static class TestableArgumentBuilder extends ArgumentBuilder<TestableArgumentBuilder> {
+        @Override
+        protected TestableArgumentBuilder getThis() {
+            return this;
+        }
+
+        @Override
+        public CommandNode build() {
+            return null;
+        }
     }
 }
