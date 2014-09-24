@@ -1,5 +1,7 @@
 package net.minecraft.commands.arguments;
 
+import net.minecraft.commands.context.CommandContext;
+import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
@@ -54,5 +56,12 @@ public class IntegerArgumentTypeTest {
 
         assertThat(result.getRaw(), is("100"));
         assertThat(result.getResult(), is(100));
+    }
+
+    @Test
+    public void testGetInteger() throws Exception {
+        CommandContext context = new CommandContextBuilder().withArgument("foo", type.parse("100")).build();
+
+        assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
     }
 }

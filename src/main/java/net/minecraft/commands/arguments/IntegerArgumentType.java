@@ -1,6 +1,7 @@
 package net.minecraft.commands.arguments;
 
 import com.google.common.base.Splitter;
+import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
@@ -25,6 +26,10 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
 
     public static IntegerArgumentType integer(int min, int max) {
         return new IntegerArgumentType(min, max);
+    }
+
+    public static int getInteger(CommandContext context, String name) {
+        return context.getArgument(name, int.class).getResult();
     }
 
     @Override
