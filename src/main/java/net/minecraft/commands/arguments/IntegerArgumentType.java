@@ -2,6 +2,7 @@ package net.minecraft.commands.arguments;
 
 import com.google.common.base.Splitter;
 import net.minecraft.commands.context.CommandContext;
+import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
@@ -33,7 +34,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     }
 
     @Override
-    public CommandArgumentParseResult<Integer> parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
+    public ParsedArgument<Integer> parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         String raw = SPLITTER.split(command).iterator().next();
 
         try {
@@ -46,7 +47,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
                 throw new ArgumentValidationException();
             }
 
-            return new CommandArgumentParseResult<Integer>(raw, value);
+            return new ParsedArgument<Integer>(raw, value);
         } catch (NumberFormatException ignored) {
             throw new IllegalArgumentSyntaxException();
         }

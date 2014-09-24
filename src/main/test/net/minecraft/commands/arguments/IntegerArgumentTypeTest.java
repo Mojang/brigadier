@@ -2,6 +2,7 @@ package net.minecraft.commands.arguments;
 
 import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.context.CommandContextBuilder;
+import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
@@ -21,7 +22,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParse() throws Exception {
-        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("50");
+        ParsedArgument<Integer> result = type.parse("50");
 
         assertThat(result.getRaw(), is("50"));
         assertThat(result.getResult(), is(50));
@@ -39,7 +40,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseLowerLimit() throws Exception {
-        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("-100");
+        ParsedArgument<Integer> result = type.parse("-100");
 
         assertThat(result.getRaw(), is("-100"));
         assertThat(result.getResult(), is(-100));
@@ -52,7 +53,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseHigherLimit() throws Exception {
-        CommandArgumentType.CommandArgumentParseResult<Integer> result = type.parse("100");
+        ParsedArgument<Integer> result = type.parse("100");
 
         assertThat(result.getRaw(), is("100"));
         assertThat(result.getResult(), is(100));

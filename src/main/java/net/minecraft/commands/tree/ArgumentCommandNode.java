@@ -1,6 +1,7 @@
 package net.minecraft.commands.tree;
 
 import net.minecraft.commands.arguments.CommandArgumentType;
+import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
@@ -24,7 +25,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
 
     @Override
     public CommandNode parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
-        CommandArgumentType.CommandArgumentParseResult<T> parsed = type.parse(command);
+        ParsedArgument<T> parsed = type.parse(command);
         int start = parsed.getRaw().length() + 1;
 
         if (start < command.length()) {
