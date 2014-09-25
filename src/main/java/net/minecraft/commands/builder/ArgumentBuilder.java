@@ -4,7 +4,7 @@ import net.minecraft.commands.Command;
 import net.minecraft.commands.tree.CommandNode;
 import net.minecraft.commands.tree.RootCommandNode;
 
-import java.util.List;
+import java.util.Collection;
 
 public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
     private final RootCommandNode arguments = new RootCommandNode();
@@ -17,7 +17,7 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
         return getThis();
     }
 
-    public List<CommandNode> getArguments() {
+    public Collection<CommandNode> getArguments() {
         return arguments.getChildren();
     }
 

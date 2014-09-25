@@ -19,6 +19,11 @@ public class LiteralCommandNode extends CommandNode {
     }
 
     @Override
+    protected Object getMergeKey() {
+        return literal;
+    }
+
+    @Override
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
 
@@ -38,15 +43,13 @@ public class LiteralCommandNode extends CommandNode {
         LiteralCommandNode that = (LiteralCommandNode) o;
 
         if (!literal.equals(that.literal)) return false;
-        if (!getChildren().equals(that.getChildren())) return false;
-
-        return true;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
         int result = literal.hashCode();
-        result = 31 * result + getChildren().hashCode();
+        result = 31 * result + super.hashCode();
         return result;
     }
 }

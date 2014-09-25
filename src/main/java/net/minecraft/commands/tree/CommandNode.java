@@ -1,16 +1,17 @@
 package net.minecraft.commands.tree;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.commands.Command;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 public abstract class CommandNode {
-    private final Command command;
-    private final List<CommandNode> children = Lists.newArrayList();
+    private final Map<Object, CommandNode> children = Maps.newLinkedHashMap();
+    private Command command;
 
     protected CommandNode(Command command) {
         this.command = command;
@@ -20,13 +21,44 @@ public abstract class CommandNode {
         return command;
     }
 
-    public List<CommandNode> getChildren() {
-        return children;
+    public Collection<CommandNode> getChildren() {
+        return children.values();
     }
 
     public void addChild(CommandNode node) {
-        children.add(node);
+        CommandNode child = children.get(node.getMergeKey());
+        if (child != null) {
+            // We've found something to merge onto
+            if (node.getCommand() != null) {
+                child.command = node.getCommand();
+            }
+            for (CommandNode grandchild : node.getChildren()) {
+                child.addChild(grandchild);
+            }
+        } else {
+            children.put(node.getMergeKey(), node);
+        }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CommandNode)) return false;
+
+        CommandNode that = (CommandNode) o;
+
+        if (!children.equals(that.children)) return false;
+        if (command != null ? !command.equals(that.command) : that.command != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * children.hashCode() + (command != null ? command.hashCode() : 0);
+    }
+
+    protected abstract Object getMergeKey();
 
     public abstract String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException;
 }

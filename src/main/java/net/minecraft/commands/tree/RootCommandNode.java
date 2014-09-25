@@ -10,6 +10,11 @@ public class RootCommandNode extends CommandNode {
     }
 
     @Override
+    protected Object getMergeKey() {
+        throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
+    }
+
+    @Override
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         return command;
     }
@@ -18,16 +23,6 @@ public class RootCommandNode extends CommandNode {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RootCommandNode)) return false;
-
-        RootCommandNode that = (RootCommandNode) o;
-
-        if (!getChildren().equals(that.getChildren())) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return getChildren().hashCode();
+        return super.equals(o);
     }
 }

@@ -9,8 +9,13 @@ import static net.minecraft.commands.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class RootCommandNodeTest {
+public class RootCommandNodeTest extends AbstractCommandNodeTest {
     RootCommandNode node;
+
+    @Override
+    protected CommandNode getCommandNode() {
+        return node;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -20,6 +25,11 @@ public class RootCommandNodeTest {
     @Test
     public void testParse() throws Exception {
         assertThat(node.parse("foo bar baz", new CommandContextBuilder()), is("foo bar baz"));
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testAddChildNoRoot() throws Exception {
+        node.addChild(new RootCommandNode());
     }
 
     @Test

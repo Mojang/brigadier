@@ -26,6 +26,11 @@ public class ArgumentCommandNode<T> extends CommandNode {
     }
 
     @Override
+    protected Object getMergeKey() {
+        return name;
+    }
+
+    @Override
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         ParsedArgument<T> parsed = type.parse(command);
         int start = parsed.getRaw().length();
@@ -48,16 +53,14 @@ public class ArgumentCommandNode<T> extends CommandNode {
 
         if (!name.equals(that.name)) return false;
         if (!type.equals(that.type)) return false;
-        if (!getChildren().equals(that.getChildren())) return false;
-
-        return true;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
         result = 31 * result + type.hashCode();
-        result = 31 * result + getChildren().hashCode();
+        result = 31 * super.hashCode();
         return result;
     }
 }

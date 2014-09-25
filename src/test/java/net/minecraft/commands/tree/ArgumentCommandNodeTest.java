@@ -1,6 +1,7 @@
 package net.minecraft.commands.tree;
 
 import com.google.common.testing.EqualsTester;
+import net.minecraft.commands.Command;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
@@ -10,10 +11,16 @@ import static net.minecraft.commands.arguments.IntegerArgumentType.integer;
 import static net.minecraft.commands.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-public class ArgumentCommandNodeTest {
+public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     ArgumentCommandNode node;
     CommandContextBuilder contextBuilder;
+
+    @Override
+    protected CommandNode getCommandNode() {
+        return node;
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -44,10 +51,16 @@ public class ArgumentCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
+        Command command = mock(Command.class);
+
         new EqualsTester()
             .addEqualityGroup(
                 argument("foo", integer()).build(),
                 argument("foo", integer()).build()
+            )
+            .addEqualityGroup(
+                argument("foo", integer()).executes(command).build(),
+                argument("foo", integer()).executes(command).build()
             )
             .addEqualityGroup(
                 argument("bar", integer(-100, 100)).build(),
