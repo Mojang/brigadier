@@ -67,4 +67,15 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     public int hashCode() {
         return 31 * minimum + maximum;
     }
+
+    @Override
+    public String toString() {
+        if (minimum == Integer.MIN_VALUE && maximum == Integer.MAX_VALUE) {
+            return "integer()";
+        } else if (maximum == Integer.MAX_VALUE) {
+            return "integer(" + minimum + ")";
+        } else {
+            return "integer(" + minimum + ", " + maximum + ")";
+        }
+    }
 }
