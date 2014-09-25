@@ -1,5 +1,6 @@
 package net.minecraft.commands.builder;
 
+import net.minecraft.commands.tree.CommandNode;
 import net.minecraft.commands.tree.LiteralCommandNode;
 
 public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuilder> {
@@ -26,8 +27,8 @@ public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
     public LiteralCommandNode build() {
         LiteralCommandNode result = new LiteralCommandNode(getLiteral(), getCommand());
 
-        for (ArgumentBuilder argument : getArguments()) {
-            result.addChild(argument.build());
+        for (CommandNode argument : getArguments()) {
+            result.addChild(argument);
         }
 
         return result;

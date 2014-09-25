@@ -25,7 +25,7 @@ public class ArgumentBuilderTest {
         builder.then(argument);
 
         assertThat(builder.getArguments(), hasSize(1));
-        assertThat(builder.getArguments(), hasItems((ArgumentBuilder) argument));
+        assertThat(builder.getArguments(), hasItems((CommandNode) argument.build()));
     }
 
     private static class TestableArgumentBuilder extends ArgumentBuilder<TestableArgumentBuilder> {

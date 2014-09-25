@@ -2,6 +2,7 @@ package net.minecraft.commands.builder;
 
 import net.minecraft.commands.arguments.CommandArgumentType;
 import net.minecraft.commands.tree.ArgumentCommandNode;
+import net.minecraft.commands.tree.CommandNode;
 
 public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
     private final String name;
@@ -32,8 +33,8 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     public ArgumentCommandNode<T> build() {
         ArgumentCommandNode<T> result = new ArgumentCommandNode<T>(getName(), getType(), getCommand());
 
-        for (ArgumentBuilder argument : getArguments()) {
-            result.addChild(argument.build());
+        for (CommandNode argument : getArguments()) {
+            result.addChild(argument);
         }
 
         return result;

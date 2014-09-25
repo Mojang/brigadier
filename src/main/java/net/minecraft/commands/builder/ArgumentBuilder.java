@@ -1,24 +1,24 @@
 package net.minecraft.commands.builder;
 
-import com.google.common.collect.Lists;
 import net.minecraft.commands.Command;
 import net.minecraft.commands.tree.CommandNode;
+import net.minecraft.commands.tree.RootCommandNode;
 
 import java.util.List;
 
 public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
-    private final List<ArgumentBuilder> arguments = Lists.newArrayList();
+    private final RootCommandNode arguments = new RootCommandNode();
     private Command command;
 
     protected abstract T getThis();
 
     public T then(ArgumentBuilder argument) {
-        arguments.add(argument);
+        arguments.addChild(argument.build());
         return getThis();
     }
 
-    public List<ArgumentBuilder> getArguments() {
-        return arguments;
+    public List<CommandNode> getArguments() {
+        return arguments.getChildren();
     }
 
     public T executes(Command command) {
