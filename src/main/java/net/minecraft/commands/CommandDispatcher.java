@@ -10,6 +10,8 @@ import net.minecraft.commands.tree.CommandNode;
 import net.minecraft.commands.tree.RootCommandNode;
 
 public class CommandDispatcher {
+    public static final String ARGUMENT_SEPARATOR = " ";
+
     private final RootCommandNode root = new RootCommandNode();
 
     public void register(LiteralArgumentBuilder command) {

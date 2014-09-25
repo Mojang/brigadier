@@ -1,13 +1,14 @@
 package net.minecraft.commands.arguments;
 
 import com.google.common.base.Splitter;
+import net.minecraft.commands.CommandDispatcher;
 import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 
 public class IntegerArgumentType implements CommandArgumentType<Integer> {
-    private static final Splitter SPLITTER = Splitter.on(' ').limit(2);
+    private static final Splitter SPLITTER = Splitter.on(CommandDispatcher.ARGUMENT_SEPARATOR).limit(2);
 
     private final int minimum;
     private final int maximum;

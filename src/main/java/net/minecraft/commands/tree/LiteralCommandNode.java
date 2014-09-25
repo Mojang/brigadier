@@ -1,6 +1,7 @@
 package net.minecraft.commands.tree;
 
 import net.minecraft.commands.Command;
+import net.minecraft.commands.CommandDispatcher;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
@@ -19,7 +20,7 @@ public class LiteralCommandNode extends CommandNode {
 
     @Override
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
-        String expected = literal + (command.length() > literal.length() ? " " : "");
+        String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
 
         if (!command.startsWith(expected)) {
             throw new IllegalArgumentSyntaxException();
