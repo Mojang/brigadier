@@ -30,6 +30,11 @@ public class LiteralCommandNodeTest {
     }
 
     @Test(expected = IllegalArgumentSyntaxException.class)
+    public void testParseSimilar() throws Exception {
+        node.parse("foobar", contextBuilder);
+    }
+
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalid() throws Exception {
         node.parse("bar", contextBuilder);
     }

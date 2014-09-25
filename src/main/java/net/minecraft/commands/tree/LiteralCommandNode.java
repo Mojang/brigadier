@@ -19,15 +19,13 @@ public class LiteralCommandNode extends CommandNode {
 
     @Override
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
-        if (!command.startsWith(literal)) {
+        String expected = literal + (command.length() > literal.length() ? " " : "");
+
+        if (!command.startsWith(expected)) {
             throw new IllegalArgumentSyntaxException();
         }
 
-        int start = literal.length();
-        if (command.length() > start) {
-            return command.substring(start + 1);
-        } else {
-            return "";
-        }
+        int start = expected.length();
+        return command.substring(start);
     }
 }
