@@ -13,4 +13,21 @@ public class RootCommandNode extends CommandNode {
     public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
         return command;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RootCommandNode)) return false;
+
+        RootCommandNode that = (RootCommandNode) o;
+
+        if (!getChildren().equals(that.getChildren())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return getChildren().hashCode();
+    }
 }

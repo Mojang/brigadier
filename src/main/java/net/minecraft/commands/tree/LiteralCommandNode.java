@@ -29,4 +29,24 @@ public class LiteralCommandNode extends CommandNode {
         int start = expected.length();
         return command.substring(start);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LiteralCommandNode)) return false;
+
+        LiteralCommandNode that = (LiteralCommandNode) o;
+
+        if (!literal.equals(that.literal)) return false;
+        if (!getChildren().equals(that.getChildren())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = literal.hashCode();
+        result = 31 * result + getChildren().hashCode();
+        return result;
+    }
 }

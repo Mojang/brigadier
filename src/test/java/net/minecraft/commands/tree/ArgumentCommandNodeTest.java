@@ -1,5 +1,6 @@
 package net.minecraft.commands.tree;
 
+import com.google.common.testing.EqualsTester;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import org.junit.Before;
@@ -39,5 +40,31 @@ public class ArgumentCommandNodeTest {
     @Test(expected = IllegalArgumentSyntaxException.class)
     public void testParseInvalid() throws Exception {
         node.parse("foo", contextBuilder);
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        new EqualsTester()
+            .addEqualityGroup(
+                argument("foo", integer()).build(),
+                argument("foo", integer()).build()
+            )
+            .addEqualityGroup(
+                argument("bar", integer(-100, 100)).build(),
+                argument("bar", integer(-100, 100)).build()
+            )
+            .addEqualityGroup(
+                argument("foo", integer(-100, 100)).build(),
+                argument("foo", integer(-100, 100)).build()
+            )
+            .addEqualityGroup(
+                argument("foo", integer()).then(
+                    argument("bar", integer())
+                ).build(),
+                argument("foo", integer()).then(
+                    argument("bar", integer())
+                ).build()
+            )
+            .testEquals();
     }
 }

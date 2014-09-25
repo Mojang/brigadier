@@ -38,4 +38,26 @@ public class ArgumentCommandNode<T> extends CommandNode {
             return "";
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArgumentCommandNode)) return false;
+
+        ArgumentCommandNode that = (ArgumentCommandNode) o;
+
+        if (!name.equals(that.name)) return false;
+        if (!type.equals(that.type)) return false;
+        if (!getChildren().equals(that.getChildren())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + getChildren().hashCode();
+        return result;
+    }
 }
