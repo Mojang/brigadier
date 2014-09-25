@@ -5,6 +5,7 @@ import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.context.ParsedArgument;
 import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import com.google.common.testing.EqualsTester;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -64,5 +65,15 @@ public class IntegerArgumentTypeTest {
         CommandContext context = new CommandContextBuilder().withArgument("foo", type.parse("100")).build();
 
         assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        new EqualsTester()
+            .addEqualityGroup(integer(), integer())
+            .addEqualityGroup(integer(-100, 100), integer(-100, 100))
+            .addEqualityGroup(integer(-100, 50), integer(-100, 50))
+            .addEqualityGroup(integer(-50, 100), integer(-50, 100))
+            .testEquals();
     }
 }

@@ -53,4 +53,18 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
             throw new IllegalArgumentSyntaxException();
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IntegerArgumentType)) return false;
+
+        IntegerArgumentType that = (IntegerArgumentType) o;
+        return maximum == that.maximum && minimum == that.minimum;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * minimum + maximum;
+    }
 }
