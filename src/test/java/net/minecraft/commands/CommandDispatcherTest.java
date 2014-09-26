@@ -13,6 +13,7 @@ import static net.minecraft.commands.builder.LiteralArgumentBuilder.literal;
 import static net.minecraft.commands.builder.RequiredArgumentBuilder.argument;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,6 +32,16 @@ public class CommandDispatcherTest {
 
         subject.execute("foo");
         verify(command).run(any(CommandContext.class));
+    }
+
+    @Test
+    public void testCreateAndMergeCommands() throws Exception {
+        subject.register(literal("base").then(literal("foo")).executes(command));
+        subject.register(literal("base").then(literal("bar")).executes(command));
+
+        subject.execute("base foo");
+        subject.execute("base bar");
+        verify(command, times(2)).run(any(CommandContext.class));
     }
 
     @Test(expected = UnknownCommandException.class)
