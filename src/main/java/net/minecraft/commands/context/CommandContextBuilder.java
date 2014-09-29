@@ -26,6 +26,13 @@ public class CommandContextBuilder {
         return this;
     }
 
+    public CommandContextBuilder copy() {
+        CommandContextBuilder copy = new CommandContextBuilder();
+        copy.command = this.command;
+        copy.arguments.putAll(this.arguments);
+        return copy;
+    }
+
     public CommandContext build() {
         return new CommandContext(arguments, command);
     }

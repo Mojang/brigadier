@@ -1,6 +1,7 @@
 package net.minecraft.commands;
 
 import net.minecraft.commands.context.CommandContext;
+import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
 import net.minecraft.commands.exceptions.UnknownCommandException;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,38 @@ public class CommandDispatcherTest {
         verify(command, times(2)).run(any(CommandContext.class));
     }
 
+    @Test
+    public void testCreateAndExecuteOverlappingCommands() throws Exception {
+        Command one = mock(Command.class);
+        Command two = mock(Command.class);
+        Command three = mock(Command.class);
+
+        subject.register(
+            literal("foo").then(
+                argument("one", integer()).then(
+                    literal("one").executes(one)
+                )
+            ).then(
+                argument("two", integer()).then(
+                    literal("two").executes(two)
+                )
+            ).then(
+                argument("three", integer()).then(
+                    literal("three").executes(three)
+                )
+            )
+        );
+
+        subject.execute("foo 1 one");
+        verify(one).run(any(CommandContext.class));
+
+        subject.execute("foo 2 two");
+        verify(two).run(any(CommandContext.class));
+
+        subject.execute("foo 3 three");
+        verify(three).run(any(CommandContext.class));
+    }
+
     @Test(expected = UnknownCommandException.class)
     public void testExecuteUnknownCommand() throws Exception {
         subject.execute("foo");
@@ -71,7 +104,7 @@ public class CommandDispatcherTest {
         verify(subCommand).run(any(CommandContext.class));
     }
 
-    @Test(expected = UnknownCommandException.class)
+    @Test(expected = IllegalArgumentSyntaxException.class)
     public void testExecuteInvalidSubcommand() throws Exception {
         subject.register(literal("foo").then(
             argument("bar", integer())
