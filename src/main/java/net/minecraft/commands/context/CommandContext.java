@@ -38,4 +38,26 @@ public class CommandContext<T> {
             throw new IllegalArgumentException("Argument '" + name + "' is defined as " + argument.getResult().getClass().getSimpleName() + ", not " + clazz);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CommandContext)) return false;
+
+        CommandContext that = (CommandContext) o;
+
+        if (!arguments.equals(that.arguments)) return false;
+        if (command != null ? !command.equals(that.command) : that.command != null) return false;
+        if (!source.equals(that.source)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = source.hashCode();
+        result = 31 * result + arguments.hashCode();
+        result = 31 * result + (command != null ? command.hashCode() : 0);
+        return result;
+    }
 }
