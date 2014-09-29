@@ -10,7 +10,7 @@ import net.minecraft.commands.exceptions.UnknownCommandException;
 import net.minecraft.commands.tree.CommandNode;
 import net.minecraft.commands.tree.RootCommandNode;
 
-public class CommandDispatcher {
+public class CommandDispatcher<T> {
     public static final String ARGUMENT_SEPARATOR = " ";
 
     private final RootCommandNode root = new RootCommandNode();
@@ -19,17 +19,17 @@ public class CommandDispatcher {
         root.addChild(command.build());
     }
 
-    public void execute(String command) throws CommandException {
-        CommandContext context = parseNodes(root, command, new CommandContextBuilder());
+    public void execute(String command, T source) throws CommandException {
+        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<T>(source));
         context.getCommand().run(context);
     }
 
-    protected CommandContext parseNodes(CommandNode node, String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException, UnknownCommandException {
+    protected CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException, UnknownCommandException {
         IllegalArgumentSyntaxException exception = null;
 
         for (CommandNode child : node.getChildren()) {
             try {
-                CommandContextBuilder context = contextBuilder.copy();
+                CommandContextBuilder<T> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);
                 if (child.getCommand() != null) {
                     context.withCommand(child.getCommand());

@@ -19,19 +19,20 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
-    CommandDispatcher subject;
+    CommandDispatcher<Object> subject;
     @Mock Command command;
+    @Mock Object source;
 
     @Before
     public void setUp() throws Exception {
-        subject = new CommandDispatcher();
+        subject = new CommandDispatcher<Object>();
     }
 
     @Test
     public void testCreateAndExecuteCommand() throws Exception {
         subject.register(literal("foo").executes(command));
 
-        subject.execute("foo");
+        subject.execute("foo", source);
         verify(command).run(any(CommandContext.class));
     }
 
@@ -40,8 +41,8 @@ public class CommandDispatcherTest {
         subject.register(literal("base").then(literal("foo")).executes(command));
         subject.register(literal("base").then(literal("bar")).executes(command));
 
-        subject.execute("base foo");
-        subject.execute("base bar");
+        subject.execute("base foo", source);
+        subject.execute("base bar", source);
         verify(command, times(2)).run(any(CommandContext.class));
     }
 
@@ -67,25 +68,25 @@ public class CommandDispatcherTest {
             )
         );
 
-        subject.execute("foo 1 one");
+        subject.execute("foo 1 one", source);
         verify(one).run(any(CommandContext.class));
 
-        subject.execute("foo 2 two");
+        subject.execute("foo 2 two", source);
         verify(two).run(any(CommandContext.class));
 
-        subject.execute("foo 3 three");
+        subject.execute("foo 3 three", source);
         verify(three).run(any(CommandContext.class));
     }
 
     @Test(expected = UnknownCommandException.class)
     public void testExecuteUnknownCommand() throws Exception {
-        subject.execute("foo");
+        subject.execute("foo", source);
     }
 
     @Test(expected = UnknownCommandException.class)
     public void testExecuteUnknownSubcommand() throws Exception {
         subject.register(literal("foo").executes(command));
-        subject.execute("foo bar");
+        subject.execute("foo bar", source);
     }
 
     @Test
@@ -100,7 +101,7 @@ public class CommandDispatcherTest {
             literal("c")
         ).executes(command));
 
-        subject.execute("foo b");
+        subject.execute("foo b", source);
         verify(subCommand).run(any(CommandContext.class));
     }
 
@@ -110,6 +111,6 @@ public class CommandDispatcherTest {
             argument("bar", integer())
         ).executes(command));
 
-        subject.execute("foo bar");
+        subject.execute("foo bar", source);
     }
 }

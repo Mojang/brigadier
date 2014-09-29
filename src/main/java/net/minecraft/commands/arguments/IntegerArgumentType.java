@@ -30,7 +30,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
         return new IntegerArgumentType(min, max);
     }
 
-    public static int getInteger(CommandContext context, String name) {
+    public static int getInteger(CommandContext<?> context, String name) {
         return context.getArgument(name, int.class).getResult();
     }
 

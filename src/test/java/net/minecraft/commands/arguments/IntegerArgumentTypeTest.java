@@ -63,7 +63,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testGetInteger() throws Exception {
-        CommandContext context = new CommandContextBuilder().withArgument("foo", type.parse("100")).build();
+        CommandContext context = new CommandContextBuilder<Object>(new Object()).withArgument("foo", type.parse("100")).build();
 
         assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
     }

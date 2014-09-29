@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     ArgumentCommandNode node;
-    CommandContextBuilder contextBuilder;
+    CommandContextBuilder<Object> contextBuilder;
 
     @Override
     protected CommandNode getCommandNode() {
@@ -25,7 +25,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = argument("foo", integer()).build();
-        contextBuilder = new CommandContextBuilder();
+        contextBuilder = new CommandContextBuilder<Object>(new Object());
     }
 
     @Test
