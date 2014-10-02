@@ -1,4 +1,0 @@
-@ParametersAreNonnullByDefault
-package net.minecraft.commands.exceptions;
-
-import javax.annotation.ParametersAreNonnullByDefault;

@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'eclipse'
 
 version = '0.0.1'
-archivesBaseName = 'minecraft-commands'
+archivesBaseName = 'brigadier'
 group = 'com.mojang'
 
 sourceCompatibility = 1.6
@@ -61,8 +61,8 @@ uploadArchives {
             repository(url: "file://" + repoDir.absolutePath)
 
             pom.project {
-                description 'Minecraft Command Handler'
-                url 'http://github.com/Mojang/minecraft-commands'
+                description 'Command Registration & Dispatch System'
+                url 'http://github.com/Mojang/brigadier'
             }
         }
     }
