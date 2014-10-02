@@ -1,18 +1,22 @@
 package net.minecraft.commands.arguments;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.testing.EqualsTester;
 import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.context.ParsedArgument;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
-import com.google.common.testing.EqualsTester;
+import net.minecraft.commands.exceptions.CommandException;
+import net.minecraft.commands.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static net.minecraft.commands.arguments.IntegerArgumentType.integer;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class IntegerArgumentTypeTest {
     IntegerArgumentType type;
@@ -30,14 +34,26 @@ public class IntegerArgumentTypeTest {
         assertThat(result.getResult(), is(50));
     }
 
-    @Test(expected = IllegalArgumentSyntaxException.class)
+    @Test
     public void testParseInvalid() throws Exception {
-        type.parse("fifty");
+        try {
+            type.parse("fifty");
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "fifty")));
+        }
     }
 
-    @Test(expected = ArgumentValidationException.class)
+    @Test
     public void testParseTooLow() throws Exception {
-        type.parse("-101");
+        try {
+            type.parse("-101");
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_TOO_SMALL));
+            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", -101, "minimum", -100)));
+        }
     }
 
     @Test
@@ -48,9 +64,15 @@ public class IntegerArgumentTypeTest {
         assertThat(result.getResult(), is(-100));
     }
 
-    @Test(expected = ArgumentValidationException.class)
+    @Test
     public void testParseTooHigh() throws Exception {
-        type.parse("101");
+        try {
+            type.parse("101");
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_TOO_BIG));
+            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", 101, "maximum", 100)));
+        }
     }
 
     @Test

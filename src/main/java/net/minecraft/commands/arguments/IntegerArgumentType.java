@@ -4,10 +4,14 @@ import com.google.common.base.Splitter;
 import net.minecraft.commands.CommandDispatcher;
 import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.context.ParsedArgument;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import net.minecraft.commands.exceptions.CommandException;
+import net.minecraft.commands.exceptions.ParameterizedCommandExceptionType;
 
 public class IntegerArgumentType implements CommandArgumentType<Integer> {
+    public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument-integer-invalid", "Expected an integer, found '${found}'", "found");
+    public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument-integer-low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
+    public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument-integer-big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
+
     private static final Splitter SPLITTER = Splitter.on(CommandDispatcher.ARGUMENT_SEPARATOR).limit(2);
 
     private final int minimum;
@@ -35,22 +39,22 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     }
 
     @Override
-    public ParsedArgument<Integer> parse(String command) throws IllegalArgumentSyntaxException, ArgumentValidationException {
+    public ParsedArgument<Integer> parse(String command) throws CommandException {
         String raw = SPLITTER.split(command).iterator().next();
 
         try {
             int value = Integer.parseInt(raw);
 
             if (value < minimum) {
-                throw new ArgumentValidationException();
+                throw ERROR_TOO_SMALL.create(value, minimum);
             }
             if (value > maximum) {
-                throw new ArgumentValidationException();
+                throw ERROR_TOO_BIG.create(value, maximum);
             }
 
             return new ParsedArgument<Integer>(raw, value);
         } catch (NumberFormatException ignored) {
-            throw new IllegalArgumentSyntaxException();
+            throw ERROR_NOT_A_NUMBER.create(raw);
         }
     }
 

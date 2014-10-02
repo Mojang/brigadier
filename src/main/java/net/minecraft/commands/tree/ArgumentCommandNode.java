@@ -4,8 +4,7 @@ import net.minecraft.commands.Command;
 import net.minecraft.commands.arguments.CommandArgumentType;
 import net.minecraft.commands.context.CommandContextBuilder;
 import net.minecraft.commands.context.ParsedArgument;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import net.minecraft.commands.exceptions.CommandException;
 
 public class ArgumentCommandNode<T> extends CommandNode {
     private final String name;
@@ -31,7 +30,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
+    public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
         ParsedArgument<T> parsed = type.parse(command);
         int start = parsed.getRaw().length();
 

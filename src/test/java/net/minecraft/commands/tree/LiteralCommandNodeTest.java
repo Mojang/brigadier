@@ -3,7 +3,7 @@ package net.minecraft.commands.tree;
 import com.google.common.testing.EqualsTester;
 import net.minecraft.commands.Command;
 import net.minecraft.commands.context.CommandContextBuilder;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import net.minecraft.commands.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,12 +37,12 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("foo", contextBuilder), is(""));
     }
 
-    @Test(expected = IllegalArgumentSyntaxException.class)
+    @Test(expected = CommandException.class)
     public void testParseSimilar() throws Exception {
         node.parse("foobar", contextBuilder);
     }
 
-    @Test(expected = IllegalArgumentSyntaxException.class)
+    @Test(expected = CommandException.class)
     public void testParseInvalid() throws Exception {
         node.parse("bar", contextBuilder);
     }

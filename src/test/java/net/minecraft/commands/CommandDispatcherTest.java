@@ -1,8 +1,7 @@
 package net.minecraft.commands;
 
 import net.minecraft.commands.context.CommandContext;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
-import net.minecraft.commands.exceptions.UnknownCommandException;
+import net.minecraft.commands.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,12 +77,12 @@ public class CommandDispatcherTest {
         verify(three).run(any(CommandContext.class));
     }
 
-    @Test(expected = UnknownCommandException.class)
+    @Test(expected = CommandException.class)
     public void testExecuteUnknownCommand() throws Exception {
         subject.execute("foo", source);
     }
 
-    @Test(expected = UnknownCommandException.class)
+    @Test(expected = CommandException.class)
     public void testExecuteUnknownSubcommand() throws Exception {
         subject.register(literal("foo").executes(command));
         subject.execute("foo bar", source);
@@ -105,7 +104,7 @@ public class CommandDispatcherTest {
         verify(subCommand).run(any(CommandContext.class));
     }
 
-    @Test(expected = IllegalArgumentSyntaxException.class)
+    @Test(expected = CommandException.class)
     public void testExecuteInvalidSubcommand() throws Exception {
         subject.register(literal("foo").then(
             argument("bar", integer())

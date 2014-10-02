@@ -3,10 +3,12 @@ package net.minecraft.commands.tree;
 import net.minecraft.commands.Command;
 import net.minecraft.commands.CommandDispatcher;
 import net.minecraft.commands.context.CommandContextBuilder;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import net.minecraft.commands.exceptions.CommandException;
+import net.minecraft.commands.exceptions.ParameterizedCommandExceptionType;
 
 public class LiteralCommandNode extends CommandNode {
+    public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("incorrect_literal", "Expected literal ${expected}", "expected");
+
     private final String literal;
 
     public LiteralCommandNode(String literal, Command command) {
@@ -24,11 +26,11 @@ public class LiteralCommandNode extends CommandNode {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException {
+    public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
         String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
 
         if (!command.startsWith(expected)) {
-            throw new IllegalArgumentSyntaxException();
+            throw ERROR_INCORRECT_LITERAL.create(expected);
         }
 
         int start = expected.length();

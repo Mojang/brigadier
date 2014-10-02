@@ -3,14 +3,13 @@ package net.minecraft.commands;
 import net.minecraft.commands.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.context.CommandContext;
 import net.minecraft.commands.context.CommandContextBuilder;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
 import net.minecraft.commands.exceptions.CommandException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
-import net.minecraft.commands.exceptions.UnknownCommandException;
+import net.minecraft.commands.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.tree.CommandNode;
 import net.minecraft.commands.tree.RootCommandNode;
 
 public class CommandDispatcher<T> {
+    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("unknown_command", "Unknown command");
     public static final String ARGUMENT_SEPARATOR = " ";
 
     private final RootCommandNode root = new RootCommandNode();
@@ -24,8 +23,8 @@ public class CommandDispatcher<T> {
         context.getCommand().run(context);
     }
 
-    protected CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException, UnknownCommandException {
-        IllegalArgumentSyntaxException exception = null;
+    protected CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws CommandException {
+        CommandException exception = null;
 
         for (CommandNode child : node.getChildren()) {
             try {
@@ -35,7 +34,7 @@ public class CommandDispatcher<T> {
                     context.withCommand(child.getCommand());
                 }
                 return parseNodes(child, remaining, context);
-            } catch (IllegalArgumentSyntaxException ex) {
+            } catch (CommandException ex) {
                 exception = ex;
             }
         }
@@ -44,7 +43,7 @@ public class CommandDispatcher<T> {
             throw exception;
         }
         if (command.length() > 0) {
-            throw new UnknownCommandException();
+            throw ERROR_UNKNOWN_COMMAND.create();
         }
 
         return contextBuilder.build();

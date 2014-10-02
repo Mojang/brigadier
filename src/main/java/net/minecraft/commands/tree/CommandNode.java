@@ -3,8 +3,7 @@ package net.minecraft.commands.tree;
 import com.google.common.collect.Maps;
 import net.minecraft.commands.Command;
 import net.minecraft.commands.context.CommandContextBuilder;
-import net.minecraft.commands.exceptions.ArgumentValidationException;
-import net.minecraft.commands.exceptions.IllegalArgumentSyntaxException;
+import net.minecraft.commands.exceptions.CommandException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -60,5 +59,5 @@ public abstract class CommandNode {
 
     protected abstract Object getMergeKey();
 
-    public abstract String parse(String command, CommandContextBuilder contextBuilder) throws IllegalArgumentSyntaxException, ArgumentValidationException;
+    public abstract String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException;
 }
