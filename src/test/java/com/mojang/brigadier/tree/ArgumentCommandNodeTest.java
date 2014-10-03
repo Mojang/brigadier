@@ -1,20 +1,26 @@
 package com.mojang.brigadier.tree;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
-    ArgumentCommandNode node;
+    ArgumentCommandNode<Integer> node;
     CommandContextBuilder<Object> contextBuilder;
 
     @Override
@@ -44,9 +50,15 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(contextBuilder.getArguments().get("foo").getResult(), is((Object) 123));
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testParseInvalid() throws Exception {
-        node.parse("foo", contextBuilder);
+        try {
+            node.parse("foo", contextBuilder);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "foo")));
+        }
     }
 
     @Test

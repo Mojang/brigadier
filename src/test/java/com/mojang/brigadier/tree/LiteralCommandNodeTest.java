@@ -1,15 +1,20 @@
 package com.mojang.brigadier.tree;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
@@ -37,14 +42,26 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("foo", contextBuilder), is(""));
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testParseSimilar() throws Exception {
-        node.parse("foobar", contextBuilder);
+        try {
+            node.parse("foobar", contextBuilder);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is((Map<String, Object>)ImmutableMap.<String, Object>of("expected", "foo")));
+        }
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testParseInvalid() throws Exception {
-        node.parse("bar", contextBuilder);
+        try {
+            node.parse("bar", contextBuilder);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is((Map<String, Object>)ImmutableMap.<String, Object>of("expected", "foo")));
+        }
     }
 
     @Test

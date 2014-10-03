@@ -1,20 +1,27 @@
 package com.mojang.brigadier;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
@@ -77,15 +84,28 @@ public class CommandDispatcherTest {
         verify(three).run(any(CommandContext.class));
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testExecuteUnknownCommand() throws Exception {
-        subject.execute("foo", source);
+        try {
+            subject.execute("foo", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+        }
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testExecuteUnknownSubcommand() throws Exception {
         subject.register(literal("foo").executes(command));
-        subject.execute("foo bar", source);
+
+        try {
+            subject.execute("foo bar", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+        }
     }
 
     @Test
@@ -104,12 +124,18 @@ public class CommandDispatcherTest {
         verify(subCommand).run(any(CommandContext.class));
     }
 
-    @Test(expected = CommandException.class)
+    @Test
     public void testExecuteInvalidSubcommand() throws Exception {
         subject.register(literal("foo").then(
             argument("bar", integer())
         ).executes(command));
 
-        subject.execute("foo bar", source);
+        try {
+            subject.execute("foo bar", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "bar")));
+        }
     }
 }

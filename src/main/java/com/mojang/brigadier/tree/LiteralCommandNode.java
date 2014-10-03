@@ -30,7 +30,7 @@ public class LiteralCommandNode extends CommandNode {
         String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
 
         if (!command.startsWith(expected)) {
-            throw ERROR_INCORRECT_LITERAL.create(expected);
+            throw ERROR_INCORRECT_LITERAL.create(literal);
         }
 
         int start = expected.length();
