@@ -14,6 +14,11 @@ public class RootCommandNode extends CommandNode {
     }
 
     @Override
+    public String getUsageText() {
+        return "";
+    }
+
+    @Override
     public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
         return command;
     }

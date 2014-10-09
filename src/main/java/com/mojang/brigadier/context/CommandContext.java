@@ -1,19 +1,27 @@
 package com.mojang.brigadier.context;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
 
 public class CommandContext<T> {
+    private final Joiner JOINER = Joiner.on(CommandDispatcher.ARGUMENT_SEPARATOR);
+
     private final T source;
     private final Map<String, ParsedArgument<?>> arguments;
     private final Command command;
+    private final Map<CommandNode, String> nodes;
 
-    public CommandContext(T source, Map<String, ParsedArgument<?>> arguments, Command command) {
+    public CommandContext(T source, Map<String, ParsedArgument<?>> arguments, Command command, Map<CommandNode, String> nodes) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
+        this.nodes = nodes;
     }
 
     public Command getCommand() {
@@ -47,6 +55,7 @@ public class CommandContext<T> {
         CommandContext that = (CommandContext) o;
 
         if (!arguments.equals(that.arguments)) return false;
+        if (!Iterables.elementsEqual(nodes.entrySet(), that.nodes.entrySet())) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (!source.equals(that.source)) return false;
 
@@ -58,6 +67,15 @@ public class CommandContext<T> {
         int result = source.hashCode();
         result = 31 * result + arguments.hashCode();
         result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + nodes.hashCode();
         return result;
+    }
+
+    public String getInput() {
+        return JOINER.join(nodes.values());
+    }
+
+    public Map<CommandNode, String> getNodes() {
+        return nodes;
     }
 }

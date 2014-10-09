@@ -33,6 +33,7 @@ public class LiteralCommandNode extends CommandNode {
             throw ERROR_INCORRECT_LITERAL.create(literal);
         }
 
+        contextBuilder.withNode(this, literal);
         int start = expected.length();
         return command.substring(start);
     }
@@ -46,6 +47,11 @@ public class LiteralCommandNode extends CommandNode {
 
         if (!literal.equals(that.literal)) return false;
         return super.equals(o);
+    }
+
+    @Override
+    public String getUsageText() {
+        return literal;
     }
 
     @Override

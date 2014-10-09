@@ -59,5 +59,7 @@ public abstract class CommandNode {
 
     protected abstract Object getMergeKey();
 
+    public abstract String getUsageText();
+
     public abstract String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException;
 }

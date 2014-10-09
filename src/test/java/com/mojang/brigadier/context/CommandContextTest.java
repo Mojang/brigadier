@@ -2,6 +2,7 @@ package com.mojang.brigadier.context;
 
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,12 +53,23 @@ public class CommandContextTest {
         Object otherSource = new Object();
         Command command = mock(Command.class);
         Command otherCommand = mock(Command.class);
+        CommandNode node = mock(CommandNode.class);
+        CommandNode otherNode = mock(CommandNode.class);
         new EqualsTester()
             .addEqualityGroup(new CommandContextBuilder<Object>(source).build(), new CommandContextBuilder<Object>(source).build())
             .addEqualityGroup(new CommandContextBuilder<Object>(otherSource).build(), new CommandContextBuilder<Object>(otherSource).build())
             .addEqualityGroup(new CommandContextBuilder<Object>(source).withCommand(command).build(), new CommandContextBuilder<Object>(source).withCommand(command).build())
             .addEqualityGroup(new CommandContextBuilder<Object>(source).withCommand(otherCommand).build(), new CommandContextBuilder<Object>(source).withCommand(otherCommand).build())
             .addEqualityGroup(new CommandContextBuilder<Object>(source).withArgument("foo", integer().parse("123")).build(), new CommandContextBuilder<Object>(source).withArgument("foo", integer().parse("123")).build())
+            .addEqualityGroup(new CommandContextBuilder<Object>(source).withNode(node, "foo").withNode(otherNode, "bar").build(), new CommandContextBuilder<Object>(source).withNode(node, "foo").withNode(otherNode, "bar").build())
+            .addEqualityGroup(new CommandContextBuilder<Object>(source).withNode(otherNode, "bar").withNode(node, "foo").build(), new CommandContextBuilder<Object>(source).withNode(otherNode, "bar").withNode(node, "foo").build())
             .testEquals();
+    }
+
+    @Test
+    public void testGetInput() throws Exception {
+        CommandContext<Object> context = builder.withNode(literal("foo").build(), "foo").withNode(argument("bar", integer()).build(), "100").withNode(literal("baz").build(), "baz").build();
+
+        assertThat(context.getInput(), is("foo 100 baz"));
     }
 }

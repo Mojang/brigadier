@@ -65,6 +65,11 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     }
 
     @Test
+    public void testUsage() throws Exception {
+        assertThat(node.getUsageText(), is("foo"));
+    }
+
+    @Test
     public void testEquals() throws Exception {
         Command command = mock(Command.class);
 

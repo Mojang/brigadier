@@ -30,11 +30,17 @@ public class ArgumentCommandNode<T> extends CommandNode {
     }
 
     @Override
+    public String getUsageText() {
+        return "<" + name + ">";
+    }
+
+    @Override
     public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
         ParsedArgument<T> parsed = type.parse(command);
         int start = parsed.getRaw().length();
 
         contextBuilder.withArgument(name, parsed);
+        contextBuilder.withNode(this, parsed.getRaw());
 
         if (command.length() > start) {
             return command.substring(start + 1);

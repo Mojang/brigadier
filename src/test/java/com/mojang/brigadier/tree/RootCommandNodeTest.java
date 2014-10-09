@@ -33,6 +33,11 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     }
 
     @Test
+    public void testUsage() throws Exception {
+        assertThat(node.getUsageText(), is(""));
+    }
+
+    @Test
     public void testEquals() throws Exception {
         new EqualsTester()
             .addEqualityGroup(
