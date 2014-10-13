@@ -28,6 +28,11 @@ public class CommandDispatcher<T> {
 
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("unknown_command", "Unknown command");
     public static final String ARGUMENT_SEPARATOR = " ";
+    private static final String USAGE_OPTIONAL_OPEN = "[";
+    private static final String USAGE_OPTIONAL_CLOSE = "]";
+    private static final String USAGE_REQUIRED_OPEN = "(";
+    private static final String USAGE_REQUIRED_CLOSE = ")";
+    private static final String USAGE_OR = "|";
 
     private final RootCommandNode root = new RootCommandNode();
 
@@ -88,23 +93,23 @@ public class CommandDispatcher<T> {
         StringBuilder result = new StringBuilder(context.getInput());
         result.append(ARGUMENT_SEPARATOR);
         if (optional) {
-            result.append("[");
+            result.append(USAGE_OPTIONAL_OPEN);
         } else if (children.size() > 1) {
-            result.append("(");
+            result.append(USAGE_REQUIRED_OPEN);
         }
 
         for (int i = 0; i < children.size(); i++) {
             result.append(children.get(i).getUsageText());
 
             if (i < children.size() - 1) {
-                result.append("|");
+                result.append(USAGE_OR);
             }
         }
 
         if (optional) {
-            result.append("]");
+            result.append(USAGE_OPTIONAL_CLOSE);
         } else if (children.size() > 1) {
-            result.append(")");
+            result.append(USAGE_REQUIRED_CLOSE);
         }
 
         return result.toString();

@@ -7,6 +7,9 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 
 public class ArgumentCommandNode<T> extends CommandNode {
+    private static final String USAGE_ARGUMENT_OPEN = "<";
+    private static final String USAGE_ARGUMENT_CLOSE = ">";
+
     private final String name;
     private final CommandArgumentType<T> type;
 
@@ -31,7 +34,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
 
     @Override
     public String getUsageText() {
-        return "<" + name + ">";
+        return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
     }
 
     @Override
