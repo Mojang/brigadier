@@ -1,37 +1,28 @@
-apply plugin: 'java'
-apply plugin: 'idea'
+apply plugin: 'java-library'
 apply plugin: 'maven'
-apply plugin: 'eclipse'
 
-version = '0.0.1'
-archivesBaseName = 'brigadier'
+version = '0.1.0'
 group = 'com.mojang'
 
-sourceCompatibility = 1.6
-
-test {
-    testLogging {
-        events "failed", "skipped"
-        showStandardStreams true
-        showExceptions true
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
 }
 
 repositories {
     maven {
-        url "http://s3.amazonaws.com/Minecraft.Download/libraries"
+        url "https://libraries.minecraft.net"
     }
     mavenCentral()
 }
 
 dependencies {
-    compile 'com.google.code.findbugs:jsr305:2.0.1'
-    compile 'com.google.guava:guava:17.0'
-    compile 'org.apache.commons:commons-lang3:3.3.2'
-    testCompile 'junit:junit-dep:4.10'
-    testCompile 'org.hamcrest:hamcrest-library:1.2.1'
-    testCompile 'org.mockito:mockito-core:1.8.5'
-    testCompile 'com.google.guava:guava-testlib:17.0'
+    api 'com.google.code.findbugs:jsr305:2.0.1'
+    api 'com.google.guava:guava:17.0'
+    api 'org.apache.commons:commons-lang3:3.3.2'
+    testImplementation 'junit:junit-dep:4.10'
+    testImplementation 'org.hamcrest:hamcrest-library:1.2.1'
+    testImplementation 'org.mockito:mockito-core:1.8.5'
+    testImplementation 'com.google.guava:guava-testlib:17.0'
 }
 
 task sourcesJar(type: Jar) {
@@ -39,17 +30,36 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-test {
-    testLogging {
-        events "failed", "skipped"
-        showStandardStreams true
-        showExceptions true
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
     }
 }
 
 artifacts {
     archives jar
     archives sourcesJar
+}
+
+test {
+    testLogging {
+        events "failed", "skipped"
+        showStandardStreams true
+        showExceptions true
+    }
 }
 
 def repoDir = new File(projectDir, "repo")
@@ -75,6 +85,6 @@ uploadArchives {
     }
 }
 
-clean << {
+clean.doLast {
     repoDir.deleteDir()
 }
