@@ -58,7 +58,7 @@ artifacts {
 test {
     testLogging {
         events "failed", "skipped"
-        showStandardStreams true
+        showStandardStreams = true
         showExceptions true
     }
 }

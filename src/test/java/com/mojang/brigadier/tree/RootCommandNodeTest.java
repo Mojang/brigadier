@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RootCommandNodeTest extends AbstractCommandNodeTest {
-    RootCommandNode node;
+    private RootCommandNode node;
 
     @Override
     protected CommandNode getCommandNode() {

@@ -20,9 +20,11 @@ import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherUsagesTest {
-    CommandDispatcher<Object> subject;
-    @Mock Object source;
-    @Mock Command command;
+    private CommandDispatcher<Object> subject;
+    @Mock
+    private Object source;
+    @Mock
+    private Command command;
 
     @Before
     public void setUp() throws Exception {

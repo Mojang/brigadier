@@ -13,8 +13,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class LiteralArgumentBuilderTest {
-    LiteralArgumentBuilder builder;
+    private LiteralArgumentBuilder builder;
     @Mock
+    private
     Command command;
 
     @Before

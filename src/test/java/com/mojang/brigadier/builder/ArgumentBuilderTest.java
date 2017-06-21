@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
 public class ArgumentBuilderTest {
-    TestableArgumentBuilder builder;
+    private TestableArgumentBuilder builder;
 
     @Before
     public void setUp() throws Exception {

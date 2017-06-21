@@ -24,9 +24,11 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
-    CommandDispatcher<Object> subject;
-    @Mock Command command;
-    @Mock Object source;
+    private CommandDispatcher<Object> subject;
+    @Mock
+    private Command command;
+    @Mock
+    private Object source;
 
     @Before
     public void setUp() throws Exception {

@@ -42,7 +42,7 @@ public class CommandDispatcher<T> {
         context.getCommand().run(context);
     }
 
-    protected CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws CommandException {
+    private CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws CommandException {
         CommandException exception = null;
 
         for (CommandNode child : node.getChildren()) {

@@ -26,7 +26,7 @@ public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
         return getThis();
     }
 
-    public Command getCommand() {
+    protected Command getCommand() {
         return command;
     }
 

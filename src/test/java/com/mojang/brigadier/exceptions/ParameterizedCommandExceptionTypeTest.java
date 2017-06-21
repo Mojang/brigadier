@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 public class ParameterizedCommandExceptionTypeTest {
-    ParameterizedCommandExceptionType type;
+    private ParameterizedCommandExceptionType type;
 
     @Before
     public void setUp() throws Exception {

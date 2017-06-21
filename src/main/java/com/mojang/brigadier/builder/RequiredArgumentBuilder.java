@@ -8,7 +8,7 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     private final String name;
     private final CommandArgumentType<T> type;
 
-    protected RequiredArgumentBuilder(String name, CommandArgumentType<T> type) {
+    private RequiredArgumentBuilder(String name, CommandArgumentType<T> type) {
         this.name = name;
         this.type = type;
     }
@@ -22,11 +22,11 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         return this;
     }
 
-    public CommandArgumentType<T> getType() {
+    private CommandArgumentType<T> getType() {
         return type;
     }
 
-    public String getName() {
+    private String getName() {
         return name;
     }
 

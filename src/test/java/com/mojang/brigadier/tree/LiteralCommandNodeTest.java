@@ -18,8 +18,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
-    LiteralCommandNode node;
-    CommandContextBuilder<Object> contextBuilder;
+    private LiteralCommandNode node;
+    private CommandContextBuilder<Object> contextBuilder;
 
     @Override
     protected CommandNode getCommandNode() {

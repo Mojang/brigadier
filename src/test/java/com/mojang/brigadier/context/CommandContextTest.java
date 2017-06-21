@@ -18,8 +18,9 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandContextTest {
-    CommandContextBuilder<Object> builder;
-    @Mock Object source;
+    private CommandContextBuilder<Object> builder;
+    @Mock
+    private Object source;
 
     @Before
     public void setUp() throws Exception {

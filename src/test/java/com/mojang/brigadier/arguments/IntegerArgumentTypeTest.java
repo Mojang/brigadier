@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class IntegerArgumentTypeTest {
-    IntegerArgumentType type;
+    private IntegerArgumentType type;
 
     @Before
     public void setUp() throws Exception {

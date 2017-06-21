@@ -20,8 +20,8 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
-    ArgumentCommandNode<Integer> node;
-    CommandContextBuilder<Object> contextBuilder;
+    private ArgumentCommandNode<Integer> node;
+    private CommandContextBuilder<Object> contextBuilder;
 
     @Override
     protected CommandNode getCommandNode() {

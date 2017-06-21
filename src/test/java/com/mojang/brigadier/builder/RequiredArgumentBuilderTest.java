@@ -14,9 +14,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RequiredArgumentBuilderTest {
-    @Mock CommandArgumentType<Integer> type;
-    RequiredArgumentBuilder<Integer> builder;
     @Mock
+    private CommandArgumentType<Integer> type;
+    private RequiredArgumentBuilder<Integer> builder;
+    @Mock
+    private
     Command command;
 
     @Before
