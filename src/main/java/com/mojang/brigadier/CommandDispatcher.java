@@ -13,7 +13,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.List;
 public class CommandDispatcher<T> {
     private static final Predicate<CommandNode> HAS_COMMAND = new Predicate<CommandNode>() {
         @Override
-        public boolean apply(@Nullable CommandNode input) {
+        public boolean apply(CommandNode input) {
             return input != null && (input.getCommand() != null || Iterables.any(input.getChildren(), HAS_COMMAND));
         }
     };

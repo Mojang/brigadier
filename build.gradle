@@ -16,7 +16,6 @@ repositories {
 }
 
 dependencies {
-    api 'com.google.code.findbugs:jsr305:2.0.1'
     api 'com.google.guava:guava:21.0'
     api 'org.apache.commons:commons-lang3:3.5'
     testImplementation 'junit:junit-dep:4.10'
