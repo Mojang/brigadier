@@ -26,7 +26,7 @@ public class CommandDispatcherUsagesTest {
 
     @Before
     public void setUp() throws Exception {
-        subject = new CommandDispatcher<Object>();
+        subject = new CommandDispatcher<>();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class CommandDispatcherUsagesTest {
             subject.getUsage("foo", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
     }

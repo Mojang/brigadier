@@ -7,9 +7,9 @@ public class ParsedArgumentTest {
     @Test
     public void testEquals() throws Exception {
         new EqualsTester()
-            .addEqualityGroup(new ParsedArgument<String>("foo", "bar"), new ParsedArgument<String>("foo", "bar"))
-            .addEqualityGroup(new ParsedArgument<String>("bar", "baz"), new ParsedArgument<String>("bar", "baz"))
-            .addEqualityGroup(new ParsedArgument<String>("foo", "baz"), new ParsedArgument<String>("foo", "baz"))
+            .addEqualityGroup(new ParsedArgument<>("foo", "bar"), new ParsedArgument<>("foo", "bar"))
+            .addEqualityGroup(new ParsedArgument<>("bar", "baz"), new ParsedArgument<>("bar", "baz"))
+            .addEqualityGroup(new ParsedArgument<>("foo", "baz"), new ParsedArgument<>("foo", "baz"))
             .testEquals();
     }
 }

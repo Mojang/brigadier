@@ -32,8 +32,8 @@ public class ParameterizedCommandExceptionTypeTest {
     @Test
     public void testCreate() throws Exception {
         CommandException exception = type.create("World");
-        assertThat(exception.getType(), is((CommandExceptionType) type));
-        assertThat(exception.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("name", "World")));
+        assertThat(exception.getType(), is(type));
+        assertThat(exception.getData(), is(ImmutableMap.<String, Object>of("name", "World")));
         assertThat(exception.getMessage(), is("Hello, World!"));
     }
 

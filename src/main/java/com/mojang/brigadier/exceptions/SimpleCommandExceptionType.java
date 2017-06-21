@@ -22,7 +22,7 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     }
 
     public CommandException create() {
-        return new CommandException(this, ImmutableMap.<String, Object>of());
+        return new CommandException(this, ImmutableMap.of());
     }
 
     @Override

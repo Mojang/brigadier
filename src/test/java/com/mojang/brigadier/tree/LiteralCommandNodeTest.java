@@ -29,7 +29,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = literal("foo").build();
-        contextBuilder = new CommandContextBuilder<Object>(new Object());
+        contextBuilder = new CommandContextBuilder<>(new Object());
     }
 
     @Test
@@ -48,8 +48,8 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
             node.parse("foobar", contextBuilder);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is((Map<String, Object>)ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
         }
     }
 
@@ -59,8 +59,8 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
             node.parse("bar", contextBuilder);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is((Map<String, Object>)ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
         }
     }
 

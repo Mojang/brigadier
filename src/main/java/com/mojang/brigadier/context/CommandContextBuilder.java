@@ -36,7 +36,7 @@ public class CommandContextBuilder<T> {
     }
 
     public CommandContextBuilder<T> copy() {
-        CommandContextBuilder<T> copy = new CommandContextBuilder<T>(source);
+        CommandContextBuilder<T> copy = new CommandContextBuilder<>(source);
         copy.command = this.command;
         copy.arguments.putAll(this.arguments);
         copy.nodes.putAll(this.nodes);
@@ -44,6 +44,6 @@ public class CommandContextBuilder<T> {
     }
 
     public CommandContext<T> build() {
-        return new CommandContext<T>(source, arguments, command, nodes);
+        return new CommandContext<>(source, arguments, command, nodes);
     }
 }

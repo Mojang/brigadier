@@ -1,3 +1,5 @@
+import groovy.io.FileType
+
 apply plugin: 'java-library'
 apply plugin: 'maven'
 
@@ -78,7 +80,7 @@ uploadArchives {
 
     doLast {
         // Purge all annoying files that arent needed
-        repoDir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.(xml|xml\.sha1|md5)$/) {
+        repoDir.traverse(type: FileType.FILES, nameFilter: ~/.*\.(xml|xml\.sha1|md5)$/) {
             it.delete()
         }
     }

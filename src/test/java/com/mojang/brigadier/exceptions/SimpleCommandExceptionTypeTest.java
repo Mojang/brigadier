@@ -13,7 +13,7 @@ public class SimpleCommandExceptionTypeTest {
     public void testCreate() throws Exception {
         SimpleCommandExceptionType type = new SimpleCommandExceptionType("foo", "bar");
         CommandException exception = type.create();
-        assertThat(exception.getType(), is((CommandExceptionType) type));
+        assertThat(exception.getType(), is(type));
         assertThat(exception.getMessage(), is("bar"));
         assertThat(exception.getData().values(), empty());
     }

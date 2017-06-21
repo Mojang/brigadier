@@ -31,7 +31,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = argument("foo", integer()).build();
-        contextBuilder = new CommandContextBuilder<Object>(new Object());
+        contextBuilder = new CommandContextBuilder<>(new Object());
     }
 
     @Test
@@ -39,7 +39,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123 456", contextBuilder), is("456"));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(), is((Object) 123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123", contextBuilder), is(""));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(), is((Object) 123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
             node.parse("foo", contextBuilder);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "foo")));
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "foo")));
         }
     }
 

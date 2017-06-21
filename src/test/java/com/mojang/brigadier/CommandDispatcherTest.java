@@ -20,7 +20,6 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,7 +30,7 @@ public class CommandDispatcherTest {
 
     @Before
     public void setUp() throws Exception {
-        subject = new CommandDispatcher<Object>();
+        subject = new CommandDispatcher<>();
     }
 
     @Test
@@ -90,7 +89,7 @@ public class CommandDispatcherTest {
             subject.execute("foo", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
     }
@@ -103,7 +102,7 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
     }
@@ -134,8 +133,8 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "bar")));
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "bar")));
         }
     }
 }

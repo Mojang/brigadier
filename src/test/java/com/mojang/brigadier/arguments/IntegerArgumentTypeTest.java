@@ -40,8 +40,8 @@ public class IntegerArgumentTypeTest {
             type.parse("fifty");
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", "fifty")));
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "fifty")));
         }
     }
 
@@ -51,8 +51,8 @@ public class IntegerArgumentTypeTest {
             type.parse("-101");
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_TOO_SMALL));
-            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", -101, "minimum", -100)));
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", -101, "minimum", -100)));
         }
     }
 
@@ -70,8 +70,8 @@ public class IntegerArgumentTypeTest {
             type.parse("101");
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is((CommandExceptionType) IntegerArgumentType.ERROR_TOO_BIG));
-            assertThat(ex.getData(), is((Map<String, Object>) ImmutableMap.<String, Object>of("found", 101, "maximum", 100)));
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", 101, "maximum", 100)));
         }
     }
 
@@ -85,7 +85,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testGetInteger() throws Exception {
-        CommandContext context = new CommandContextBuilder<Object>(new Object()).withArgument("foo", type.parse("100")).build();
+        CommandContext context = new CommandContextBuilder<>(new Object()).withArgument("foo", type.parse("100")).build();
 
         assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
     }

@@ -14,7 +14,7 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     }
 
     public static <T> RequiredArgumentBuilder<T> argument(String name, CommandArgumentType<T> type) {
-        return new RequiredArgumentBuilder<T>(name, type);
+        return new RequiredArgumentBuilder<>(name, type);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     }
 
     public ArgumentCommandNode<T> build() {
-        ArgumentCommandNode<T> result = new ArgumentCommandNode<T>(getName(), getType(), getCommand());
+        ArgumentCommandNode<T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand());
 
         for (CommandNode argument : getArguments()) {
             result.addChild(argument);

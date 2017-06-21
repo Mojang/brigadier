@@ -24,7 +24,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("foo bar baz", new CommandContextBuilder<Object>(new Object())), is("foo bar baz"));
+        assertThat(node.parse("foo bar baz", new CommandContextBuilder<>(new Object())), is("foo bar baz"));
     }
 
     @Test(expected = UnsupportedOperationException.class)

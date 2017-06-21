@@ -52,7 +52,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
                 throw ERROR_TOO_BIG.create(value, maximum);
             }
 
-            return new ParsedArgument<Integer>(raw, value);
+            return new ParsedArgument<>(raw, value);
         } catch (NumberFormatException ignored) {
             throw ERROR_NOT_A_NUMBER.create(raw);
         }

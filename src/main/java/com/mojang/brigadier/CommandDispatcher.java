@@ -1,9 +1,7 @@
 package com.mojang.brigadier;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -13,15 +11,15 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class CommandDispatcher<T> {
     private static final Predicate<CommandNode> HAS_COMMAND = new Predicate<CommandNode>() {
         @Override
-        public boolean apply(CommandNode input) {
-            return input != null && (input.getCommand() != null || Iterables.any(input.getChildren(), HAS_COMMAND));
+        public boolean test(CommandNode input) {
+            return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(HAS_COMMAND));
         }
     };
 
@@ -40,7 +38,7 @@ public class CommandDispatcher<T> {
     }
 
     public void execute(String command, T source) throws CommandException {
-        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<T>(source));
+        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<>(source));
         context.getCommand().run(context);
     }
 
@@ -71,23 +69,18 @@ public class CommandDispatcher<T> {
     }
 
     public String getUsage(String command, T source) throws CommandException {
-        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<T>(source));
+        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<>(source));
         CommandNode base = Iterables.getLast(context.getNodes().keySet());
-        List<CommandNode> children = Lists.newArrayList(Iterables.filter(base.getChildren(), HAS_COMMAND));
+        List<CommandNode> children = base.getChildren().stream().filter(HAS_COMMAND).collect(Collectors.toList());
         boolean optional = base.getCommand() != null;
 
         if (children.isEmpty()) {
             return context.getInput();
         }
 
-        Collections.sort(children, new Comparator<CommandNode>() {
-            @Override
-            public int compare(CommandNode o1, CommandNode o2) {
-                return ComparisonChain.start()
-                    .compareTrueFirst(o1 instanceof LiteralCommandNode, o2 instanceof LiteralCommandNode)
-                    .result();
-            }
-        });
+        children.sort((o1, o2) -> ComparisonChain.start()
+            .compareTrueFirst(o1 instanceof LiteralCommandNode, o2 instanceof LiteralCommandNode)
+            .result());
 
         StringBuilder result = new StringBuilder(context.getInput());
         result.append(ARGUMENT_SEPARATOR);

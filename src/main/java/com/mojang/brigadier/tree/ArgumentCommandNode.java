@@ -68,7 +68,6 @@ public class ArgumentCommandNode<T> extends CommandNode {
     public int hashCode() {
         int result = name.hashCode();
         result = 31 * result + type.hashCode();
-        result = 31 * super.hashCode();
         return result;
     }
 }
