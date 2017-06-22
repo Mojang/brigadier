@@ -1,6 +1,7 @@
 package com.mojang.brigadier.tree;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -11,9 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -36,7 +40,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("123 456", contextBuilder), is("456"));
+        assertThat(node.parse("123 456", contextBuilder), is(" 456"));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
         assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
@@ -64,6 +68,13 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testUsage() throws Exception {
         assertThat(node.getUsageText(), is("<foo>"));
+    }
+
+    @Test
+    public void testSuggestions() throws Exception {
+        Set<String> set = Sets.newHashSet();
+        node.listSuggestions("", set);
+        assertThat(set, is(empty()));
     }
 
     @Test

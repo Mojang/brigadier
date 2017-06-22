@@ -1,11 +1,15 @@
 package com.mojang.brigadier.tree;
 
+import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Set;
+
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -35,6 +39,13 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testUsage() throws Exception {
         assertThat(node.getUsageText(), is(""));
+    }
+
+    @Test
+    public void testSuggestions() throws Exception {
+        Set<String> set = Sets.newHashSet();
+        node.listSuggestions("", set);
+        assertThat(set, is(empty()));
     }
 
     @Test

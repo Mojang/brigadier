@@ -1,6 +1,7 @@
 package com.mojang.brigadier.tree;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -10,8 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -34,7 +38,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("foo bar", contextBuilder), is("bar"));
+        assertThat(node.parse("foo bar", contextBuilder), is(" bar"));
     }
 
     @Test
@@ -67,6 +71,25 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testUsage() throws Exception {
         assertThat(node.getUsageText(), is("foo"));
+    }
+
+    @Test
+    public void testSuggestions() throws Exception {
+        Set<String> set = Sets.newHashSet();
+        node.listSuggestions("", set);
+        assertThat(set, equalTo(Sets.newHashSet("foo")));
+
+        set.clear();
+        node.listSuggestions("foo", set);
+        assertThat(set, equalTo(Sets.newHashSet("foo")));
+
+        set.clear();
+        node.listSuggestions("food", set);
+        assertThat(set, is(empty()));
+
+        set.clear();
+        node.listSuggestions("b", set);
+        assertThat(set, is(empty()));
     }
 
     @Test

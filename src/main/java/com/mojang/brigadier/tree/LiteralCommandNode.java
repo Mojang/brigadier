@@ -6,8 +6,10 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Set;
+
 public class LiteralCommandNode extends CommandNode {
-    public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("incorrect_literal", "Expected literal ${expected}", "expected");
+    public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("argument.literal.incorrect", "Expected literal ${expected}", "expected");
 
     private final String literal;
 
@@ -34,8 +36,15 @@ public class LiteralCommandNode extends CommandNode {
         }
 
         contextBuilder.withNode(this, literal);
-        int start = expected.length();
+        int start = literal.length();
         return command.substring(start);
+    }
+
+    @Override
+    public void listSuggestions(String command, Set<String> output) {
+        if (literal.startsWith(command)) {
+            output.add(literal);
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -12,6 +13,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,7 +25,7 @@ public class CommandDispatcher<T> {
         }
     };
 
-    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("unknown_command", "Unknown command");
+    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown", "Unknown command");
     public static final String ARGUMENT_SEPARATOR = " ";
     private static final String USAGE_OPTIONAL_OPEN = "[";
     private static final String USAGE_OPTIONAL_CLOSE = "]";
@@ -52,7 +54,11 @@ public class CommandDispatcher<T> {
                 if (child.getCommand() != null) {
                     context.withCommand(child.getCommand());
                 }
-                return parseNodes(child, remaining, context);
+                if (remaining.isEmpty()) {
+                    return context.build();
+                } else {
+                    return parseNodes(child, remaining.substring(1), context);
+                }
             } catch (CommandException ex) {
                 exception = ex;
             }
@@ -105,5 +111,29 @@ public class CommandDispatcher<T> {
         }
 
         return result.toString();
+    }
+
+    private Set<String> findSuggestions(CommandNode node, String command, CommandContextBuilder<T> contextBuilder, Set<String> result) {
+        for (CommandNode child : node.getChildren()) {
+            try {
+                CommandContextBuilder<T> context = contextBuilder.copy();
+                String remaining = child.parse(command, context);
+                if (remaining.isEmpty()) {
+                    child.listSuggestions(command, result);
+                } else {
+                    return findSuggestions(child, remaining.substring(1), context, result);
+                }
+            } catch (CommandException e) {
+                child.listSuggestions(command, result);
+            }
+        }
+
+        return result;
+    }
+
+    public String[] getCompletionSuggestions(String command, T source) {
+        final Set<String> nodes = findSuggestions(root, command, new CommandContextBuilder<>(source), Sets.newLinkedHashSet());
+
+        return nodes.toArray(new String[nodes.size()]);
     }
 }

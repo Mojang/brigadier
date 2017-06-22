@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandException;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class CommandNode {
     private final Map<Object, CommandNode> children = Maps.newLinkedHashMap();
@@ -62,4 +63,6 @@ public abstract class CommandNode {
     public abstract String getUsageText();
 
     public abstract String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException;
+
+    public abstract void listSuggestions(String command, Set<String> output);
 }

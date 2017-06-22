@@ -6,6 +6,8 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 
+import java.util.Set;
+
 public class ArgumentCommandNode<T> extends CommandNode {
     private static final String USAGE_ARGUMENT_OPEN = "<";
     private static final String USAGE_ARGUMENT_CLOSE = ">";
@@ -46,10 +48,15 @@ public class ArgumentCommandNode<T> extends CommandNode {
         contextBuilder.withNode(this, parsed.getRaw());
 
         if (command.length() > start) {
-            return command.substring(start + 1);
+            return command.substring(start);
         } else {
             return "";
         }
+    }
+
+    @Override
+    public void listSuggestions(String command, Set<String> output) {
+        type.listSuggestions(command, output);
     }
 
     @Override

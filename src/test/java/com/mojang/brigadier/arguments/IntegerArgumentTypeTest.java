@@ -1,6 +1,7 @@
 package com.mojang.brigadier.arguments;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -11,8 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -88,6 +91,13 @@ public class IntegerArgumentTypeTest {
         CommandContext context = new CommandContextBuilder<>(new Object()).withArgument("foo", type.parse("100")).build();
 
         assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
+    }
+
+    @Test
+    public void testSuggestions() throws Exception {
+        Set<String> set = Sets.newHashSet();
+        type.listSuggestions("", set);
+        assertThat(set, is(empty()));
     }
 
     @Test

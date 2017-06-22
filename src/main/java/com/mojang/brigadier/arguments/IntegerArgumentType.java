@@ -7,10 +7,12 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Set;
+
 public class IntegerArgumentType implements CommandArgumentType<Integer> {
-    public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument-integer-invalid", "Expected an integer, found '${found}'", "found");
-    public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument-integer-low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
-    public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument-integer-big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
+    public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument.integer.invalid", "Expected an integer, found '${found}'", "found");
+    public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
+    public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
 
     private static final Splitter SPLITTER = Splitter.on(CommandDispatcher.ARGUMENT_SEPARATOR).limit(2);
 
@@ -56,6 +58,10 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
         } catch (NumberFormatException ignored) {
             throw ERROR_NOT_A_NUMBER.create(raw);
         }
+    }
+
+    @Override
+    public void listSuggestions(String command, Set<String> output) {
     }
 
     @Override
