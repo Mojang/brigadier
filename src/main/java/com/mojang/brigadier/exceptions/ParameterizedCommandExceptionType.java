@@ -2,9 +2,12 @@ package com.mojang.brigadier.exceptions;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.text.StrSubstitutor;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ParameterizedCommandExceptionType implements CommandExceptionType {
+    private static Pattern PATTERN = Pattern.compile("\\$\\{(\\w+)}");
     private static final Joiner JOINER = Joiner.on(", ");
 
     private final String name;
@@ -24,7 +27,13 @@ public class ParameterizedCommandExceptionType implements CommandExceptionType {
 
     @Override
     public String getErrorMessage(CommandException exception) {
-        return new StrSubstitutor(exception.getData()).replace(message);
+        final Matcher matcher = PATTERN.matcher(message);
+        final StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(result, exception.getData().get(matcher.group(1)).toString());
+        }
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     public CommandException create(Object... values) {
