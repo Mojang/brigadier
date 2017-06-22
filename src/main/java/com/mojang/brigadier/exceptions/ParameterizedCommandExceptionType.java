@@ -30,7 +30,7 @@ public class ParameterizedCommandExceptionType implements CommandExceptionType {
         final Matcher matcher = PATTERN.matcher(message);
         final StringBuffer result = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(result, exception.getData().get(matcher.group(1)).toString());
+            matcher.appendReplacement(result, Matcher.quoteReplacement(exception.getData().get(matcher.group(1)).toString()));
         }
         matcher.appendTail(result);
         return result.toString();
