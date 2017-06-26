@@ -16,6 +16,10 @@ public class CommandContextBuilder<S> {
         this.source = source;
     }
 
+    public S getSource() {
+        return source;
+    }
+
     public CommandContextBuilder<S> withArgument(String name, ParsedArgument<?> argument) {
         this.arguments.put(name, argument);
         return this;

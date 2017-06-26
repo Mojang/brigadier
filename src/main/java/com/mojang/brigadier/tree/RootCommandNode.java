@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
-        super(null);
+        super(null, c -> true);
     }
 
     @Override

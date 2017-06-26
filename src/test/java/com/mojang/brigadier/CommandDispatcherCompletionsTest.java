@@ -35,6 +35,7 @@ public class CommandDispatcherCompletionsTest {
     public void testCommand() throws Exception {
         subject.register(literal("foo"));
         subject.register(literal("bar"));
+        subject.register(literal("baz").requires(s -> false));
         assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"foo", "bar"}));
         assertThat(subject.getCompletionSuggestions("f", source), equalTo(new String[] {"foo"}));
         assertThat(subject.getCompletionSuggestions("b", source), equalTo(new String[] {"bar"}));
@@ -43,7 +44,7 @@ public class CommandDispatcherCompletionsTest {
 
     @Test
     public void testSubCommand() throws Exception {
-        subject.register(literal("foo").then(literal("abc")).then(literal("def")));
+        subject.register(literal("foo").then(literal("abc")).then(literal("def")).then(literal("ghi").requires(s -> false)));
         subject.register(literal("bar"));
         assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"foo", "bar"}));
         assertThat(subject.getCompletionSuggestions("f", source), equalTo(new String[] {"foo"}));

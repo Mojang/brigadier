@@ -5,10 +5,12 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
+import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, ?>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
+    private Predicate<S> requirement = s -> true;
 
     protected abstract T getThis();
 
@@ -28,6 +30,15 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, ?>> {
 
     protected Command<S> getCommand() {
         return command;
+    }
+
+    public T requires(Predicate<S> requirement) {
+        this.requirement = requirement;
+        return getThis();
+    }
+
+    public Predicate<S> getRequirement() {
+        return requirement;
     }
 
     public abstract CommandNode<S> build();

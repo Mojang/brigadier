@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown", "Unknown command");
+    public static final SimpleCommandExceptionType ERROR_IMPERMISSIBLE = new SimpleCommandExceptionType("command.impermissible", "Command not allowed");
     public static final String ARGUMENT_SEPARATOR = " ";
     private static final String USAGE_OPTIONAL_OPEN = "[";
     private static final String USAGE_OPTIONAL_CLOSE = "]";
@@ -45,8 +46,13 @@ public class CommandDispatcher<S> {
 
     private CommandContext<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         CommandException exception = null;
+        final S source = contextBuilder.getSource();
 
         for (CommandNode<S> child : node.getChildren()) {
+            if (!child.canUse(source)) {
+                exception = ERROR_IMPERMISSIBLE.create();
+                continue;
+            }
             try {
                 CommandContextBuilder<S> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);
@@ -113,7 +119,11 @@ public class CommandDispatcher<S> {
     }
 
     private Set<String> findSuggestions(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder, Set<String> result) {
+        final S source = contextBuilder.getSource();
         for (CommandNode<S> child : node.getChildren()) {
+            if (!child.canUse(source)) {
+                continue;
+            }
             try {
                 CommandContextBuilder<S> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);

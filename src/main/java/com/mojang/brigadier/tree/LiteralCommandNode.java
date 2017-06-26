@@ -7,14 +7,15 @@ import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
     public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("argument.literal.incorrect", "Expected literal ${expected}", "expected");
 
     private final String literal;
 
-    public LiteralCommandNode(String literal, Command<S> command) {
-        super(command);
+    public LiteralCommandNode(String literal, Command<S> command, Predicate<S> requirement) {
+        super(command, requirement);
         this.literal = literal;
     }
 

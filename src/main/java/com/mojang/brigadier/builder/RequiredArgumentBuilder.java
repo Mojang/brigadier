@@ -31,7 +31,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     public ArgumentCommandNode<S, T> build() {
-        ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand());
+        ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement());
 
         for (CommandNode<S> argument : getArguments()) {
             result.addChild(argument);

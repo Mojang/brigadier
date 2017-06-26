@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private static final String USAGE_ARGUMENT_OPEN = "<";
@@ -15,8 +16,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final CommandArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command<S> command) {
-        super(command);
+    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command<S> command, Predicate<S> requirement) {
+        super(command, requirement);
         this.name = name;
         this.type = type;
     }

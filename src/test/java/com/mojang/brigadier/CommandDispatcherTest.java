@@ -100,6 +100,19 @@ public class CommandDispatcherTest {
     }
 
     @Test
+    public void testExecuteImpermissibleCommand() throws Exception {
+        subject.register(literal("foo").requires(s -> false));
+
+        try {
+            subject.execute("foo", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_IMPERMISSIBLE));
+            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+        }
+    }
+
+    @Test
     public void testExecuteUnknownSubcommand() throws Exception {
         subject.register(literal("foo").executes(command));
 
