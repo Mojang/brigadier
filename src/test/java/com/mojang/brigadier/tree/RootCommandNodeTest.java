@@ -14,16 +14,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RootCommandNodeTest extends AbstractCommandNodeTest {
-    private RootCommandNode node;
+    private RootCommandNode<Object> node;
 
     @Override
-    protected CommandNode getCommandNode() {
+    protected CommandNode<Object> getCommandNode() {
         return node;
     }
 
     @Before
     public void setUp() throws Exception {
-        node = new RootCommandNode();
+        node = new RootCommandNode<>();
     }
 
     @Test
@@ -33,7 +33,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void testAddChildNoRoot() throws Exception {
-        node.addChild(new RootCommandNode());
+        node.addChild(new RootCommandNode<>());
     }
 
     @Test
@@ -52,14 +52,14 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     public void testEquals() throws Exception {
         new EqualsTester()
             .addEqualityGroup(
-                new RootCommandNode(),
-                new RootCommandNode()
+                new RootCommandNode<>(),
+                new RootCommandNode<>()
             )
             .addEqualityGroup(
-                new RootCommandNode() {{
+                new RootCommandNode<Object>() {{
                     addChild(literal("foo").build());
                 }},
-                new RootCommandNode() {{
+                new RootCommandNode<Object>() {{
                     addChild(literal("foo").build());
                 }}
             )

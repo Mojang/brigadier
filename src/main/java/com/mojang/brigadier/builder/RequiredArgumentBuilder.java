@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.CommandArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 
-public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
+public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
     private final CommandArgumentType<T> type;
 
@@ -13,12 +13,12 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         this.type = type;
     }
 
-    public static <T> RequiredArgumentBuilder<T> argument(String name, CommandArgumentType<T> type) {
+    public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, CommandArgumentType<T> type) {
         return new RequiredArgumentBuilder<>(name, type);
     }
 
     @Override
-    protected RequiredArgumentBuilder<T> getThis() {
+    protected RequiredArgumentBuilder<S, T> getThis() {
         return this;
     }
 
@@ -30,10 +30,10 @@ public class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         return name;
     }
 
-    public ArgumentCommandNode<T> build() {
-        ArgumentCommandNode<T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand());
+    public ArgumentCommandNode<S, T> build() {
+        ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand());
 
-        for (CommandNode argument : getArguments()) {
+        for (CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
         }
 

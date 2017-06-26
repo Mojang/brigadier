@@ -16,10 +16,10 @@ import static org.junit.Assert.assertThat;
 public class RequiredArgumentBuilderTest {
     @Mock
     private CommandArgumentType<Integer> type;
-    private RequiredArgumentBuilder<Integer> builder;
+    private RequiredArgumentBuilder<Object, Integer> builder;
     @Mock
     private
-    Command command;
+    Command<Object> command;
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +28,7 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuild() throws Exception {
-        ArgumentCommandNode<Integer> node = builder.build();
+        ArgumentCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
@@ -36,7 +36,7 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuildWithExecutor() throws Exception {
-        ArgumentCommandNode<Integer> node = builder.executes(command).build();
+        ArgumentCommandNode<Object, Integer> node = builder.executes(command).build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
@@ -47,7 +47,7 @@ public class RequiredArgumentBuilderTest {
     public void testBuildWithChildren() throws Exception {
         builder.then(argument("bar", integer()));
         builder.then(argument("baz", integer()));
-        ArgumentCommandNode node = builder.build();
+        ArgumentCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getChildren(), hasSize(2));
     }

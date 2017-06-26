@@ -8,12 +8,12 @@ import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Set;
 
-public class LiteralCommandNode extends CommandNode {
+public class LiteralCommandNode<S> extends CommandNode<S> {
     public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("argument.literal.incorrect", "Expected literal ${expected}", "expected");
 
     private final String literal;
 
-    public LiteralCommandNode(String literal, Command command) {
+    public LiteralCommandNode(String literal, Command<S> command) {
         super(command);
         this.literal = literal;
     }
@@ -28,7 +28,7 @@ public class LiteralCommandNode extends CommandNode {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
+    public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
 
         if (!command.startsWith(expected)) {

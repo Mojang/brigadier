@@ -17,14 +17,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class CommandDispatcher<T> {
-    private static final Predicate<CommandNode> HAS_COMMAND = new Predicate<CommandNode>() {
-        @Override
-        public boolean test(CommandNode input) {
-            return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(HAS_COMMAND));
-        }
-    };
-
+public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown", "Unknown command");
     public static final String ARGUMENT_SEPARATOR = " ";
     private static final String USAGE_OPTIONAL_OPEN = "[";
@@ -33,23 +26,29 @@ public class CommandDispatcher<T> {
     private static final String USAGE_REQUIRED_CLOSE = ")";
     private static final String USAGE_OR = "|";
 
-    private final RootCommandNode root = new RootCommandNode();
+    private final RootCommandNode<S> root = new RootCommandNode<>();
+    private final Predicate<CommandNode<S>> hasCommand = new Predicate<CommandNode<S>>() {
+        @Override
+        public boolean test(CommandNode<S> input) {
+            return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
+        }
+    };
 
-    public void register(LiteralArgumentBuilder command) {
+    public void register(LiteralArgumentBuilder<S> command) {
         root.addChild(command.build());
     }
 
-    public void execute(String command, T source) throws CommandException {
-        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<>(source));
+    public void execute(String command, S source) throws CommandException {
+        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source));
         context.getCommand().run(context);
     }
 
-    private CommandContext<T> parseNodes(CommandNode node, String command, CommandContextBuilder<T> contextBuilder) throws CommandException {
+    private CommandContext<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         CommandException exception = null;
 
-        for (CommandNode child : node.getChildren()) {
+        for (CommandNode<S> child : node.getChildren()) {
             try {
-                CommandContextBuilder<T> context = contextBuilder.copy();
+                CommandContextBuilder<S> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);
                 if (child.getCommand() != null) {
                     context.withCommand(child.getCommand());
@@ -74,10 +73,10 @@ public class CommandDispatcher<T> {
         return contextBuilder.build();
     }
 
-    public String getUsage(String command, T source) throws CommandException {
-        CommandContext<T> context = parseNodes(root, command, new CommandContextBuilder<>(source));
-        CommandNode base = Iterables.getLast(context.getNodes().keySet());
-        List<CommandNode> children = base.getChildren().stream().filter(HAS_COMMAND).collect(Collectors.toList());
+    public String getUsage(String command, S source) throws CommandException {
+        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source));
+        CommandNode<S> base = Iterables.getLast(context.getNodes().keySet());
+        List<CommandNode<S>> children = base.getChildren().stream().filter(hasCommand).collect(Collectors.toList());
         boolean optional = base.getCommand() != null;
 
         if (children.isEmpty()) {
@@ -113,10 +112,10 @@ public class CommandDispatcher<T> {
         return result.toString();
     }
 
-    private Set<String> findSuggestions(CommandNode node, String command, CommandContextBuilder<T> contextBuilder, Set<String> result) {
-        for (CommandNode child : node.getChildren()) {
+    private Set<String> findSuggestions(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder, Set<String> result) {
+        for (CommandNode<S> child : node.getChildren()) {
             try {
-                CommandContextBuilder<T> context = contextBuilder.copy();
+                CommandContextBuilder<S> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);
                 if (remaining.isEmpty()) {
                     child.listSuggestions(command, result);
@@ -131,7 +130,7 @@ public class CommandDispatcher<T> {
         return result;
     }
 
-    public String[] getCompletionSuggestions(String command, T source) {
+    public String[] getCompletionSuggestions(String command, S source) {
         final Set<String> nodes = findSuggestions(root, command, new CommandContextBuilder<>(source), Sets.newLinkedHashSet());
 
         return nodes.toArray(new String[nodes.size()]);

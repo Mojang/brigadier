@@ -6,29 +6,29 @@ import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 
-public abstract class ArgumentBuilder<T extends ArgumentBuilder<?>> {
-    private final RootCommandNode arguments = new RootCommandNode();
-    private Command command;
+public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, ?>> {
+    private final RootCommandNode<S> arguments = new RootCommandNode<>();
+    private Command<S> command;
 
     protected abstract T getThis();
 
-    public T then(ArgumentBuilder argument) {
+    public T then(ArgumentBuilder<S, ?> argument) {
         arguments.addChild(argument.build());
         return getThis();
     }
 
-    public Collection<CommandNode> getArguments() {
+    public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
     }
 
-    public T executes(Command command) {
+    public T executes(Command<S> command) {
         this.command = command;
         return getThis();
     }
 
-    protected Command getCommand() {
+    protected Command<S> getCommand() {
         return command;
     }
 
-    public abstract CommandNode build();
+    public abstract CommandNode<S> build();
 }

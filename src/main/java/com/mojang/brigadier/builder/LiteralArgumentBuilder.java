@@ -3,19 +3,19 @@ package com.mojang.brigadier.builder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 
-public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuilder> {
+public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
     private final String literal;
 
     protected LiteralArgumentBuilder(String literal) {
         this.literal = literal;
     }
 
-    public static LiteralArgumentBuilder literal(String name) {
-        return new LiteralArgumentBuilder(name);
+    public static <S> LiteralArgumentBuilder<S> literal(String name) {
+        return new LiteralArgumentBuilder<>(name);
     }
 
     @Override
-    protected LiteralArgumentBuilder getThis() {
+    protected LiteralArgumentBuilder<S> getThis() {
         return this;
     }
 
@@ -24,10 +24,10 @@ public class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
     }
 
     @Override
-    public LiteralCommandNode build() {
-        LiteralCommandNode result = new LiteralCommandNode(getLiteral(), getCommand());
+    public LiteralCommandNode<S> build() {
+        LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand());
 
-        for (CommandNode argument : getArguments()) {
+        for (CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
         }
 

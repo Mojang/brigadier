@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandException;
 
 import java.util.Set;
 
-public class RootCommandNode extends CommandNode {
+public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
         super(null);
     }
@@ -21,7 +21,7 @@ public class RootCommandNode extends CommandNode {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
+    public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         return command;
     }
 

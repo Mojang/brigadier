@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 public class CommandDispatcherTest {
     private CommandDispatcher<Object> subject;
     @Mock
-    private Command command;
+    private Command<Object> command;
     @Mock
     private Object source;
 
@@ -35,6 +35,7 @@ public class CommandDispatcherTest {
         subject = new CommandDispatcher<>();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndExecuteCommand() throws Exception {
         subject.register(literal("foo").executes(command));
@@ -43,6 +44,7 @@ public class CommandDispatcherTest {
         verify(command).run(any(CommandContext.class));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndMergeCommands() throws Exception {
         subject.register(literal("base").then(literal("foo")).executes(command));
@@ -53,11 +55,12 @@ public class CommandDispatcherTest {
         verify(command, times(2)).run(any(CommandContext.class));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndExecuteOverlappingCommands() throws Exception {
-        Command one = mock(Command.class);
-        Command two = mock(Command.class);
-        Command three = mock(Command.class);
+        Command<Object> one = mock(Command.class);
+        Command<Object> two = mock(Command.class);
+        Command<Object> three = mock(Command.class);
 
         subject.register(
             literal("foo").then(
@@ -109,9 +112,10 @@ public class CommandDispatcherTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testExecuteSubcommand() throws Exception {
-        Command subCommand = mock(Command.class);
+        Command<Object> subCommand = mock(Command.class);
 
         subject.register(literal("foo").then(
             literal("a")

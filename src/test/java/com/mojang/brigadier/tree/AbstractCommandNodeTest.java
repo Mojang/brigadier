@@ -15,11 +15,11 @@ import static org.junit.Assert.assertThat;
 public abstract class AbstractCommandNodeTest {
     @Mock private Command command;
 
-    protected abstract CommandNode getCommandNode();
+    protected abstract CommandNode<Object> getCommandNode();
 
     @Test
     public void testAddChild() throws Exception {
-        CommandNode node = getCommandNode();
+        CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child1").build());
         node.addChild(literal("child2").build());
@@ -30,7 +30,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildMergesGrandchildren() throws Exception {
-        CommandNode node = getCommandNode();
+        CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").then(
             literal("grandchild1")
@@ -46,7 +46,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildPreservesCommand() throws Exception {
-        CommandNode node = getCommandNode();
+        CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").executes(command).build());
         node.addChild(literal("child").build());
@@ -56,7 +56,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildOverwritesCommand() throws Exception {
-        CommandNode node = getCommandNode();
+        CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").build());
         node.addChild(literal("child").executes(command).build());

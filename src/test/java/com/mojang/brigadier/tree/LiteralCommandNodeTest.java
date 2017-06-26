@@ -6,11 +6,9 @@ import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
 import java.util.Set;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -22,11 +20,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
-    private LiteralCommandNode node;
+    private LiteralCommandNode<Object> node;
     private CommandContextBuilder<Object> contextBuilder;
 
     @Override
-    protected CommandNode getCommandNode() {
+    protected CommandNode<Object> getCommandNode() {
         return node;
     }
 
@@ -94,7 +92,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        Command command = mock(Command.class);
+        @SuppressWarnings("unchecked") Command<Object> command = mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(

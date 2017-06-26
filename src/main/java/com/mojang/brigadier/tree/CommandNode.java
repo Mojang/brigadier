@@ -9,30 +9,30 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class CommandNode {
-    private final Map<Object, CommandNode> children = Maps.newLinkedHashMap();
-    private Command command;
+public abstract class CommandNode<S> {
+    private final Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
+    private Command<S> command;
 
-    protected CommandNode(Command command) {
+    protected CommandNode(Command<S> command) {
         this.command = command;
     }
 
-    public Command getCommand() {
+    public Command<S> getCommand() {
         return command;
     }
 
-    public Collection<CommandNode> getChildren() {
+    public Collection<CommandNode<S>> getChildren() {
         return children.values();
     }
 
-    public void addChild(CommandNode node) {
-        CommandNode child = children.get(node.getMergeKey());
+    public void addChild(CommandNode<S> node) {
+        CommandNode<S> child = children.get(node.getMergeKey());
         if (child != null) {
             // We've found something to merge onto
             if (node.getCommand() != null) {
                 child.command = node.getCommand();
             }
-            for (CommandNode grandchild : node.getChildren()) {
+            for (CommandNode<S> grandchild : node.getChildren()) {
                 child.addChild(grandchild);
             }
         } else {
@@ -45,7 +45,7 @@ public abstract class CommandNode {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
-        CommandNode that = (CommandNode) o;
+        CommandNode<S> that = (CommandNode<S>) o;
 
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
@@ -62,7 +62,7 @@ public abstract class CommandNode {
 
     public abstract String getUsageText();
 
-    public abstract String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException;
+    public abstract String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
     public abstract void listSuggestions(String command, Set<String> output);
 }

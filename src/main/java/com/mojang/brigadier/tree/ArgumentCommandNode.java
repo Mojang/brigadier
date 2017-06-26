@@ -8,14 +8,14 @@ import com.mojang.brigadier.exceptions.CommandException;
 
 import java.util.Set;
 
-public class ArgumentCommandNode<T> extends CommandNode {
+public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private static final String USAGE_ARGUMENT_OPEN = "<";
     private static final String USAGE_ARGUMENT_CLOSE = ">";
 
     private final String name;
     private final CommandArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command command) {
+    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command<S> command) {
         super(command);
         this.name = name;
         this.type = type;
@@ -40,7 +40,7 @@ public class ArgumentCommandNode<T> extends CommandNode {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder<?> contextBuilder) throws CommandException {
+    public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         ParsedArgument<T> parsed = type.parse(command);
         int start = parsed.getRaw().length();
 

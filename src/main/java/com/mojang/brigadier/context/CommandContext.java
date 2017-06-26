@@ -9,26 +9,26 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
 
-public class CommandContext<T> {
+public class CommandContext<S> {
     private final Joiner JOINER = Joiner.on(CommandDispatcher.ARGUMENT_SEPARATOR);
 
-    private final T source;
+    private final S source;
     private final Map<String, ParsedArgument<?>> arguments;
-    private final Command command;
-    private final Map<CommandNode, String> nodes;
+    private final Command<S> command;
+    private final Map<CommandNode<S>, String> nodes;
 
-    public CommandContext(T source, Map<String, ParsedArgument<?>> arguments, Command command, Map<CommandNode, String> nodes) {
+    public CommandContext(S source, Map<String, ParsedArgument<?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
         this.nodes = nodes;
     }
 
-    public Command getCommand() {
+    public Command<S> getCommand() {
         return command;
     }
 
-    public T getSource() {
+    public S getSource() {
         return source;
     }
 
@@ -75,7 +75,7 @@ public class CommandContext<T> {
         return JOINER.join(nodes.values());
     }
 
-    public Map<CommandNode, String> getNodes() {
+    public Map<CommandNode<S>, String> getNodes() {
         return nodes;
     }
 }

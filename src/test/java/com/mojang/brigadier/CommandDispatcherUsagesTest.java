@@ -24,7 +24,7 @@ public class CommandDispatcherUsagesTest {
     @Mock
     private Object source;
     @Mock
-    private Command command;
+    private Command<Object>  command;
 
     @Before
     public void setUp() throws Exception {

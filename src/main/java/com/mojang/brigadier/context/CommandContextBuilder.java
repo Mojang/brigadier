@@ -6,17 +6,17 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
 
-public class CommandContextBuilder<T> {
+public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<?>> arguments = Maps.newHashMap();
-    private final Map<CommandNode, String> nodes = Maps.newLinkedHashMap();
-    private final T source;
-    private Command command;
+    private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
+    private final S source;
+    private Command<S> command;
 
-    public CommandContextBuilder(T source) {
+    public CommandContextBuilder(S source) {
         this.source = source;
     }
 
-    public CommandContextBuilder<T> withArgument(String name, ParsedArgument<?> argument) {
+    public CommandContextBuilder<S> withArgument(String name, ParsedArgument<?> argument) {
         this.arguments.put(name, argument);
         return this;
     }
@@ -25,25 +25,25 @@ public class CommandContextBuilder<T> {
         return arguments;
     }
 
-    public CommandContextBuilder<T> withCommand(Command command) {
+    public CommandContextBuilder<S> withCommand(Command<S> command) {
         this.command = command;
         return this;
     }
 
-    public CommandContextBuilder<T> withNode(CommandNode node, String raw) {
+    public CommandContextBuilder<S> withNode(CommandNode<S> node, String raw) {
         this.nodes.put(node, raw);
         return this;
     }
 
-    public CommandContextBuilder<T> copy() {
-        CommandContextBuilder<T> copy = new CommandContextBuilder<>(source);
+    public CommandContextBuilder<S> copy() {
+        CommandContextBuilder<S> copy = new CommandContextBuilder<>(source);
         copy.command = this.command;
         copy.arguments.putAll(this.arguments);
         copy.nodes.putAll(this.nodes);
         return copy;
     }
 
-    public CommandContext<T> build() {
+    public CommandContext<S> build() {
         return new CommandContext<>(source, arguments, command, nodes);
     }
 }

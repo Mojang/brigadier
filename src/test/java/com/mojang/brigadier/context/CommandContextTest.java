@@ -49,13 +49,14 @@ public class CommandContextTest {
         assertThat(builder.build().getSource(), is(source));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testEquals() throws Exception {
         Object otherSource = new Object();
-        Command command = mock(Command.class);
-        Command otherCommand = mock(Command.class);
-        CommandNode node = mock(CommandNode.class);
-        CommandNode otherNode = mock(CommandNode.class);
+        Command<Object> command = mock(Command.class);
+        Command<Object> otherCommand = mock(Command.class);
+        CommandNode<Object> node = mock(CommandNode.class);
+        CommandNode<Object> otherNode = mock(CommandNode.class);
         new EqualsTester()
             .addEqualityGroup(new CommandContextBuilder<>(source).build(), new CommandContextBuilder<>(source).build())
             .addEqualityGroup(new CommandContextBuilder<>(otherSource).build(), new CommandContextBuilder<>(otherSource).build())
