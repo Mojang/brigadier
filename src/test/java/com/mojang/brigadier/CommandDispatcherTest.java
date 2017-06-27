@@ -33,6 +33,7 @@ public class CommandDispatcherTest {
     @Before
     public void setUp() throws Exception {
         subject = new CommandDispatcher<>();
+        when(command.run(any())).thenReturn(42);
     }
 
     @SuppressWarnings("unchecked")
@@ -40,7 +41,7 @@ public class CommandDispatcherTest {
     public void testCreateAndExecuteCommand() throws Exception {
         subject.register(literal("foo").executes(command));
 
-        subject.execute("foo", source);
+        assertThat(subject.execute("foo", source), is(42));
         verify(command).run(any(CommandContext.class));
     }
 
@@ -50,8 +51,8 @@ public class CommandDispatcherTest {
         subject.register(literal("base").then(literal("foo")).executes(command));
         subject.register(literal("base").then(literal("bar")).executes(command));
 
-        subject.execute("base foo", source);
-        subject.execute("base bar", source);
+        assertThat(subject.execute("base foo", source), is(42));
+        assertThat(subject.execute("base bar", source), is(42));
         verify(command, times(2)).run(any(CommandContext.class));
     }
 
@@ -61,6 +62,10 @@ public class CommandDispatcherTest {
         Command<Object> one = mock(Command.class);
         Command<Object> two = mock(Command.class);
         Command<Object> three = mock(Command.class);
+
+        when(one.run(any())).thenReturn(111);
+        when(two.run(any())).thenReturn(222);
+        when(three.run(any())).thenReturn(333);
 
         subject.register(
             literal("foo").then(
@@ -78,13 +83,13 @@ public class CommandDispatcherTest {
             )
         );
 
-        subject.execute("foo 1 one", source);
+        assertThat(subject.execute("foo 1 one", source), is(111));
         verify(one).run(any(CommandContext.class));
 
-        subject.execute("foo 2 two", source);
+        assertThat(subject.execute("foo 2 two", source), is(222));
         verify(two).run(any(CommandContext.class));
 
-        subject.execute("foo 3 three", source);
+        assertThat(subject.execute("foo 3 three", source), is(333));
         verify(three).run(any(CommandContext.class));
     }
 
@@ -129,6 +134,7 @@ public class CommandDispatcherTest {
     @Test
     public void testExecuteSubcommand() throws Exception {
         Command<Object> subCommand = mock(Command.class);
+        when(subCommand.run(any())).thenReturn(100);
 
         subject.register(literal("foo").then(
             literal("a")
@@ -138,7 +144,7 @@ public class CommandDispatcherTest {
             literal("c")
         ).executes(command));
 
-        subject.execute("foo b", source);
+        assertThat(subject.execute("foo b", source), is(100));
         verify(subCommand).run(any(CommandContext.class));
     }
 

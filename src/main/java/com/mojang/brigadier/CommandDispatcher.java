@@ -39,9 +39,9 @@ public class CommandDispatcher<S> {
         root.addChild(command.build());
     }
 
-    public void execute(String command, S source) throws CommandException {
+    public int execute(String command, S source) throws CommandException {
         CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source));
-        context.getCommand().run(context);
+        return context.getCommand().run(context);
     }
 
     private CommandContext<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
