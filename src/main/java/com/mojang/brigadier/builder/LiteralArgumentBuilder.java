@@ -19,7 +19,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
         return this;
     }
 
-    private String getLiteral() {
+    public String getLiteral() {
         return literal;
     }
 

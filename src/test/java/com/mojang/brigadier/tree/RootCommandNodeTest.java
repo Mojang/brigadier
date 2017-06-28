@@ -48,6 +48,11 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(set, is(empty()));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testCreateBuilder() throws Exception {
+        node.createBuilder();
+    }
+
     @Test
     public void testEquals() throws Exception {
         new EqualsTester()

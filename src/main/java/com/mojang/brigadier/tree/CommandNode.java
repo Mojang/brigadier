@@ -2,6 +2,7 @@ package com.mojang.brigadier.tree;
 
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 
@@ -65,6 +66,10 @@ public abstract class CommandNode<S> {
         return 31 * children.hashCode() + (command != null ? command.hashCode() : 0);
     }
 
+    public Predicate<S> getRequirement() {
+        return requirement;
+    }
+
     protected abstract Object getMergeKey();
 
     public abstract String getUsageText();
@@ -72,4 +77,6 @@ public abstract class CommandNode<S> {
     public abstract String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
     public abstract void listSuggestions(String command, Set<String> output);
+
+    public abstract ArgumentBuilder<S, ?> createBuilder();
 }

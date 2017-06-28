@@ -2,6 +2,8 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
@@ -69,5 +71,15 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         int result = literal.hashCode();
         result = 31 * result + super.hashCode();
         return result;
+    }
+
+    @Override
+    public LiteralArgumentBuilder<S> createBuilder() {
+        final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
+        builder.requires(getRequirement());
+        if (getCommand() != null) {
+            builder.executes(getCommand());
+        }
+        return builder;
     }
 }

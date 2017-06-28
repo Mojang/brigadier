@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
@@ -104,5 +105,14 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
                 ).build()
             )
             .testEquals();
+    }
+
+    @Test
+    public void testCreateBuilder() throws Exception {
+        final RequiredArgumentBuilder<Object, Integer> builder = node.createBuilder();
+        assertThat(builder.getName(), is(node.getName()));
+        assertThat(builder.getType(), is(node.getType()));
+        assertThat(builder.getRequirement(), is(node.getRequirement()));
+        assertThat(builder.getCommand(), is(node.getCommand()));
     }
 }

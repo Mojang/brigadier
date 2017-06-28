@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
@@ -116,5 +118,13 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
                 ).build()
             )
             .testEquals();
+    }
+
+    @Test
+    public void testCreateBuilder() throws Exception {
+        final LiteralArgumentBuilder<Object> builder = node.createBuilder();
+        assertThat(builder.getLiteral(), is(node.getLiteral()));
+        assertThat(builder.getRequirement(), is(node.getRequirement()));
+        assertThat(builder.getCommand(), is(node.getCommand()));
     }
 }

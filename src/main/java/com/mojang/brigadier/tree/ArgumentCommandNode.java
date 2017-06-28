@@ -2,6 +2,8 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.CommandArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -58,6 +60,16 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     public void listSuggestions(String command, Set<String> output) {
         type.listSuggestions(command, output);
+    }
+
+    @Override
+    public RequiredArgumentBuilder<S, T> createBuilder() {
+        final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
+        builder.requires(getRequirement());
+        if (getCommand() != null) {
+            builder.executes(getCommand());
+        }
+        return builder;
     }
 
     @Override

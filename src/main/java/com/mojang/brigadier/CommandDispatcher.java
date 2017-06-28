@@ -162,4 +162,8 @@ public class CommandDispatcher<S> {
 
         return nodes.toArray(new String[nodes.size()]);
     }
+
+    public RootCommandNode<S> getRoot() {
+        return root;
+    }
 }

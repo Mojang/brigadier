@@ -1,5 +1,6 @@
 package com.mojang.brigadier.tree;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 
@@ -34,5 +35,10 @@ public class RootCommandNode<S> extends CommandNode<S> {
         if (this == o) return true;
         if (!(o instanceof RootCommandNode)) return false;
         return super.equals(o);
+    }
+
+    @Override
+    public ArgumentBuilder<S, ?> createBuilder() {
+        throw new IllegalStateException("Cannot convert root into a builder");
     }
 }

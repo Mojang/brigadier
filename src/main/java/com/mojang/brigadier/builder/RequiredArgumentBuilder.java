@@ -22,11 +22,11 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         return this;
     }
 
-    private CommandArgumentType<T> getType() {
+    public CommandArgumentType<T> getType() {
         return type;
     }
 
-    private String getName() {
+    public String getName() {
         return name;
     }
 
