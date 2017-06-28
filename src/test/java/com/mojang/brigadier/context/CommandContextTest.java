@@ -46,7 +46,7 @@ public class CommandContextTest {
     @Test
     public void testGetArgument() throws Exception {
         CommandContext<Object> context = builder.withArgument("foo", integer().parse("123")).build();
-        assertThat(context.getArgument("foo", int.class).getResult(), is(123));
+        assertThat(context.getArgument("foo", int.class), is(123));
     }
 
     @Test
@@ -88,11 +88,11 @@ public class CommandContextTest {
 
         when(supplier.get()).thenReturn(first);
         CommandContext<Object> context = builder.withNode(literal("test").build(), "test").withArgument("test", new DynamicParsedArgument<>("test", supplier)).build();
-        assertThat(context.getArgument("test", Object.class).getResult(), is(first));
+        assertThat(context.getArgument("test", Object.class), is(first));
 
         when(supplier.get()).thenReturn(second);
         CommandContext<Object> copy = context.copy();
         assertThat(context, is(equalTo(copy)));
-        assertThat(copy.getArgument("test", Object.class).getResult(), is(second));
+        assertThat(copy.getArgument("test", Object.class), is(second));
     }
 }

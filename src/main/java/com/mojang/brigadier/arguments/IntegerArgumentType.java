@@ -38,7 +38,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     }
 
     public static int getInteger(CommandContext<?> context, String name) {
-        return context.getArgument(name, int.class).getResult();
+        return context.getArgument(name, int.class);
     }
 
     @Override

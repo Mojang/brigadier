@@ -34,7 +34,7 @@ public class CommandContext<S> {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> ParsedArgument<V> getArgument(String name, Class<V> clazz) {
+    public <V> V getArgument(String name, Class<V> clazz) {
         ParsedArgument<?> argument = arguments.get(name);
 
         if (argument == null) {
@@ -42,7 +42,7 @@ public class CommandContext<S> {
         }
 
         if (Primitives.wrap(clazz).isAssignableFrom(argument.getResult().getClass())) {
-            return (ParsedArgument<V>) argument;
+            return ((ParsedArgument<V>) argument).getResult();
         } else {
             throw new IllegalArgumentException("Argument '" + name + "' is defined as " + argument.getResult().getClass().getSimpleName() + ", not " + clazz);
         }
