@@ -7,6 +7,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -18,8 +19,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CommandDispatcher<S> {
-    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown", "Unknown command");
-    public static final SimpleCommandExceptionType ERROR_IMPERMISSIBLE = new SimpleCommandExceptionType("command.impermissible", "Command not allowed");
+    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
+    public static final ParameterizedCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new ParameterizedCommandExceptionType("command.unknown.argument", "Incorrect argument for command, couldn't parse: ${argument}", "argument");
+    public static final SimpleCommandExceptionType ERROR_IMPERMISSIBLE = new SimpleCommandExceptionType("command.impermissible", "You are not allowed to use this command");
+
     public static final String ARGUMENT_SEPARATOR = " ";
     private static final String USAGE_OPTIONAL_OPEN = "[";
     private static final String USAGE_OPTIONAL_CLOSE = "]";
@@ -61,27 +64,33 @@ public class CommandDispatcher<S> {
                 exception = ERROR_IMPERMISSIBLE.create();
                 continue;
             }
+            CommandContextBuilder<S> context = contextBuilder.copy();
+            String remaining;
             try {
-                CommandContextBuilder<S> context = contextBuilder.copy();
-                String remaining = child.parse(command, context);
-                if (child.getCommand() != null) {
-                    context.withCommand(child.getCommand());
-                }
-                if (remaining.isEmpty()) {
-                    return context;
-                } else {
-                    return parseNodes(child, remaining.substring(1), context);
-                }
+                remaining = child.parse(command, context);
             } catch (CommandException ex) {
                 exception = ex;
+                continue;
+            }
+
+            if (child.getCommand() != null) {
+                context.withCommand(child.getCommand());
+            }
+            if (remaining.isEmpty()) {
+                return context;
+            } else {
+                return parseNodes(child, remaining.substring(1), context);
             }
         }
 
         if (command.length() > 0) {
-            if (exception != null) {
+            if (node == root && (exception == null || exception.getType() != ERROR_IMPERMISSIBLE)) {
+                throw ERROR_UNKNOWN_COMMAND.create();
+            }
+            if (exception != null && node.getChildren().size() == 1) {
                 throw exception;
             }
-            throw ERROR_UNKNOWN_COMMAND.create();
+            throw ERROR_UNKNOWN_ARGUMENT.create(command);
         }
 
         return contextBuilder;

@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.CommandExceptionType;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,45 +57,11 @@ public class CommandDispatcherTest {
         verify(command, times(2)).run(any(CommandContext.class));
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testCreateAndExecuteOverlappingCommands() throws Exception {
-        Command<Object> one = mock(Command.class);
-        Command<Object> two = mock(Command.class);
-        Command<Object> three = mock(Command.class);
-
-        when(one.run(any())).thenReturn(111);
-        when(two.run(any())).thenReturn(222);
-        when(three.run(any())).thenReturn(333);
-
-        subject.register(
-            literal("foo").then(
-                argument("one", integer()).then(
-                    literal("one").executes(one)
-                )
-            ).then(
-                argument("two", integer()).then(
-                    literal("two").executes(two)
-                )
-            ).then(
-                argument("three", integer()).then(
-                    literal("three").executes(three)
-                )
-            )
-        );
-
-        assertThat(subject.execute("foo 1 one", source), is(111));
-        verify(one).run(any(CommandContext.class));
-
-        assertThat(subject.execute("foo 2 two", source), is(222));
-        verify(two).run(any(CommandContext.class));
-
-        assertThat(subject.execute("foo 3 three", source), is(333));
-        verify(three).run(any(CommandContext.class));
-    }
-
     @Test
     public void testExecuteUnknownCommand() throws Exception {
+        subject.register(literal("bar"));
+        subject.register(literal("baz"));
+
         try {
             subject.execute("foo", source);
             fail();
@@ -138,8 +105,38 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
+            assertThat(ex.getData(), is(Collections.singletonMap("argument", "bar")));
+        }
+    }
+
+    @Test
+    public void testExecuteIncorrectLiteral() throws Exception {
+        subject.register(literal("foo").executes(command).then(literal("bar")));
+
+        try {
+            subject.execute("foo baz", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is(Collections.singletonMap("expected", "bar")));
+        }
+    }
+
+    @Test
+    public void testExecuteAmbiguousIncorrectArgument() throws Exception {
+        subject.register(
+            literal("foo").executes(command)
+                .then(literal("bar"))
+                .then(literal("baz"))
+        );
+
+        try {
+            subject.execute("foo unknown", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
+            assertThat(ex.getData(), is(Collections.singletonMap("argument", "unknown")));
         }
     }
 
