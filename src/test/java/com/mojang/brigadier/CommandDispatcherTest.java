@@ -118,6 +118,19 @@ public class CommandDispatcherTest {
     }
 
     @Test
+    public void testExecuteEmptyCommand() throws Exception {
+        subject.register(literal(""));
+
+        try {
+            subject.execute("", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+        }
+    }
+
+    @Test
     public void testExecuteUnknownSubcommand() throws Exception {
         subject.register(literal("foo").executes(command));
 

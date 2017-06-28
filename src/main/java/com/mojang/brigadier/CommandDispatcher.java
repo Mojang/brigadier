@@ -39,9 +39,13 @@ public class CommandDispatcher<S> {
         root.addChild(command.build());
     }
 
-    public int execute(String command, S source) throws CommandException {
-        CommandContext<S> context = parse(command, source).build();
-        return context.getCommand().run(context);
+    public int execute(String input, S source) throws CommandException {
+        CommandContext<S> context = parse(input, source).build();
+        Command<S> command = context.getCommand();
+        if (command == null) {
+            throw ERROR_UNKNOWN_COMMAND.create();
+        }
+        return command.run(context);
     }
 
     public CommandContextBuilder<S> parse(String command, S source) throws CommandException {
