@@ -42,7 +42,7 @@ public class CommandContextBuilder<S> {
     public CommandContextBuilder<S> copy() {
         CommandContextBuilder<S> copy = new CommandContextBuilder<>(source);
         copy.command = this.command;
-        copy.arguments.putAll(this.arguments);
+        this.arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
         copy.nodes.putAll(this.nodes);
         return copy;
     }

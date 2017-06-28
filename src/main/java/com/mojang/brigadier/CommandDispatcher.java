@@ -40,11 +40,15 @@ public class CommandDispatcher<S> {
     }
 
     public int execute(String command, S source) throws CommandException {
-        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source));
+        CommandContext<S> context = parse(command, source).build();
         return context.getCommand().run(context);
     }
 
-    private CommandContext<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public CommandContextBuilder<S> parse(String command, S source) throws CommandException {
+        return parseNodes(root, command, new CommandContextBuilder<>(source));
+    }
+
+    private CommandContextBuilder<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         CommandException exception = null;
         final S source = contextBuilder.getSource();
 
@@ -60,7 +64,7 @@ public class CommandDispatcher<S> {
                     context.withCommand(child.getCommand());
                 }
                 if (remaining.isEmpty()) {
-                    return context.build();
+                    return context;
                 } else {
                     return parseNodes(child, remaining.substring(1), context);
                 }
@@ -76,11 +80,11 @@ public class CommandDispatcher<S> {
             throw ERROR_UNKNOWN_COMMAND.create();
         }
 
-        return contextBuilder.build();
+        return contextBuilder;
     }
 
     public String getUsage(String command, S source) throws CommandException {
-        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source));
+        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source)).build();
         CommandNode<S> base = Iterables.getLast(context.getNodes().keySet());
         List<CommandNode<S>> children = base.getChildren().stream().filter(hasCommand).collect(Collectors.toList());
         boolean optional = base.getCommand() != null;
