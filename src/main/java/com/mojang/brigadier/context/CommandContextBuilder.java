@@ -63,6 +63,10 @@ public class CommandContextBuilder<S> {
         return input.toString();
     }
 
+    public Map<CommandNode<S>, String> getNodes() {
+        return nodes;
+    }
+
     public CommandContext<S> build() {
         return new CommandContext<>(source, arguments, command, nodes, input.toString());
     }

@@ -43,6 +43,40 @@ public class CommandDispatcherUsagesTest {
     }
 
     @Test
+    public void testNoCommand() throws Exception {
+        try {
+            subject.getUsage("", source);
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+        }
+    }
+
+    @Test
+    public void testUnknownSubcommand() throws Exception {
+        subject.register(
+            literal("base").then(
+                literal("foo").executes(command)
+            ).then(
+                literal("bar").then(
+                    literal("baz").executes(command)
+                ).then(
+                    literal("qux").then(
+                        literal("not_runnable")
+                    )
+                ).then(
+                    literal("quux").then(
+                        literal("corge").executes(command)
+                    )
+                ).executes(command)
+            ).executes(command)
+        );
+
+        assertThat(subject.getUsage("base unknown", source), hasToString("base [foo|bar]"));
+    }
+
+    @Test
     public void testInaccessibleCommand() throws Exception {
         subject.register(literal("foo").requires(s -> false));
 
@@ -50,7 +84,7 @@ public class CommandDispatcherUsagesTest {
             subject.getUsage("foo", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_IMPERMISSIBLE));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
     }

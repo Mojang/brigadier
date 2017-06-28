@@ -2,6 +2,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -14,6 +15,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,7 +23,6 @@ import java.util.stream.Collectors;
 public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
     public static final ParameterizedCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new ParameterizedCommandExceptionType("command.unknown.argument", "Incorrect argument for command, couldn't parse: ${argument}", "argument");
-    public static final SimpleCommandExceptionType ERROR_IMPERMISSIBLE = new SimpleCommandExceptionType("command.impermissible", "You are not allowed to use this command");
 
     public static final String ARGUMENT_SEPARATOR = " ";
     private static final String USAGE_OPTIONAL_OPEN = "[";
@@ -43,7 +44,17 @@ public class CommandDispatcher<S> {
     }
 
     public int execute(String input, S source) throws CommandException {
-        CommandContext<S> context = parse(input, source).build();
+        final ParseResults<S> parse = parse(input, source);
+        if (parse.getRemaining().length() > 0) {
+            if (parse.getExceptions().size() == 1) {
+                throw parse.getExceptions().values().iterator().next();
+            } else if (parse.getContext().getInput().isEmpty()) {
+                throw ERROR_UNKNOWN_COMMAND.create();
+            } else {
+                throw ERROR_UNKNOWN_ARGUMENT.create(parse.getRemaining());
+            }
+        }
+        CommandContext<S> context = parse.getContext().build();
         Command<S> command = context.getCommand();
         if (command == null) {
             throw ERROR_UNKNOWN_COMMAND.create();
@@ -51,17 +62,16 @@ public class CommandDispatcher<S> {
         return command.run(context);
     }
 
-    public CommandContextBuilder<S> parse(String command, S source) throws CommandException {
+    public ParseResults<S> parse(String command, S source) throws CommandException {
         return parseNodes(root, command, new CommandContextBuilder<>(source));
     }
 
-    private CommandContextBuilder<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        CommandException exception = null;
+    private ParseResults<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         final S source = contextBuilder.getSource();
+        Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
 
         for (CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
-                exception = ERROR_IMPERMISSIBLE.create();
                 continue;
             }
             CommandContextBuilder<S> context = contextBuilder.copy();
@@ -69,7 +79,7 @@ public class CommandDispatcher<S> {
             try {
                 remaining = child.parse(command, context);
             } catch (CommandException ex) {
-                exception = ex;
+                errors.put(child, ex);
                 continue;
             }
 
@@ -77,27 +87,22 @@ public class CommandDispatcher<S> {
                 context.withCommand(child.getCommand());
             }
             if (remaining.isEmpty()) {
-                return context;
+                return new ParseResults<>(context);
             } else {
                 return parseNodes(child, remaining.substring(1), context);
             }
         }
 
-        if (command.length() > 0) {
-            if (node == root && (exception == null || exception.getType() != ERROR_IMPERMISSIBLE)) {
-                throw ERROR_UNKNOWN_COMMAND.create();
-            }
-            if (exception != null && node.getChildren().size() == 1) {
-                throw exception;
-            }
-            throw ERROR_UNKNOWN_ARGUMENT.create(command);
-        }
-
-        return contextBuilder;
+        return new ParseResults<>(contextBuilder, command, errors);
     }
 
     public String getUsage(String command, S source) throws CommandException {
-        CommandContext<S> context = parseNodes(root, command, new CommandContextBuilder<>(source)).build();
+        final ParseResults<S> parse = parseNodes(root, command, new CommandContextBuilder<>(source));
+        if (parse.getContext().getNodes().isEmpty()) {
+            throw ERROR_UNKNOWN_COMMAND.create();
+        }
+
+        CommandContext<S> context = parse.getContext().build();
         CommandNode<S> base = Iterables.getLast(context.getNodes().keySet());
         List<CommandNode<S>> children = base.getChildren().stream().filter(hasCommand).collect(Collectors.toList());
         boolean optional = base.getCommand() != null;

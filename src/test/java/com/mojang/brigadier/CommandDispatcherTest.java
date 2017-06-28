@@ -79,7 +79,7 @@ public class CommandDispatcherTest {
             subject.execute("foo", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_IMPERMISSIBLE));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
     }
