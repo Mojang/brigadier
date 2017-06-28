@@ -2,6 +2,7 @@ package com.mojang.brigadier.context;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -77,5 +78,11 @@ public class CommandContext<S> {
 
     public Map<CommandNode<S>, String> getNodes() {
         return nodes;
+    }
+
+    public CommandContext<S> copy() {
+        Map<String, ParsedArgument<?>> arguments = Maps.newHashMap();
+        this.arguments.forEach((k, v) -> arguments.put(k, v.copy()));
+        return new CommandContext<>(source, arguments, command, nodes);
     }
 }

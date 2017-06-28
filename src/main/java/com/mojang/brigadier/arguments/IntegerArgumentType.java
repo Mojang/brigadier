@@ -3,6 +3,7 @@ package com.mojang.brigadier.arguments;
 import com.google.common.base.Splitter;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
@@ -54,7 +55,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
                 throw ERROR_TOO_BIG.create(value, maximum);
             }
 
-            return new ParsedArgument<>(raw, value);
+            return new FixedParsedArgument<>(raw, value);
         } catch (NumberFormatException ignored) {
             throw ERROR_NOT_A_NUMBER.create(raw);
         }

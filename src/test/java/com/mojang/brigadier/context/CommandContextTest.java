@@ -9,12 +9,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.function.Supplier;
+
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandContextTest {
@@ -73,5 +78,21 @@ public class CommandContextTest {
         CommandContext<Object> context = builder.withNode(literal("foo").build(), "foo").withNode(argument("bar", integer()).build(), "100").withNode(literal("baz").build(), "baz").build();
 
         assertThat(context.getInput(), is("foo 100 baz"));
+    }
+
+    @Test
+    public void testCopy() throws Exception {
+        Object first = new Object();
+        Object second = new Object();
+        @SuppressWarnings("unchecked") Supplier<Object> supplier = (Supplier<Object>) mock(Supplier.class);
+
+        when(supplier.get()).thenReturn(first);
+        CommandContext<Object> context = builder.withNode(literal("test").build(), "test").withArgument("test", new DynamicParsedArgument<>("test", supplier)).build();
+        assertThat(context.getArgument("test", Object.class).getResult(), is(first));
+
+        when(supplier.get()).thenReturn(second);
+        CommandContext<Object> copy = context.copy();
+        assertThat(context, is(equalTo(copy)));
+        assertThat(copy.getArgument("test", Object.class).getResult(), is(second));
     }
 }
