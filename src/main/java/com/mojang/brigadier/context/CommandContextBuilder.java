@@ -9,11 +9,16 @@ import java.util.Map;
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<?>> arguments = Maps.newHashMap();
     private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
-    private final S source;
+    private S source;
     private Command<S> command;
 
     public CommandContextBuilder(S source) {
         this.source = source;
+    }
+
+    public CommandContextBuilder<S> withSource(S source) {
+        this.source = source;
+        return this;
     }
 
     public S getSource() {
