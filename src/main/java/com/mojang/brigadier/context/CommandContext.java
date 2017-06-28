@@ -1,28 +1,26 @@
 package com.mojang.brigadier.context;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
 
 public class CommandContext<S> {
-    private final Joiner JOINER = Joiner.on(CommandDispatcher.ARGUMENT_SEPARATOR);
-
     private final S source;
     private final Map<String, ParsedArgument<?>> arguments;
     private final Command<S> command;
     private final Map<CommandNode<S>, String> nodes;
+    private final String input;
 
-    public CommandContext(S source, Map<String, ParsedArgument<?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes) {
+    public CommandContext(S source, Map<String, ParsedArgument<?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes, String input) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
         this.nodes = nodes;
+        this.input = input;
     }
 
     public Command<S> getCommand() {
@@ -73,7 +71,7 @@ public class CommandContext<S> {
     }
 
     public String getInput() {
-        return JOINER.join(nodes.values());
+        return input;
     }
 
     public Map<CommandNode<S>, String> getNodes() {
@@ -81,8 +79,8 @@ public class CommandContext<S> {
     }
 
     public CommandContext<S> copy() {
-        Map<String, ParsedArgument<?>> arguments = Maps.newHashMap();
+        Map<String, ParsedArgument<?>> arguments = Maps.newLinkedHashMap();
         this.arguments.forEach((k, v) -> arguments.put(k, v.copy()));
-        return new CommandContext<>(source, arguments, command, nodes);
+        return new CommandContext<>(source, arguments, command, nodes, input);
     }
 }

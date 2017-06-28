@@ -2,6 +2,7 @@ package com.mojang.brigadier.context;
 
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<?>> arguments = Maps.newHashMap();
     private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
+    private final StringBuilder input = new StringBuilder();
     private S source;
     private Command<S> command;
 
@@ -40,19 +42,28 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContextBuilder<S> withNode(CommandNode<S> node, String raw) {
-        this.nodes.put(node, raw);
+        if (!nodes.isEmpty()) {
+            input.append(CommandDispatcher.ARGUMENT_SEPARATOR);
+        }
+        nodes.put(node, raw);
+        input.append(raw);
         return this;
     }
 
     public CommandContextBuilder<S> copy() {
         CommandContextBuilder<S> copy = new CommandContextBuilder<>(source);
         copy.command = this.command;
-        this.arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
+        arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
         copy.nodes.putAll(this.nodes);
+        copy.input.append(input);
         return copy;
     }
 
+    public String getInput() {
+        return input.toString();
+    }
+
     public CommandContext<S> build() {
-        return new CommandContext<>(source, arguments, command, nodes);
+        return new CommandContext<>(source, arguments, command, nodes, input.toString());
     }
 }
