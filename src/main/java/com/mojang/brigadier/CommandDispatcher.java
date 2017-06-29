@@ -2,6 +2,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -14,6 +15,9 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +45,8 @@ public class CommandDispatcher<S> {
     };
 
     public void register(LiteralArgumentBuilder<S> command) {
-        root.addChild(command.build());
+        final LiteralCommandNode<S> build = command.build();
+        root.addChild(build);
     }
 
     public int execute(String input, S source) throws CommandException {
@@ -97,48 +102,88 @@ public class CommandDispatcher<S> {
         return new ParseResults<>(contextBuilder, command, errors);
     }
 
-    public String getUsage(String command, S source) throws CommandException {
-        final ParseResults<S> parse = parseNodes(root, command, new CommandContextBuilder<>(source));
-        if (parse.getContext().getNodes().isEmpty()) {
-            throw ERROR_UNKNOWN_COMMAND.create();
+    public String[] getAllUsage(CommandNode<S> node, S source) {
+        final ArrayList<String> result = Lists.newArrayList();
+        getAllUsage(node, source, result,  "");
+        return result.toArray(new String[result.size()]);
+    }
+
+    private void getAllUsage(CommandNode<S> node, S source, ArrayList<String> result, String prefix) {
+        if (!node.canUse(source)) {
+            return;
         }
 
-        CommandContext<S> context = parse.getContext().build();
-        CommandNode<S> base = Iterables.getLast(context.getNodes().keySet());
-        List<CommandNode<S>> children = base.getChildren().stream().filter(hasCommand).collect(Collectors.toList());
-        boolean optional = base.getCommand() != null;
-
-        if (children.isEmpty()) {
-            return context.getInput();
+        if (node.getCommand() != null) {
+            result.add(prefix);
         }
 
-        children.sort((o1, o2) -> ComparisonChain.start()
-            .compareTrueFirst(o1 instanceof LiteralCommandNode, o2 instanceof LiteralCommandNode)
-            .result());
+        if (!node.getChildren().isEmpty()) {
+            for (final CommandNode<S> child : node.getChildren()) {
+                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText());
+            }
+        }
+    }
 
-        StringBuilder result = new StringBuilder(context.getInput());
-        result.append(ARGUMENT_SEPARATOR);
-        if (optional) {
-            result.append(USAGE_OPTIONAL_OPEN);
-        } else if (children.size() > 1) {
-            result.append(USAGE_REQUIRED_OPEN);
+    public Map<CommandNode<S>, String> getSmartUsage(CommandNode<S> node, S source) {
+        Map<CommandNode<S>, String> result = Maps.newLinkedHashMap();
+
+        final boolean optional = node.getCommand() != null;
+        for (CommandNode<S> child : node.getChildren()) {
+            String usage = getSmartUsage(child, source, optional, false);
+            if (usage != null) {
+                result.put(child, usage);
+            }
+        }
+        return result;
+    }
+
+    private String getSmartUsage(CommandNode<S> node, S source, boolean optional, boolean deep) {
+        if (!node.canUse(source)) {
+            return null;
         }
 
-        for (int i = 0; i < children.size(); i++) {
-            result.append(children.get(i).getUsageText());
+        String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
+        boolean childOptional = node.getCommand() != null;
+        String open = childOptional ? USAGE_OPTIONAL_OPEN : USAGE_REQUIRED_OPEN;
+        String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
-            if (i < children.size() - 1) {
-                result.append(USAGE_OR);
+        if (!deep) {
+            final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+            if (children.size() == 1) {
+                final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
+                if (usage != null) {
+                    return self + ARGUMENT_SEPARATOR + usage;
+                }
+            } else if (children.size() > 1) {
+                Set<String> childUsage = Sets.newLinkedHashSet();
+                for (final CommandNode<S> child : children) {
+                    final String usage = getSmartUsage(child, source, childOptional, true);
+                    if (usage != null) {
+                        childUsage.add(usage);
+                    }
+                }
+                if (childUsage.size() == 1) {
+                    final String usage = childUsage.iterator().next();
+                    return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
+                } else if (childUsage.size() > 1) {
+                    StringBuilder builder = new StringBuilder(open);
+                    int count = 0;
+                    for (final CommandNode<S> child : children) {
+                        if (count > 0) {
+                            builder.append(USAGE_OR);
+                        }
+                        builder.append(child.getUsageText());
+                        count++;
+                    }
+                    if (count > 0) {
+                        builder.append(close);
+                        return self + ARGUMENT_SEPARATOR + builder.toString();
+                    }
+                }
             }
         }
 
-        if (optional) {
-            result.append(USAGE_OPTIONAL_CLOSE);
-        } else if (children.size() > 1) {
-            result.append(USAGE_REQUIRED_CLOSE);
-        }
-
-        return result.toString();
+        return self;
     }
 
     private Set<String> findSuggestions(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder, Set<String> result) {
