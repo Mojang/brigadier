@@ -25,6 +25,7 @@ public class CommandDispatcher<S> {
     public static final ParameterizedCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new ParameterizedCommandExceptionType("command.unknown.argument", "Incorrect argument for command, couldn't parse: ${argument}", "argument");
 
     public static final String ARGUMENT_SEPARATOR = " ";
+    public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
     private static final String USAGE_OPTIONAL_OPEN = "[";
     private static final String USAGE_OPTIONAL_CLOSE = "]";
     private static final String USAGE_REQUIRED_OPEN = "(";
