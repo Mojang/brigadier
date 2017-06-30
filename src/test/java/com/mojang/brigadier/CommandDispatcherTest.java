@@ -49,8 +49,8 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndMergeCommands() throws Exception {
-        subject.register(literal("base").then(literal("foo")).executes(command));
-        subject.register(literal("base").then(literal("bar")).executes(command));
+        subject.register(literal("base").then(literal("foo").executes(command)));
+        subject.register(literal("base").then(literal("bar").executes(command)));
 
         assertThat(subject.execute("base foo", source), is(42));
         assertThat(subject.execute("base bar", source), is(42));

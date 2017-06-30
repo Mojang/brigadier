@@ -89,9 +89,7 @@ public class CommandDispatcher<S> {
                 continue;
             }
 
-            if (child.getCommand() != null) {
-                context.withCommand(child.getCommand());
-            }
+            context.withCommand(child.getCommand());
             if (remaining.isEmpty()) {
                 return new ParseResults<>(context);
             } else {
