@@ -1,9 +1,9 @@
 package com.mojang.brigadier.context;
 
-public interface ParsedArgument<T> {
+public interface ParsedArgument<S, T> {
     String getRaw();
 
-    T getResult();
+    T getResult(S source);
 
-    ParsedArgument<T> copy();
+    ParsedArgument<S, T> copy();
 }

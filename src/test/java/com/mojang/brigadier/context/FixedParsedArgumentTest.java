@@ -21,7 +21,7 @@ public class FixedParsedArgumentTest {
 
     @Test
     public void copy() throws Exception {
-        final FixedParsedArgument<String> argument = new FixedParsedArgument<>("foo", "bar");
+        final FixedParsedArgument<Object, String> argument = new FixedParsedArgument<>("foo", "bar");
         assertThat(argument.copy(), is(equalTo(argument)));
     }
 }

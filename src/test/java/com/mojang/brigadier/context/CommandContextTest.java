@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -84,13 +85,13 @@ public class CommandContextTest {
     public void testCopy() throws Exception {
         Object first = new Object();
         Object second = new Object();
-        @SuppressWarnings("unchecked") Supplier<Object> supplier = (Supplier<Object>) mock(Supplier.class);
+        @SuppressWarnings("unchecked") Function<Object, Object> supplier = (Function<Object, Object>) mock(Function.class);
 
-        when(supplier.get()).thenReturn(first);
+        when(supplier.apply(source)).thenReturn(first);
         CommandContext<Object> context = builder.withNode(literal("test").build(), "test").withArgument("test", new DynamicParsedArgument<>("test", supplier)).build();
         assertThat(context.getArgument("test", Object.class), is(first));
 
-        when(supplier.get()).thenReturn(second);
+        when(supplier.apply(source)).thenReturn(second);
         CommandContext<Object> copy = context.copy();
         assertThat(context, is(equalTo(copy)));
         assertThat(copy.getArgument("test", Object.class), is(second));

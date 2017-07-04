@@ -2,7 +2,6 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.CommandArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -44,7 +43,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        ParsedArgument<T> parsed = type.parse(command);
+        ParsedArgument<S, T> parsed = type.parse(command);
         int start = parsed.getRaw().length();
 
         contextBuilder.withArgument(name, parsed);

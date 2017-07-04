@@ -1,14 +1,13 @@
 package com.mojang.brigadier.context;
 
 import com.google.common.testing.EqualsTester;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -20,9 +19,11 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DynamicParsedArgumentTest {
-    private DynamicParsedArgument<Object> subject;
+    private DynamicParsedArgument<Object, Object> subject;
     @Mock
-    private Supplier<Object> supplier;
+    private Function<Object, Object> supplier;
+    @Mock
+    private Object source;
 
     @Before
     public void setUp() throws Exception {
@@ -32,28 +33,28 @@ public class DynamicParsedArgumentTest {
     @Test
     public void suppliedOnce() throws Exception {
         Object result = new Object();
-        when(supplier.get()).thenReturn(result);
+        when(supplier.apply(source)).thenReturn(result);
 
-        assertThat("first evaluation", subject.getResult(), is(result));
-        assertThat("already evaluated", subject.getResult(), is(result));
+        assertThat("first evaluation", subject.getResult(source), is(result));
+        assertThat("already evaluated", subject.getResult(source), is(result));
 
-        verify(supplier, times(1)).get();
+        verify(supplier, times(1)).apply(source);
     }
 
     @Test
     public void copy() throws Exception {
         Object result = new Object();
-        when(supplier.get()).thenReturn(result);
-        assertThat(subject.getResult(), is(result));
+        when(supplier.apply(source)).thenReturn(result);
+        assertThat(subject.getResult(source), is(result));
 
         Object newResult = new Object();
-        when(supplier.get()).thenReturn(newResult);
-        ParsedArgument<Object> copy = subject.copy();
-        assertThat(copy.getResult(), is(newResult));
+        when(supplier.apply(source)).thenReturn(newResult);
+        ParsedArgument<Object, Object> copy = subject.copy();
+        assertThat(copy.getResult(source), is(newResult));
 
         assertThat(copy, is(equalTo(subject)));
 
-        verify(supplier, times(2)).get();
+        verify(supplier, times(2)).apply(source);
     }
 
     @Test

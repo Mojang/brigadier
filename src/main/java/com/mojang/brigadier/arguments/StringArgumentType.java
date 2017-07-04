@@ -39,7 +39,7 @@ public class StringArgumentType implements CommandArgumentType<String> {
     }
 
     @Override
-    public ParsedArgument<String> parse(String command) throws CommandException {
+    public <S> ParsedArgument<S, String> parse(String command) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
             return new FixedParsedArgument<>(command, command);
         } else if (type == StringType.SINGLE_WORLD) {

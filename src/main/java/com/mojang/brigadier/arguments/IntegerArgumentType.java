@@ -42,7 +42,7 @@ public class IntegerArgumentType implements CommandArgumentType<Integer> {
     }
 
     @Override
-    public ParsedArgument<Integer> parse(String command) throws CommandException {
+    public <S> ParsedArgument<S, Integer> parse(String command) throws CommandException {
         String raw = SPLITTER.split(command).iterator().next();
 
         try {

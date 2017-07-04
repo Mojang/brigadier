@@ -7,11 +7,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.CommandExceptionType;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Map;
 import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -21,8 +22,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+@RunWith(MockitoJUnitRunner.class)
 public class IntegerArgumentTypeTest {
     private IntegerArgumentType type;
+    @Mock
+    private Object source;
 
     @Before
     public void setUp() throws Exception {
@@ -31,10 +35,10 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParse() throws Exception {
-        ParsedArgument<Integer> result = type.parse("50");
+        ParsedArgument<Object, Integer> result = type.parse("50");
 
         assertThat(result.getRaw(), is("50"));
-        assertThat(result.getResult(), is(50));
+        assertThat(result.getResult(source), is(50));
     }
 
     @Test
@@ -61,10 +65,10 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseLowerLimit() throws Exception {
-        ParsedArgument<Integer> result = type.parse("-100");
+        ParsedArgument<Object, Integer> result = type.parse("-100");
 
         assertThat(result.getRaw(), is("-100"));
-        assertThat(result.getResult(), is(-100));
+        assertThat(result.getResult(source), is(-100));
     }
 
     @Test
@@ -80,10 +84,10 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParseHigherLimit() throws Exception {
-        ParsedArgument<Integer> result = type.parse("100");
+        ParsedArgument<Object, Integer> result = type.parse("100");
 
         assertThat(result.getRaw(), is("100"));
-        assertThat(result.getResult(), is(100));
+        assertThat(result.getResult(source), is(100));
     }
 
     @Test

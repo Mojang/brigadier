@@ -1,14 +1,14 @@
 package com.mojang.brigadier.context;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
-public class DynamicParsedArgument<T> implements ParsedArgument<T> {
+public class DynamicParsedArgument<S, T> implements ParsedArgument<S, T> {
     private final String raw;
-    private Supplier<T> supplier;
+    private Function<S, T> supplier;
     private boolean evaluated;
     private T result;
 
-    public DynamicParsedArgument(String raw, Supplier<T> supplier) {
+    public DynamicParsedArgument(String raw, Function<S, T> supplier) {
         this.raw = raw;
         this.supplier = supplier;
     }
@@ -19,9 +19,9 @@ public class DynamicParsedArgument<T> implements ParsedArgument<T> {
     }
 
     @Override
-    public T getResult() {
+    public T getResult(S source) {
         if (!evaluated) {
-            result = supplier.get();
+            result = supplier.apply(source);
             evaluated = true;
         }
         return result;
@@ -48,7 +48,7 @@ public class DynamicParsedArgument<T> implements ParsedArgument<T> {
     }
 
     @Override
-    public ParsedArgument<T> copy() {
+    public ParsedArgument<S, T> copy() {
         return new DynamicParsedArgument<>(raw, supplier);
     }
 }

@@ -3,8 +3,10 @@ package com.mojang.brigadier.arguments;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.sun.xml.internal.ws.api.ComponentEx;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,97 +27,100 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+@RunWith(MockitoJUnitRunner.class)
 public class StringArgumentTypeTest {
     private StringArgumentType type;
+    @Mock
+    private Object source;
 
     @Test
     public void testParseWord() throws Exception {
         type = word();
-        ParsedArgument<String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
     public void testParseWord_empty() throws Exception {
         type = word();
-        ParsedArgument<String> result = type.parse("");
+        ParsedArgument<Object, String> result = type.parse("");
 
         assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(), is(""));
+        assertThat(result.getResult(source), is(""));
     }
 
     @Test
     public void testParseWord_simple() throws Exception {
         type = word();
-        ParsedArgument<String> result = type.parse("hello");
+        ParsedArgument<Object, String> result = type.parse("hello");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
     public void testParseString() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
     public void testParseGreedyString() throws Exception {
         type = greedyString();
-        ParsedArgument<String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world");
 
         assertThat(result.getRaw(), is("hello world"));
-        assertThat(result.getResult(), is("hello world"));
+        assertThat(result.getResult(source), is("hello world"));
     }
 
     @Test
     public void testParse() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("hello");
+        ParsedArgument<Object, String> result = type.parse("hello");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
     public void testParseWordQuoted() throws Exception {
         type = word();
-        ParsedArgument<String> result = type.parse("\"hello \\\" world\"");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"");
 
         assertThat(result.getRaw(), is("\"hello"));
-        assertThat(result.getResult(), is("\"hello"));
+        assertThat(result.getResult(source), is("\"hello"));
     }
 
     @Test
     public void testParseQuoted() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("\"hello \\\" world\"");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"");
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(), is("hello \" world"));
+        assertThat(result.getResult(source), is("hello \" world"));
     }
 
     @Test
     public void testParseQuotedWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("\"hello \\\" world\" with remaining");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\" with remaining");
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(), is("hello \" world"));
+        assertThat(result.getResult(source), is("hello \" world"));
     }
 
     @Test
     public void testParseNotQuoted() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
@@ -133,10 +138,10 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuote_earlyUnquoteWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("\"hello\" world");
+        ParsedArgument<Object, String> result = type.parse("\"hello\" world");
 
         assertThat(result.getRaw(), is("\"hello\""));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
@@ -154,10 +159,10 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuote_lateQuoteWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("hello \"world\"");
+        ParsedArgument<Object, String> result = type.parse("hello \"world\"");
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        assertThat(result.getResult(source), is("hello"));
     }
 
     @Test
@@ -187,10 +192,10 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseEmpty() throws Exception {
         type = string();
-        ParsedArgument<String> result = type.parse("");
+        ParsedArgument<Object, String> result = type.parse("");
 
         assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(), is(""));
+        assertThat(result.getResult(source), is(""));
     }
 
     @Test

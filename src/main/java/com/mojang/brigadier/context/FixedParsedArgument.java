@@ -1,6 +1,6 @@
 package com.mojang.brigadier.context;
 
-public class FixedParsedArgument<T> implements ParsedArgument<T> {
+public class FixedParsedArgument<S, T> implements ParsedArgument<S, T> {
     private final String raw;
     private final T result;
 
@@ -15,7 +15,7 @@ public class FixedParsedArgument<T> implements ParsedArgument<T> {
     }
 
     @Override
-    public T getResult() {
+    public T getResult(S source) {
         return result;
     }
 
@@ -40,7 +40,7 @@ public class FixedParsedArgument<T> implements ParsedArgument<T> {
     }
 
     @Override
-    public ParsedArgument<T> copy() {
+    public ParsedArgument<S, T> copy() {
         return new FixedParsedArgument<>(raw, result);
     }
 }

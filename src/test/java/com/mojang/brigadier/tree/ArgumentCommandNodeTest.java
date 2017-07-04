@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     private ArgumentCommandNode<Object, Integer> node;
     private CommandContextBuilder<Object> contextBuilder;
+    private Object source = new Object();
 
     @Override
     protected CommandNode<Object> getCommandNode() {
@@ -41,7 +42,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123 456", contextBuilder), is(" 456"));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(source), is(123));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123", contextBuilder), is(""));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(source), is(123));
     }
 
     @Test

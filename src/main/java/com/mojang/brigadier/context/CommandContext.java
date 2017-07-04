@@ -5,17 +5,18 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.CommandNode;
+import sun.security.x509.OIDMap;
 
 import java.util.Map;
 
 public class CommandContext<S> {
     private final S source;
-    private final Map<String, ParsedArgument<?>> arguments;
+    private final Map<String, ParsedArgument<S, ?>> arguments;
     private final Command<S> command;
     private final Map<CommandNode<S>, String> nodes;
     private final String input;
 
-    public CommandContext(S source, Map<String, ParsedArgument<?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes, String input) {
+    public CommandContext(S source, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes, String input) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
@@ -33,16 +34,17 @@ public class CommandContext<S> {
 
     @SuppressWarnings("unchecked")
     public <V> V getArgument(String name, Class<V> clazz) {
-        ParsedArgument<?> argument = arguments.get(name);
+        ParsedArgument<S, ?> argument = arguments.get(name);
 
         if (argument == null) {
             throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
         }
 
-        if (Primitives.wrap(clazz).isAssignableFrom(argument.getResult().getClass())) {
-            return ((ParsedArgument<V>) argument).getResult();
+        final Object result = argument.getResult(source);
+        if (Primitives.wrap(clazz).isAssignableFrom(result.getClass())) {
+            return (V) result;
         } else {
-            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + argument.getResult().getClass().getSimpleName() + ", not " + clazz);
+            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
         }
     }
 
@@ -79,7 +81,7 @@ public class CommandContext<S> {
     }
 
     public CommandContext<S> copy() {
-        Map<String, ParsedArgument<?>> arguments = Maps.newLinkedHashMap();
+        Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
         this.arguments.forEach((k, v) -> arguments.put(k, v.copy()));
         return new CommandContext<>(source, arguments, command, nodes, input);
     }
