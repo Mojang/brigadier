@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Set;
 
-public class IntegerArgumentType implements CommandArgumentType<Integer> {
+public class IntegerArgumentType implements ArgumentType<Integer> {
     public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument.integer.invalid", "Expected an integer, found '${found}'", "found");
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");

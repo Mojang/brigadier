@@ -1,7 +1,7 @@
 package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.CommandArgumentType;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -15,9 +15,9 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private static final String USAGE_ARGUMENT_CLOSE = ">";
 
     private final String name;
-    private final CommandArgumentType<T> type;
+    private final ArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, CommandArgumentType<T> type, Command<S> command, Predicate<S> requirement) {
+    public ArgumentCommandNode(String name, ArgumentType<T> type, Command<S> command, Predicate<S> requirement) {
         super(command, requirement);
         this.name = name;
         this.type = type;
@@ -27,7 +27,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return name;
     }
 
-    public CommandArgumentType<T> getType() {
+    public ArgumentType<T> getType() {
         return type;
     }
 

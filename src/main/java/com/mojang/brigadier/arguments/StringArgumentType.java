@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import java.util.Set;
 
-public class StringArgumentType implements CommandArgumentType<String> {
+public class StringArgumentType implements ArgumentType<String> {
     public static final ParameterizedCommandExceptionType ERROR_INVALID_ESCAPE = new ParameterizedCommandExceptionType("argument.string.escape.invalid", "Unknown or invalid escape sequence: ${input}", "input");
     public static final SimpleCommandExceptionType ERROR_UNEXPECTED_ESCAPE = new SimpleCommandExceptionType("argument.string.escape.unexpected", "Unexpected escape sequence, please quote the whole argument");
     public static final SimpleCommandExceptionType ERROR_UNEXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType("argument.string.quote.unexpected_start", "Unexpected start-of-quote character (\"), please quote the whole argument");

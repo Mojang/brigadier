@@ -1,7 +1,7 @@
 package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.CommandArgumentType;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
 
 public class RequiredArgumentBuilderTest {
     @Mock
-    private CommandArgumentType<Integer> type;
+    private ArgumentType<Integer> type;
     private RequiredArgumentBuilder<Object, Integer> builder;
     @Mock
     private
