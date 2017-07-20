@@ -1,5 +1,6 @@
 package com.mojang.brigadier.tree;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -7,12 +8,14 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-public abstract class CommandNode<S> {
-    private final Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
+public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
+    private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
     private Command<S> command;
     private Predicate<S> requirement;
 
@@ -46,6 +49,8 @@ public abstract class CommandNode<S> {
         } else {
             children.put(node.getMergeKey(), node);
         }
+
+        children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     @Override
@@ -79,4 +84,15 @@ public abstract class CommandNode<S> {
     public abstract void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder);
 
     public abstract ArgumentBuilder<S, ?> createBuilder();
+
+    protected abstract String getSortedKey();
+
+    @Override
+    public int compareTo(CommandNode<S> o) {
+        return ComparisonChain
+            .start()
+            .compareTrueFirst(this instanceof LiteralCommandNode, o instanceof LiteralCommandNode)
+            .compare(getSortedKey(), o.getSortedKey())
+            .result();
+    }
 }

@@ -84,10 +84,6 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof IntegerArgumentType)) return false;
@@ -110,5 +106,15 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         } else {
             return "integer(" + minimum + ", " + maximum + ")";
         }
+    }
+
+    @Override
+    public String getUsageSuffix() {
+        return suffix.length() == 0 ? null : suffix;
+    }
+
+    @Override
+    public String getUsageText() {
+        return "int";
     }
 }

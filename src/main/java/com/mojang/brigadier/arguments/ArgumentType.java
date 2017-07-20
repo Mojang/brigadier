@@ -9,5 +9,13 @@ import java.util.Set;
 public interface ArgumentType<T> {
     <S> ParsedArgument<S, T> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
-    <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder);
+    default <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {}
+
+    default String getUsageSuffix() {
+        return null;
+    }
+
+    default String getUsageText() {
+        return null;
+    }
 }

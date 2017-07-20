@@ -19,6 +19,7 @@ import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -201,5 +202,25 @@ public class IntegerArgumentTypeTest {
         assertThat(integer(-100), hasToString("integer(-100)"));
         assertThat(integer(-100, 100), hasToString("integer(-100, 100)"));
         assertThat(integer(Integer.MIN_VALUE, 100), hasToString("integer(-2147483648, 100)"));
+    }
+
+    @Test
+    public void testUsageSuffix() throws Exception {
+        assertThat(integer().getUsageSuffix(), equalTo(null));
+    }
+
+    @Test
+    public void testUsageSuffix_suffix() throws Exception {
+        assertThat(integer(0, 100, "L").getUsageSuffix(), equalTo("L"));
+    }
+
+    @Test
+    public void testUsageText() throws Exception {
+        assertThat(integer().getUsageText(), equalTo("int"));
+    }
+
+    @Test
+    public void testUsageText_suffix() throws Exception {
+        assertThat(integer(0, 100, "L").getUsageText(), equalTo("int"));
     }
 }

@@ -38,7 +38,15 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public String getUsageText() {
-        return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
+        String usage = name;
+        if (type.getUsageText() != null) {
+            usage += ": " + type.getUsageText();
+        }
+        usage = USAGE_ARGUMENT_OPEN + usage + USAGE_ARGUMENT_CLOSE;
+        if (type.getUsageSuffix() != null) {
+            usage += type.getUsageSuffix();
+        }
+        return usage;
     }
 
     @Override
@@ -88,5 +96,10 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         int result = name.hashCode();
         result = 31 * result + type.hashCode();
         return result;
+    }
+
+    @Override
+    protected String getSortedKey() {
+        return name;
     }
 }

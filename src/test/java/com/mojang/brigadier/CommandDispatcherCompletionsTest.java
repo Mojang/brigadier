@@ -36,7 +36,7 @@ public class CommandDispatcherCompletionsTest {
         subject.register(literal("foo"));
         subject.register(literal("bar"));
         subject.register(literal("baz").requires(s -> false));
-        assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"foo", "bar"}));
+        assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"bar", "foo"}));
         assertThat(subject.getCompletionSuggestions("f", source), equalTo(new String[] {"foo"}));
         assertThat(subject.getCompletionSuggestions("b", source), equalTo(new String[] {"bar"}));
         assertThat(subject.getCompletionSuggestions("q", source), is(emptyArray()));
@@ -46,7 +46,7 @@ public class CommandDispatcherCompletionsTest {
     public void testSubCommand() throws Exception {
         subject.register(literal("foo").then(literal("abc")).then(literal("def")).then(literal("ghi").requires(s -> false)));
         subject.register(literal("bar"));
-        assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"foo", "bar"}));
+        assertThat(subject.getCompletionSuggestions("", source), equalTo(new String[] {"bar", "foo"}));
         assertThat(subject.getCompletionSuggestions("f", source), equalTo(new String[] {"foo"}));
         assertThat(subject.getCompletionSuggestions("foo", source), equalTo(new String[] {"foo"}));
         assertThat(subject.getCompletionSuggestions("foo ", source), equalTo(new String[] {"abc", "def"}));

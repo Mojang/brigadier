@@ -81,4 +81,9 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         }
         return builder;
     }
+
+    @Override
+    protected String getSortedKey() {
+        return literal;
+    }
 }

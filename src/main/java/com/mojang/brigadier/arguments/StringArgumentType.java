@@ -97,10 +97,6 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
-    }
-
-    @Override
     public String toString() {
         return "string()";
     }

@@ -6,6 +6,7 @@ import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -68,6 +69,18 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testUsage() throws Exception {
+        assertThat(node.getUsageText(), is("<foo: int>"));
+    }
+
+    @Test
+    public void testUsage_suffix() throws Exception {
+        node = argument("foo", integer(0, 100, "L")).build();
+        assertThat(node.getUsageText(), is("<foo: int>L"));
+    }
+
+    @Test
+    public void testUsage_empty() throws Exception {
+        ArgumentCommandNode<Object, String> node = argument("foo", StringArgumentType.word()).build();
         assertThat(node.getUsageText(), is("<foo>"));
     }
 

@@ -41,4 +41,9 @@ public class RootCommandNode<S> extends CommandNode<S> {
     public ArgumentBuilder<S, ?> createBuilder() {
         throw new IllegalStateException("Cannot convert root into a builder");
     }
+
+    @Override
+    protected String getSortedKey() {
+        return "";
+    }
 }
