@@ -98,6 +98,39 @@ public class IntegerArgumentTypeTest {
     }
 
     @Test
+    public void testParseEmpty() throws Exception {
+        try {
+            type.parse("", new CommandContextBuilder<>(dispatcher, source));
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "")));
+        }
+    }
+
+    @Test
+    public void testParseEmpty_suffix() throws Exception {
+        try {
+            integer(0, 100, "L").parse("", new CommandContextBuilder<>(dispatcher, source));
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("suffix", "L")));
+        }
+    }
+
+    @Test
+    public void testPars_suffix_onlySuffix() throws Exception {
+        try {
+            integer(0, 100, "L").parse("L", new CommandContextBuilder<>(dispatcher, source));
+            fail();
+        } catch (CommandException ex) {
+            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "")));
+        }
+    }
+
+    @Test
     public void testParseTooLow() throws Exception {
         try {
             type.parse("-101", new CommandContextBuilder<>(dispatcher, source));

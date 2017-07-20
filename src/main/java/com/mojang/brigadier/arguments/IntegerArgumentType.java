@@ -55,6 +55,11 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         if (end > -1) {
             raw = command.substring(0, end);
         }
+
+        if (raw.length() < suffix.length()) {
+            throw ERROR_WRONG_SUFFIX.create(this.suffix);
+        }
+
         String number = raw.substring(0, raw.length() - suffix.length());
         String suffix = raw.substring(number.length());
 
@@ -74,7 +79,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
 
             return new FixedParsedArgument<>(raw, value);
         } catch (NumberFormatException ignored) {
-            throw ERROR_NOT_A_NUMBER.create(raw);
+            throw ERROR_NOT_A_NUMBER.create(number);
         }
     }
 
