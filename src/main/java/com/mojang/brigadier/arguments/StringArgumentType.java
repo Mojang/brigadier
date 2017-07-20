@@ -9,8 +9,6 @@ import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import java.util.Set;
-
 public class StringArgumentType implements ArgumentType<String> {
     public static final ParameterizedCommandExceptionType ERROR_INVALID_ESCAPE = new ParameterizedCommandExceptionType("argument.string.escape.invalid", "Unknown or invalid escape sequence: ${input}", "input");
     public static final SimpleCommandExceptionType ERROR_UNEXPECTED_ESCAPE = new SimpleCommandExceptionType("argument.string.escape.unexpected", "Unexpected escape sequence, please quote the whole argument");
@@ -24,7 +22,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     public static StringArgumentType word() {
-        return new StringArgumentType(StringType.SINGLE_WORLD);
+        return new StringArgumentType(StringType.SINGLE_WORD);
     }
 
     public static StringArgumentType string() {
@@ -43,7 +41,7 @@ public class StringArgumentType implements ArgumentType<String> {
     public <S> ParsedArgument<S, String> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
             return new FixedParsedArgument<>(command, command);
-        } else if (type == StringType.SINGLE_WORLD) {
+        } else if (type == StringType.SINGLE_WORD) {
             int index = command.indexOf(CommandDispatcher.ARGUMENT_SEPARATOR);
             if (index > 0) {
                 final String word = command.substring(0, index);
@@ -123,8 +121,13 @@ public class StringArgumentType implements ArgumentType<String> {
         return result.toString();
     }
 
+    @Override
+    public String getUsageText() {
+        return "string";
+    }
+
     public enum StringType {
-        SINGLE_WORLD,
+        SINGLE_WORD,
         QUOTABLE_PHRASE,
         GREEDY_PHRASE,
     }

@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -23,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     private ArgumentCommandNode<Object, Integer> node;
@@ -80,7 +82,9 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testUsage_empty() throws Exception {
-        ArgumentCommandNode<Object, String> node = argument("foo", StringArgumentType.word()).build();
+        @SuppressWarnings("unchecked") ArgumentType<String> type = mock(ArgumentType.class);
+        when(type.getUsageText()).thenReturn(null);
+        ArgumentCommandNode<Object, String> node = argument("foo", type).build();
         assertThat(node.getUsageText(), is("<foo>"));
     }
 
