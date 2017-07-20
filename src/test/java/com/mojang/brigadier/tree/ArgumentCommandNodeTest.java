@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Set;
 
@@ -34,7 +36,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = argument("foo", integer()).build();
-        contextBuilder = new CommandContextBuilder<>(new Object());
+        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object());
     }
 
     @Test
@@ -72,7 +74,8 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testSuggestions() throws Exception {
         Set<String> set = Sets.newHashSet();
-        node.listSuggestions("", set);
+        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
+        node.listSuggestions("", set, context);
         assertThat(set, is(empty()));
     }
 

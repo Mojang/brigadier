@@ -2,6 +2,7 @@ package com.mojang.brigadier.context;
 
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -27,10 +27,12 @@ public class CommandContextTest {
     private CommandContextBuilder<Object> builder;
     @Mock
     private Object source;
+    @Mock
+    private CommandDispatcher<Object> dispatcher;
 
     @Before
     public void setUp() throws Exception {
-        builder = new CommandContextBuilder<>(source);
+        builder = new CommandContextBuilder<>(dispatcher, source);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -40,13 +42,13 @@ public class CommandContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetArgument_wrongType() throws Exception {
-        CommandContext<Object> context = builder.withArgument("foo", integer().parse("123")).build();
+        CommandContext<Object> context = builder.withArgument("foo", integer().parse("123", new CommandContextBuilder<>(dispatcher, source))).build();
         context.getArgument("foo", String.class);
     }
 
     @Test
     public void testGetArgument() throws Exception {
-        CommandContext<Object> context = builder.withArgument("foo", integer().parse("123")).build();
+        CommandContext<Object> context = builder.withArgument("foo", integer().parse("123", new CommandContextBuilder<>(dispatcher, source))).build();
         assertThat(context.getArgument("foo", int.class), is(123));
     }
 
@@ -64,13 +66,13 @@ public class CommandContextTest {
         CommandNode<Object> node = mock(CommandNode.class);
         CommandNode<Object> otherNode = mock(CommandNode.class);
         new EqualsTester()
-            .addEqualityGroup(new CommandContextBuilder<>(source).build(), new CommandContextBuilder<>(source).build())
-            .addEqualityGroup(new CommandContextBuilder<>(otherSource).build(), new CommandContextBuilder<>(otherSource).build())
-            .addEqualityGroup(new CommandContextBuilder<>(source).withCommand(command).build(), new CommandContextBuilder<>(source).withCommand(command).build())
-            .addEqualityGroup(new CommandContextBuilder<>(source).withCommand(otherCommand).build(), new CommandContextBuilder<>(source).withCommand(otherCommand).build())
-            .addEqualityGroup(new CommandContextBuilder<>(source).withArgument("foo", integer().parse("123")).build(), new CommandContextBuilder<>(source).withArgument("foo", integer().parse("123")).build())
-            .addEqualityGroup(new CommandContextBuilder<>(source).withNode(node, "foo").withNode(otherNode, "bar").build(), new CommandContextBuilder<>(source).withNode(node, "foo").withNode(otherNode, "bar").build())
-            .addEqualityGroup(new CommandContextBuilder<>(source).withNode(otherNode, "bar").withNode(node, "foo").build(), new CommandContextBuilder<>(source).withNode(otherNode, "bar").withNode(node, "foo").build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).build(), new CommandContextBuilder<>(dispatcher, source).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, otherSource).build(), new CommandContextBuilder<>(dispatcher, otherSource).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withCommand(command).build(), new CommandContextBuilder<>(dispatcher, source).withCommand(command).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withCommand(otherCommand).build(), new CommandContextBuilder<>(dispatcher, source).withCommand(otherCommand).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withArgument("foo", integer().parse("123", new CommandContextBuilder<>(dispatcher, source))).build(), new CommandContextBuilder<>(dispatcher, source).withArgument("foo", integer().parse("123", new CommandContextBuilder<>(dispatcher, source))).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withNode(node, "foo").withNode(otherNode, "bar").build(), new CommandContextBuilder<>(dispatcher, source).withNode(node, "foo").withNode(otherNode, "bar").build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withNode(otherNode, "bar").withNode(node, "foo").build(), new CommandContextBuilder<>(dispatcher, source).withNode(otherNode, "bar").withNode(node, "foo").build())
             .testEquals();
     }
 

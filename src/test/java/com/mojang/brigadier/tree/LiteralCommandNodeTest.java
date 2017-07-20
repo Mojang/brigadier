@@ -4,12 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = literal("foo").build();
-        contextBuilder = new CommandContextBuilder<>(new Object());
+        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object());
     }
 
     @Test
@@ -76,19 +77,21 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testSuggestions() throws Exception {
         Set<String> set = Sets.newHashSet();
-        node.listSuggestions("", set);
+        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
+
+        node.listSuggestions("", set, context);
         assertThat(set, equalTo(Sets.newHashSet("foo")));
 
         set.clear();
-        node.listSuggestions("foo", set);
+        node.listSuggestions("foo", set, context);
         assertThat(set, equalTo(Sets.newHashSet("foo")));
 
         set.clear();
-        node.listSuggestions("food", set);
+        node.listSuggestions("food", set, context);
         assertThat(set, is(empty()));
 
         set.clear();
-        node.listSuggestions("b", set);
+        node.listSuggestions("b", set, context);
         assertThat(set, is(empty()));
     }
 

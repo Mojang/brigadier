@@ -2,9 +2,11 @@ package com.mojang.brigadier.tree;
 
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Set;
 
@@ -28,7 +30,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("foo bar baz", new CommandContextBuilder<>(new Object())), is("foo bar baz"));
+        assertThat(node.parse("foo bar baz", new CommandContextBuilder<>(new CommandDispatcher<>(), new Object())), is("foo bar baz"));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -44,7 +46,8 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testSuggestions() throws Exception {
         Set<String> set = Sets.newHashSet();
-        node.listSuggestions("", set);
+        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
+        node.listSuggestions("", set, context);
         assertThat(set, is(empty()));
     }
 

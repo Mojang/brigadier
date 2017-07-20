@@ -76,7 +76,7 @@ public abstract class CommandNode<S> {
 
     public abstract String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
-    public abstract void listSuggestions(String command, Set<String> output);
+    public abstract void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder);
 
     public abstract ArgumentBuilder<S, ?> createBuilder();
 }

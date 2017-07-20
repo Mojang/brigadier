@@ -43,7 +43,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        ParsedArgument<S, T> parsed = type.parse(command);
+        ParsedArgument<S, T> parsed = type.parse(command, contextBuilder);
         int start = parsed.getRaw().length();
 
         contextBuilder.withArgument(name, parsed);
@@ -57,8 +57,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output) {
-        type.listSuggestions(command, output);
+    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
+        type.listSuggestions(command, output, contextBuilder);
     }
 
     @Override

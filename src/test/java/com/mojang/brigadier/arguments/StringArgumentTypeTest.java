@@ -1,11 +1,14 @@
 package com.mojang.brigadier.arguments;
 
 import com.google.common.collect.Sets;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
@@ -32,11 +35,13 @@ public class StringArgumentTypeTest {
     private StringArgumentType type;
     @Mock
     private Object source;
+    @Mock
+    private CommandDispatcher<Object> dispatcher;
 
     @Test
     public void testParseWord() throws Exception {
         type = word();
-        ParsedArgument<Object, String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -45,7 +50,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseWord_empty() throws Exception {
         type = word();
-        ParsedArgument<Object, String> result = type.parse("");
+        ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is(""));
         assertThat(result.getResult(source), is(""));
@@ -54,7 +59,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseWord_simple() throws Exception {
         type = word();
-        ParsedArgument<Object, String> result = type.parse("hello");
+        ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -63,7 +68,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseString() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -72,7 +77,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseGreedyString() throws Exception {
         type = greedyString();
-        ParsedArgument<Object, String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello world"));
         assertThat(result.getResult(source), is("hello world"));
@@ -81,7 +86,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParse() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("hello");
+        ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -90,7 +95,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseWordQuoted() throws Exception {
         type = word();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello"));
         assertThat(result.getResult(source), is("\"hello"));
@@ -99,7 +104,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuoted() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
         assertThat(result.getResult(source), is("hello \" world"));
@@ -108,7 +113,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuotedWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\" with remaining");
+        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\" with remaining", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
         assertThat(result.getResult(source), is("hello \" world"));
@@ -117,7 +122,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseNotQuoted() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("hello world");
+        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -127,7 +132,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidQuote_earlyUnquote() throws Exception {
         try {
             type = string();
-            type.parse("\"hello \"world");
+            type.parse("\"hello \"world", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_UNEXPECTED_END_OF_QUOTE));
@@ -138,7 +143,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuote_earlyUnquoteWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello\" world");
+        ParsedArgument<Object, String> result = type.parse("\"hello\" world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello\""));
         assertThat(result.getResult(source), is("hello"));
@@ -148,7 +153,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidQuote_lateQuote() throws Exception {
         try {
             type = string();
-            type.parse("hello\" world\"");
+            type.parse("hello\" world\"", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_UNEXPECTED_START_OF_QUOTE));
@@ -159,7 +164,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseQuote_lateQuoteWithRemaining() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("hello \"world\"");
+        ParsedArgument<Object, String> result = type.parse("hello \"world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
         assertThat(result.getResult(source), is("hello"));
@@ -169,7 +174,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidQuote_middleQuote() throws Exception {
         try {
             type = string();
-            type.parse("hel\"lo");
+            type.parse("hel\"lo", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_UNEXPECTED_START_OF_QUOTE));
@@ -181,7 +186,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidQuote_noUnquote() throws Exception {
         try {
             type = string();
-            type.parse("\"hello world");
+            type.parse("\"hello world", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_EXPECTED_END_OF_QUOTE));
@@ -192,7 +197,7 @@ public class StringArgumentTypeTest {
     @Test
     public void testParseEmpty() throws Exception {
         type = string();
-        ParsedArgument<Object, String> result = type.parse("");
+        ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is(""));
         assertThat(result.getResult(source), is(""));
@@ -202,7 +207,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidEscape_onlyEscape() throws Exception {
         try {
             type = string();
-            type.parse("\\");
+            type.parse("\\", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_UNEXPECTED_ESCAPE));
@@ -214,7 +219,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidEscape_unknownSequence() throws Exception {
         try {
             type = string();
-            type.parse("\"\\n\"");
+            type.parse("\"\\n\"", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_INVALID_ESCAPE));
@@ -226,7 +231,7 @@ public class StringArgumentTypeTest {
     public void testParseInvalidEscape_notQuoted() throws Exception {
         try {
             type = string();
-            type.parse("hel\\\\o");
+            type.parse("hel\\\\o", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException e) {
             assertThat(e.getType(), is(ERROR_UNEXPECTED_ESCAPE));
@@ -238,7 +243,8 @@ public class StringArgumentTypeTest {
     public void testSuggestions() throws Exception {
         type = string();
         Set<String> set = Sets.newHashSet();
-        type.listSuggestions("", set);
+        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
+        type.listSuggestions("", set, context);
         assertThat(set, is(empty()));
     }
 

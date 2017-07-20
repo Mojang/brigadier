@@ -2,7 +2,6 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -44,7 +43,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output) {
+    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
         if (literal.startsWith(command)) {
             output.add(literal);
         }

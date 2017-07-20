@@ -10,11 +10,13 @@ import java.util.Map;
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments = Maps.newHashMap();
     private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
+    private final CommandDispatcher<S> dispatcher;
     private final StringBuilder input = new StringBuilder();
     private S source;
     private Command<S> command;
 
-    public CommandContextBuilder(S source) {
+    public CommandContextBuilder(CommandDispatcher<S> dispatcher, S source) {
+        this.dispatcher = dispatcher;
         this.source = source;
     }
 
@@ -51,7 +53,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContextBuilder<S> copy() {
-        CommandContextBuilder<S> copy = new CommandContextBuilder<>(source);
+        CommandContextBuilder<S> copy = new CommandContextBuilder<>(dispatcher, source);
         copy.command = this.command;
         arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
         copy.nodes.putAll(this.nodes);
@@ -69,5 +71,9 @@ public class CommandContextBuilder<S> {
 
     public CommandContext<S> build() {
         return new CommandContext<>(source, arguments, command, nodes, input.toString());
+    }
+
+    public CommandDispatcher<S> getDispatcher() {
+        return dispatcher;
     }
 }

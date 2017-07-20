@@ -27,7 +27,7 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output) {
+    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -39,7 +40,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public <S> ParsedArgument<S, String> parse(String command) throws CommandException {
+    public <S> ParsedArgument<S, String> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
             return new FixedParsedArgument<>(command, command);
         } else if (type == StringType.SINGLE_WORLD) {
@@ -96,7 +97,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output) {
+    public <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
     }
 
     @Override

@@ -3,26 +3,29 @@ package com.mojang.brigadier.arguments;
 import com.google.common.base.Splitter;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Objects;
 import java.util.Set;
 
 public class IntegerArgumentType implements ArgumentType<Integer> {
     public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument.integer.invalid", "Expected an integer, found '${found}'", "found");
+    public static final ParameterizedCommandExceptionType ERROR_WRONG_SUFFIX = new ParameterizedCommandExceptionType("argument.integer.wrongsuffix", "Expected suffix '${suffix}'", "suffix");
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
 
-    private static final Splitter SPLITTER = Splitter.on(CommandDispatcher.ARGUMENT_SEPARATOR).limit(2);
-
     private final int minimum;
     private final int maximum;
+    private final String suffix;
 
-    private IntegerArgumentType(int minimum, int maximum) {
+    private IntegerArgumentType(int minimum, int maximum, String suffix) {
         this.minimum = minimum;
         this.maximum = maximum;
+        this.suffix = suffix;
     }
 
     public static IntegerArgumentType integer() {
@@ -34,7 +37,11 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     public static IntegerArgumentType integer(int min, int max) {
-        return new IntegerArgumentType(min, max);
+        return integer(min, max, "");
+    }
+
+    public static IntegerArgumentType integer(int min, int max, String suffix) {
+        return new IntegerArgumentType(min, max, suffix);
     }
 
     public static int getInteger(CommandContext<?> context, String name) {
@@ -42,11 +49,21 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public <S> ParsedArgument<S, Integer> parse(String command) throws CommandException {
-        String raw = SPLITTER.split(command).iterator().next();
+    public <S> ParsedArgument<S, Integer> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
+        int end = command.indexOf(CommandDispatcher.ARGUMENT_SEPARATOR);
+        String raw = command;
+        if (end > -1) {
+            raw = command.substring(0, end);
+        }
+        String number = raw.substring(0, raw.length() - suffix.length());
+        String suffix = raw.substring(number.length());
+
+        if (!suffix.equals(this.suffix)) {
+            throw ERROR_WRONG_SUFFIX.create(this.suffix);
+        }
 
         try {
-            int value = Integer.parseInt(raw);
+            int value = Integer.parseInt(number);
 
             if (value < minimum) {
                 throw ERROR_TOO_SMALL.create(value, minimum);
@@ -62,7 +79,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output) {
+    public <S> void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
     }
 
     @Override
@@ -71,7 +88,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         if (!(o instanceof IntegerArgumentType)) return false;
 
         IntegerArgumentType that = (IntegerArgumentType) o;
-        return maximum == that.maximum && minimum == that.minimum;
+        return maximum == that.maximum && minimum == that.minimum && Objects.equals(suffix, that.suffix);
     }
 
     @Override

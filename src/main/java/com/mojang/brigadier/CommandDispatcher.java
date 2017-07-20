@@ -1,7 +1,5 @@
 package com.mojang.brigadier;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,8 +15,6 @@ import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -51,6 +47,10 @@ public class CommandDispatcher<S> {
 
     public int execute(String input, S source) throws CommandException {
         final ParseResults<S> parse = parse(input, source);
+        return execute(parse);
+    }
+
+    public int execute(ParseResults<S> parse) throws CommandException {
         if (parse.getRemaining().length() > 0) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -69,7 +69,7 @@ public class CommandDispatcher<S> {
     }
 
     public ParseResults<S> parse(String command, S source) throws CommandException {
-        return parseNodes(root, command, new CommandContextBuilder<>(source));
+        return parseNodes(root, command, new CommandContextBuilder<>(this, source));
     }
 
     private ParseResults<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
@@ -190,16 +190,16 @@ public class CommandDispatcher<S> {
             if (!child.canUse(source)) {
                 continue;
             }
+            CommandContextBuilder<S> context = contextBuilder.copy();
             try {
-                CommandContextBuilder<S> context = contextBuilder.copy();
                 String remaining = child.parse(command, context);
                 if (remaining.isEmpty()) {
-                    child.listSuggestions(command, result);
+                    child.listSuggestions(command, result, context);
                 } else {
                     return findSuggestions(child, remaining.substring(1), context, result);
                 }
             } catch (CommandException e) {
-                child.listSuggestions(command, result);
+                child.listSuggestions(command, result, context);
             }
         }
 
@@ -207,7 +207,7 @@ public class CommandDispatcher<S> {
     }
 
     public String[] getCompletionSuggestions(String command, S source) {
-        final Set<String> nodes = findSuggestions(root, command, new CommandContextBuilder<>(source), Sets.newLinkedHashSet());
+        final Set<String> nodes = findSuggestions(root, command, new CommandContextBuilder<>(this, source), Sets.newLinkedHashSet());
 
         return nodes.toArray(new String[nodes.size()]);
     }
