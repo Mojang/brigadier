@@ -3,7 +3,6 @@ package com.mojang.brigadier.arguments;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -31,9 +30,9 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
         }
 
         if (raw.equals("true")) {
-            return new FixedParsedArgument<>(raw, true);
+            return new ParsedArgument<>(raw, true);
         } else if (raw.equals("false")) {
-            return new FixedParsedArgument<>(raw, false);
+            return new ParsedArgument<>(raw, false);
         } else {
             throw ERROR_INVALID.create();
         }

@@ -1,9 +1,43 @@
 package com.mojang.brigadier.context;
 
-public interface ParsedArgument<S, T> {
-    String getRaw();
+public class ParsedArgument<S, T> {
+    private final String raw;
+    private final T result;
 
-    T getResult(S source);
+    public ParsedArgument(String raw, T result) {
+        this.raw = raw;
+        this.result = result;
+    }
 
-    ParsedArgument<S, T> copy();
+    public String getRaw() {
+        return raw;
+    }
+
+    public T getResult(S source) {
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ParsedArgument)) return false;
+
+        ParsedArgument that = (ParsedArgument) o;
+
+        if (!raw.equals(that.raw)) return false;
+        if (!result.equals(that.result)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = raw.hashCode();
+        result = 31 * result + this.result.hashCode();
+        return result;
+    }
+
+    public ParsedArgument<S, T> copy() {
+        return new ParsedArgument<>(raw, result);
+    }
 }

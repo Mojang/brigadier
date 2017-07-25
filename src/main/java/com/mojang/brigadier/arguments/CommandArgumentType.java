@@ -2,7 +2,6 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 
@@ -19,7 +18,7 @@ public class CommandArgumentType<T> implements ArgumentType<ParseResults<T>> {
         final ParseResults<S> parse = contextBuilder.getDispatcher().parse(command, contextBuilder.getSource());
 
         //noinspection unchecked
-        return new FixedParsedArgument<>(command, (ParseResults<T>) parse);
+        return new ParsedArgument<>(command, (ParseResults<T>) parse);
     }
 
     @Override

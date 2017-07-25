@@ -3,7 +3,6 @@ package com.mojang.brigadier.arguments;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
@@ -40,14 +39,14 @@ public class StringArgumentType implements ArgumentType<String> {
     @Override
     public <S> ParsedArgument<S, String> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
-            return new FixedParsedArgument<>(command, command);
+            return new ParsedArgument<>(command, command);
         } else if (type == StringType.SINGLE_WORD) {
             int index = command.indexOf(CommandDispatcher.ARGUMENT_SEPARATOR);
             if (index > 0) {
                 final String word = command.substring(0, index);
-                return new FixedParsedArgument<>(word, word);
+                return new ParsedArgument<>(word, word);
             } else {
-                return new FixedParsedArgument<>(command, command);
+                return new ParsedArgument<>(command, command);
             }
         } else {
             StringBuilder result = new StringBuilder();
@@ -90,7 +89,7 @@ public class StringArgumentType implements ArgumentType<String> {
 
                 i++;
             }
-            return new FixedParsedArgument<>(command.substring(0, i), result.toString());
+            return new ParsedArgument<>(command.substring(0, i), result.toString());
         }
     }
 

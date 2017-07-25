@@ -5,14 +5,13 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.CommandNode;
-import sun.security.x509.OIDMap;
 
 import java.util.Map;
 
 public class CommandContext<S> {
     private final S source;
-    private final Map<String, ParsedArgument<S, ?>> arguments;
     private final Command<S> command;
+    private final Map<String, ParsedArgument<S, ?>> arguments;
     private final Map<CommandNode<S>, String> nodes;
     private final String input;
 

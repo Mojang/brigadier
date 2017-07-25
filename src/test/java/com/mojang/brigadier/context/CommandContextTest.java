@@ -82,20 +82,4 @@ public class CommandContextTest {
 
         assertThat(context.getInput(), is("foo 100 baz"));
     }
-
-    @Test
-    public void testCopy() throws Exception {
-        Object first = new Object();
-        Object second = new Object();
-        @SuppressWarnings("unchecked") Function<Object, Object> supplier = (Function<Object, Object>) mock(Function.class);
-
-        when(supplier.apply(source)).thenReturn(first);
-        CommandContext<Object> context = builder.withNode(literal("test").build(), "test").withArgument("test", new DynamicParsedArgument<>("test", supplier)).build();
-        assertThat(context.getArgument("test", Object.class), is(first));
-
-        when(supplier.apply(source)).thenReturn(second);
-        CommandContext<Object> copy = context.copy();
-        assertThat(context, is(equalTo(copy)));
-        assertThat(copy.getArgument("test", Object.class), is(second));
-    }
 }

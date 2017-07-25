@@ -1,16 +1,13 @@
 package com.mojang.brigadier.arguments;
 
-import com.google.common.base.Splitter;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.FixedParsedArgument;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Objects;
-import java.util.Set;
 
 public class IntegerArgumentType implements ArgumentType<Integer> {
     public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument.integer.invalid", "Expected an integer, found '${found}'", "found");
@@ -77,7 +74,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
                 throw ERROR_TOO_BIG.create(value, maximum);
             }
 
-            return new FixedParsedArgument<>(raw, value);
+            return new ParsedArgument<>(raw, value);
         } catch (NumberFormatException ignored) {
             throw ERROR_NOT_A_NUMBER.create(number);
         }
