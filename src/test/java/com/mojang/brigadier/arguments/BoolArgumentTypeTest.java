@@ -33,21 +33,21 @@ public class BoolArgumentTypeTest {
     @Test
     public void parse_true() throws Exception {
         ParsedArgument<Object, Boolean> parse = type.parse("true", context);
-        assertThat(parse.getResult(source), is(true));
+        assertThat(parse.getResult(), is(true));
         assertThat(parse.getRaw(), equalTo("true"));
     }
 
     @Test
     public void parse_false() throws Exception {
         ParsedArgument<Object, Boolean> parse = type.parse("false", context);
-        assertThat(parse.getResult(source), is(false));
+        assertThat(parse.getResult(), is(false));
         assertThat(parse.getRaw(), equalTo("false"));
     }
 
     @Test
     public void parse_trailing() throws Exception {
         ParsedArgument<Object, Boolean> parse = type.parse("false hello world", context);
-        assertThat(parse.getResult(source), is(false));
+        assertThat(parse.getResult(), is(false));
         assertThat(parse.getRaw(), equalTo("false"));
     }
 

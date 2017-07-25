@@ -39,7 +39,7 @@ public class CommandContext<S> {
             throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
         }
 
-        final Object result = argument.getResult(source);
+        final Object result = argument.getResult();
         if (Primitives.wrap(clazz).isAssignableFrom(result.getClass())) {
             return (V) result;
         } else {

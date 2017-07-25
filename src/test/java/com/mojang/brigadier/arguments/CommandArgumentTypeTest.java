@@ -37,7 +37,7 @@ public class CommandArgumentTypeTest {
         when(dispatcher.parse("hello world", source)).thenReturn(command);
         final ParsedArgument<Object, ParseResults<Object>> argument = command().parse("hello world", new CommandContextBuilder<>(dispatcher, source));
         assertThat(argument.getRaw(), equalTo("hello world"));
-        assertThat(argument.getResult(source), is(command));
+        assertThat(argument.getResult(), is(command));
     }
 
     @SuppressWarnings("unchecked")

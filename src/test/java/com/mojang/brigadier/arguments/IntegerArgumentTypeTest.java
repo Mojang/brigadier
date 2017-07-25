@@ -43,7 +43,7 @@ public class IntegerArgumentTypeTest {
         ParsedArgument<Object, Integer> result = type.parse("50", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("50"));
-        assertThat(result.getResult(source), is(50));
+        assertThat(result.getResult(), is(50));
     }
 
     @Test
@@ -51,7 +51,7 @@ public class IntegerArgumentTypeTest {
         ParsedArgument<Object, Integer> result = integer(0, 100, "L").parse("50L", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("50L"));
-        assertThat(result.getResult(source), is(50));
+        assertThat(result.getResult(), is(50));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class IntegerArgumentTypeTest {
         ParsedArgument<Object, Integer> result = type.parse("-100", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("-100"));
-        assertThat(result.getResult(source), is(-100));
+        assertThat(result.getResult(), is(-100));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class IntegerArgumentTypeTest {
         ParsedArgument<Object, Integer> result = type.parse("100", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("100"));
-        assertThat(result.getResult(source), is(100));
+        assertThat(result.getResult(), is(100));
     }
 
     @Test

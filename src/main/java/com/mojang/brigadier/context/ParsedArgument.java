@@ -13,7 +13,7 @@ public class ParsedArgument<S, T> {
         return raw;
     }
 
-    public T getResult(S source) {
+    public T getResult() {
         return result;
     }
 

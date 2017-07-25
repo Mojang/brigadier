@@ -7,7 +7,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -47,7 +46,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123 456", contextBuilder), is(" 456"));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(source), is(123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
     }
 
     @Test
@@ -55,7 +54,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(node.parse("123", contextBuilder), is(""));
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(source), is(123));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
     }
 
     @Test

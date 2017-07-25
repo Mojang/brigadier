@@ -44,7 +44,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(source), is(""));
+        assertThat(result.getResult(), is(""));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello world"));
-        assertThat(result.getResult(source), is("hello world"));
+        assertThat(result.getResult(), is("hello world"));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello"));
-        assertThat(result.getResult(source), is("\"hello"));
+        assertThat(result.getResult(), is("\"hello"));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(source), is("hello \" world"));
+        assertThat(result.getResult(), is("hello \" world"));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\" with remaining", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(source), is("hello \" world"));
+        assertThat(result.getResult(), is("hello \" world"));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -146,7 +146,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("\"hello\" world", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("\"hello\""));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -167,7 +167,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("hello \"world\"", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(source), is("hello"));
+        assertThat(result.getResult(), is("hello"));
     }
 
     @Test
@@ -200,7 +200,7 @@ public class StringArgumentTypeTest {
         ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(source), is(""));
+        assertThat(result.getResult(), is(""));
     }
 
     @Test
