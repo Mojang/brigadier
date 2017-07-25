@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandException;
 import java.util.Set;
 
 public interface ArgumentType<T> {
+    @Deprecated
     default <S> ParsedArgument<S, T> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
         StringReader reader = new StringReader(command);
         T result = parse(reader, contextBuilder);

@@ -3,11 +3,8 @@ package com.mojang.brigadier.arguments;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -31,9 +27,7 @@ import static org.junit.Assert.fail;
 public class IntegerArgumentTypeTest {
     private IntegerArgumentType type;
     @Mock
-    private Object source;
-    @Mock
-    private CommandDispatcher<Object> dispatcher;
+    private CommandContextBuilder<Object> context;
 
     @Before
     public void setUp() throws Exception {
@@ -41,137 +35,65 @@ public class IntegerArgumentTypeTest {
     }
 
     @Test
-    public void testParse() throws Exception {
-
-        ParsedArgument<Object, Integer> result = type.parse("50", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("50"));
-        assertThat(result.getResult(), is(50));
+    public void parse_noSuffix() throws Exception {
+        StringReader reader = new StringReader("15");
+        assertThat(integer().parse(reader, context), is(15));
+        assertThat(reader.canRead(), is(false));
     }
 
     @Test
-    public void testParse_suffix() throws Exception {
-        ParsedArgument<Object, Integer> result = integer(0, 100, "L").parse("50L", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("50L"));
-        assertThat(result.getResult(), is(50));
+    public void parse_suffix() throws Exception {
+        StringReader reader = new StringReader("15L");
+        assertThat(integer(0, 100, "L").parse(reader, context), is(15));
+        assertThat(reader.canRead(), is(false));
     }
 
     @Test
-    public void testParse_noSuffix() throws Exception {
+    public void parse_suffix_incorrect() throws Exception {
+        StringReader reader = new StringReader("15W");
         try {
-            integer(0, 0, "L").parse("50", new CommandContextBuilder<>(dispatcher, source));
+            integer(0, 100, "L").parse(reader, context);
             fail();
         } catch (CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("suffix", "L")));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
         }
     }
 
     @Test
-    public void testParse_wrongSuffix() throws Exception {
+    public void parse_suffix_missing() throws Exception {
+        StringReader reader = new StringReader("15");
         try {
-            integer(0, 0, "L").parse("50B", new CommandContextBuilder<>(dispatcher, source));
+            integer(0, 100, "L").parse(reader, context);
             fail();
         } catch (CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("suffix", "L")));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
         }
     }
 
     @Test
-    public void testParse_unexpectedSuffix() throws Exception {
-        type.parse("50L", new CommandContextBuilder<>(dispatcher, source));
-        // This has to pass, it's the responsibility of a node to decide "this isn't right, it's followed by text!"
-    }
-
-    @Test
-    public void testParseInvalid() throws Exception {
+    public void parse_tooSmall() throws Exception {
+        StringReader reader = new StringReader("-5");
         try {
-            type.parse("fifty", new CommandContextBuilder<>(dispatcher, source));
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
-        }
-    }
-
-    @Test
-    public void testParseEmpty() throws Exception {
-        try {
-            type.parse("", new CommandContextBuilder<>(dispatcher, source));
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
-        }
-    }
-
-    @Test
-    public void testParseEmpty_suffix() throws Exception {
-        try {
-            integer(0, 100, "L").parse("", new CommandContextBuilder<>(dispatcher, source));
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
-        }
-    }
-
-    @Test
-    public void testPars_suffix_onlySuffix() throws Exception {
-        try {
-            integer(0, 100, "L").parse("L", new CommandContextBuilder<>(dispatcher, source));
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
-        }
-    }
-
-    @Test
-    public void testParseTooLow() throws Exception {
-        try {
-            type.parse("-101", new CommandContextBuilder<>(dispatcher, source));
+            integer(0, 100).parse(reader, context);
             fail();
         } catch (CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", -101, "minimum", -100)));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", -5, "minimum", 0)));
         }
     }
 
     @Test
-    public void testParseLowerLimit() throws Exception {
-        ParsedArgument<Object, Integer> result = type.parse("-100", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("-100"));
-        assertThat(result.getResult(), is(-100));
-    }
-
-    @Test
-    public void testParseTooHigh() throws Exception {
+    public void parse_tooBig() throws Exception {
+        StringReader reader = new StringReader("5");
         try {
-            type.parse("101", new CommandContextBuilder<>(dispatcher, source));
+            integer(-100, 0).parse(reader, context);
             fail();
         } catch (CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", 101, "maximum", 100)));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", 5, "maximum", 0)));
         }
-    }
-
-    @Test
-    public void testParseHigherLimit() throws Exception {
-        ParsedArgument<Object, Integer> result = type.parse("100", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("100"));
-        assertThat(result.getResult(), is(100));
-    }
-
-    @Test
-    public void testGetInteger() throws Exception {
-        CommandContext context = new CommandContextBuilder<>(dispatcher, new Object()).withArgument("foo", type.parse("100", new CommandContextBuilder<>(dispatcher, source))).build();
-
-        assertThat(IntegerArgumentType.getInteger(context, "foo"), is(100));
     }
 
     @Test

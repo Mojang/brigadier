@@ -1,13 +1,11 @@
 package com.mojang.brigadier.arguments;
 
 import com.google.common.collect.Sets;
-import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedArgument;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Set;
@@ -21,138 +19,42 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StringArgumentTypeTest {
-    private StringArgumentType type;
     @Mock
-    private Object source;
-    @Mock
-    private CommandDispatcher<Object> dispatcher;
+    private CommandContextBuilder<Object> context;
 
     @Test
     public void testParseWord() throws Exception {
-        type = word();
-        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
-    }
-
-    @Test
-    public void testParseWord_empty() throws Exception {
-        type = word();
-        ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(), is(""));
-    }
-
-    @Test
-    public void testParseWord_simple() throws Exception {
-        type = word();
-        ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        StringReader reader = mock(StringReader.class);
+        when(reader.readUnquotedString()).thenReturn("hello");
+        assertThat(word().parse(reader, context), equalTo("hello"));
+        verify(reader).readUnquotedString();
     }
 
     @Test
     public void testParseString() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
+        StringReader reader = mock(StringReader.class);
+        when(reader.readString()).thenReturn("hello world");
+        assertThat(string().parse(reader, context), equalTo("hello world"));
+        verify(reader).readString();
     }
 
     @Test
     public void testParseGreedyString() throws Exception {
-        type = greedyString();
-        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello world"));
-        assertThat(result.getResult(), is("hello world"));
-    }
-
-    @Test
-    public void testParse() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("hello", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
-    }
-
-    @Test
-    public void testParseWordQuoted() throws Exception {
-        type = word();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(), is(""));
-    }
-
-    @Test
-    public void testParseQuoted() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\"", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(), is("hello \" world"));
-    }
-
-    @Test
-    public void testParseQuotedWithRemaining() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello \\\" world\" with remaining", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("\"hello \\\" world\""));
-        assertThat(result.getResult(), is("hello \" world"));
-    }
-
-    @Test
-    public void testParseNotQuoted() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("hello world", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
-    }
-
-    @Test
-    public void testParseQuote_earlyUnquoteWithRemaining() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("\"hello\" world", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("\"hello\""));
-        assertThat(result.getResult(), is("hello"));
-    }
-
-    @Test
-    public void testParseQuote_lateQuoteWithRemaining() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("hello \"world\"", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is("hello"));
-        assertThat(result.getResult(), is("hello"));
-    }
-
-    @Test
-    public void testParseEmpty() throws Exception {
-        type = string();
-        ParsedArgument<Object, String> result = type.parse("", new CommandContextBuilder<>(dispatcher, source));
-
-        assertThat(result.getRaw(), is(""));
-        assertThat(result.getResult(), is(""));
+        StringReader reader = new StringReader("Hello world! This is a test.");
+        assertThat(greedyString().parse(reader, context), equalTo("Hello world! This is a test."));
+        assertThat(reader.canRead(), is(false));
     }
 
     @Test
     public void testSuggestions() throws Exception {
-        type = string();
         Set<String> set = Sets.newHashSet();
-        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
-        type.listSuggestions("", set, context);
+        string().listSuggestions("", set, context);
         assertThat(set, is(empty()));
     }
 
