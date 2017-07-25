@@ -36,25 +36,25 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void parse_noSuffix() throws Exception {
-        StringReader reader = new StringReader("15");
+        final StringReader reader = new StringReader("15");
         assertThat(integer().parse(reader, context), is(15));
         assertThat(reader.canRead(), is(false));
     }
 
     @Test
     public void parse_suffix() throws Exception {
-        StringReader reader = new StringReader("15L");
+        final StringReader reader = new StringReader("15L");
         assertThat(integer(0, 100, "L").parse(reader, context), is(15));
         assertThat(reader.canRead(), is(false));
     }
 
     @Test
     public void parse_suffix_incorrect() throws Exception {
-        StringReader reader = new StringReader("15W");
+        final StringReader reader = new StringReader("15W");
         try {
             integer(0, 100, "L").parse(reader, context);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
         }
@@ -62,11 +62,11 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void parse_suffix_missing() throws Exception {
-        StringReader reader = new StringReader("15");
+        final StringReader reader = new StringReader("15");
         try {
             integer(0, 100, "L").parse(reader, context);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
         }
@@ -74,11 +74,11 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void parse_tooSmall() throws Exception {
-        StringReader reader = new StringReader("-5");
+        final StringReader reader = new StringReader("-5");
         try {
             integer(0, 100).parse(reader, context);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", -5, "minimum", 0)));
         }
@@ -86,11 +86,11 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void parse_tooBig() throws Exception {
-        StringReader reader = new StringReader("5");
+        final StringReader reader = new StringReader("5");
         try {
             integer(-100, 0).parse(reader, context);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", 5, "maximum", 0)));
         }
@@ -98,7 +98,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        Set<String> set = Sets.newHashSet();
+        final Set<String> set = Sets.newHashSet();
         @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
         type.listSuggestions("", set, context);
         assertThat(set, is(empty()));

@@ -2,22 +2,16 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.brigadier.exceptions.CommandException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
-
-import static com.mojang.brigadier.arguments.BoolArgumentType.ERROR_INVALID;
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,7 +29,7 @@ public class BoolArgumentTypeTest {
 
     @Test
     public void parse() throws Exception {
-        StringReader reader = mock(StringReader.class);
+        final StringReader reader = mock(StringReader.class);
         when(reader.readBoolean()).thenReturn(true);
         assertThat(type.parse(reader, context), is(true));
         verify(reader).readBoolean();

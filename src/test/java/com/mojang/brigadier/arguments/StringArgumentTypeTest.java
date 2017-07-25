@@ -30,7 +30,7 @@ public class StringArgumentTypeTest {
 
     @Test
     public void testParseWord() throws Exception {
-        StringReader reader = mock(StringReader.class);
+        final StringReader reader = mock(StringReader.class);
         when(reader.readUnquotedString()).thenReturn("hello");
         assertThat(word().parse(reader, context), equalTo("hello"));
         verify(reader).readUnquotedString();
@@ -38,7 +38,7 @@ public class StringArgumentTypeTest {
 
     @Test
     public void testParseString() throws Exception {
-        StringReader reader = mock(StringReader.class);
+        final StringReader reader = mock(StringReader.class);
         when(reader.readString()).thenReturn("hello world");
         assertThat(string().parse(reader, context), equalTo("hello world"));
         verify(reader).readString();
@@ -46,14 +46,14 @@ public class StringArgumentTypeTest {
 
     @Test
     public void testParseGreedyString() throws Exception {
-        StringReader reader = new StringReader("Hello world! This is a test.");
+        final StringReader reader = new StringReader("Hello world! This is a test.");
         assertThat(greedyString().parse(reader, context), equalTo("Hello world! This is a test."));
         assertThat(reader.canRead(), is(false));
     }
 
     @Test
     public void testSuggestions() throws Exception {
-        Set<String> set = Sets.newHashSet();
+        final Set<String> set = Sets.newHashSet();
         string().listSuggestions("", set, context);
         assertThat(set, is(empty()));
     }

@@ -12,13 +12,13 @@ public class ParseResults<S> {
     private final String remaining;
     private final Map<CommandNode<S>, CommandException> exceptions;
 
-    public ParseResults(CommandContextBuilder<S> context, String remaining, Map<CommandNode<S>, CommandException> exceptions) {
+    public ParseResults(final CommandContextBuilder<S> context, final String remaining, final Map<CommandNode<S>, CommandException> exceptions) {
         this.context = context;
         this.remaining = remaining;
         this.exceptions = exceptions;
     }
 
-    public ParseResults(CommandContextBuilder<S> context) {
+    public ParseResults(final CommandContextBuilder<S> context) {
         this(context, "", Collections.emptyMap());
     }
 

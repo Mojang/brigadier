@@ -8,12 +8,12 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     private final String name;
     private final ArgumentType<T> type;
 
-    private RequiredArgumentBuilder(String name, ArgumentType<T> type) {
+    private RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
         this.name = name;
         this.type = type;
     }
 
-    public static <S, T> RequiredArgumentBuilder<S, T> argument(String name, ArgumentType<T> type) {
+    public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {
         return new RequiredArgumentBuilder<>(name, type);
     }
 
@@ -31,9 +31,9 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     public ArgumentCommandNode<S, T> build() {
-        ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement());
+        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement());
 
-        for (CommandNode<S> argument : getArguments()) {
+        for (final CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
         }
 

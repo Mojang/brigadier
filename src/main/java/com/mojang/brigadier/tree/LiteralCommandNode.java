@@ -1,7 +1,6 @@
 package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -16,7 +15,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     private final String literal;
 
-    public LiteralCommandNode(String literal, Command<S> command, Predicate<S> requirement) {
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement) {
         super(command, requirement);
         this.literal = literal;
     }
@@ -31,7 +30,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
         for (int i = 0; i < literal.length(); i++) {
             if (reader.canRead() && reader.peek() == literal.charAt(i)) {
                 reader.skip();
@@ -44,18 +43,18 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
+    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
         if (literal.startsWith(command)) {
             output.add(literal);
         }
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof LiteralCommandNode)) return false;
 
-        LiteralCommandNode that = (LiteralCommandNode) o;
+        final LiteralCommandNode that = (LiteralCommandNode) o;
 
         if (!literal.equals(that.literal)) return false;
         return super.equals(o);

@@ -1,10 +1,7 @@
 package com.mojang.brigadier;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.Map;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -21,7 +17,11 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
@@ -65,7 +65,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
@@ -78,7 +78,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
@@ -91,7 +91,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
         }
@@ -104,7 +104,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo bar", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
             assertThat(ex.getData(), is(Collections.singletonMap("argument", "bar")));
         }
@@ -117,7 +117,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo baz", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(Collections.singletonMap("expected", "bar")));
         }
@@ -134,7 +134,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo unknown", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
             assertThat(ex.getData(), is(Collections.singletonMap("argument", "unknown")));
         }
@@ -143,7 +143,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteSubcommand() throws Exception {
-        Command<Object> subCommand = mock(Command.class);
+        final Command<Object> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         subject.register(literal("foo").then(
@@ -167,7 +167,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo bar", source);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
             assertThat(ex.getData(), is(Collections.emptyMap()));
         }

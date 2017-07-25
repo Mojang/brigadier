@@ -18,7 +18,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
 
-    public ArgumentCommandNode(String name, ArgumentType<T> type, Command<S> command, Predicate<S> requirement) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement) {
         super(command, requirement);
         this.name = name;
         this.type = type;
@@ -51,17 +51,17 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        int start = reader.getCursor();
-        T result = type.parse(reader, contextBuilder);
-        ParsedArgument<S, T> parsed = new ParsedArgument<>(reader.getString().substring(start, reader.getCursor()), result);
+    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+        final int start = reader.getCursor();
+        final T result = type.parse(reader, contextBuilder);
+        final ParsedArgument<S, T> parsed = new ParsedArgument<>(reader.getString().substring(start, reader.getCursor()), result);
 
         contextBuilder.withArgument(name, parsed);
         contextBuilder.withNode(this, parsed.getRaw());
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
+    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
         type.listSuggestions(command, output, contextBuilder);
     }
 
@@ -76,11 +76,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ArgumentCommandNode)) return false;
 
-        ArgumentCommandNode that = (ArgumentCommandNode) o;
+        final ArgumentCommandNode that = (ArgumentCommandNode) o;
 
         if (!name.equals(that.name)) return false;
         if (!type.equals(that.type)) return false;

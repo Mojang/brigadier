@@ -15,7 +15,7 @@ public class CommandContext<S> {
     private final Map<CommandNode<S>, String> nodes;
     private final String input;
 
-    public CommandContext(S source, Map<String, ParsedArgument<S, ?>> arguments, Command<S> command, Map<CommandNode<S>, String> nodes, String input) {
+    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, String> nodes, final String input) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
@@ -32,8 +32,8 @@ public class CommandContext<S> {
     }
 
     @SuppressWarnings("unchecked")
-    public <V> V getArgument(String name, Class<V> clazz) {
-        ParsedArgument<S, ?> argument = arguments.get(name);
+    public <V> V getArgument(final String name, final Class<V> clazz) {
+        final ParsedArgument<S, ?> argument = arguments.get(name);
 
         if (argument == null) {
             throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
@@ -48,11 +48,11 @@ public class CommandContext<S> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CommandContext)) return false;
 
-        CommandContext that = (CommandContext) o;
+        final CommandContext that = (CommandContext) o;
 
         if (!arguments.equals(that.arguments)) return false;
         if (!Iterables.elementsEqual(nodes.entrySet(), that.nodes.entrySet())) return false;
@@ -80,7 +80,7 @@ public class CommandContext<S> {
     }
 
     public CommandContext<S> copy() {
-        Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
+        final Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
         this.arguments.forEach((k, v) -> arguments.put(k, v.copy()));
         return new CommandContext<>(source, arguments, command, nodes, input);
     }

@@ -23,15 +23,15 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
     }
 
     @Override
-    public void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder) {
+    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof RootCommandNode)) return false;
         return super.equals(o);

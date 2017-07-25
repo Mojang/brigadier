@@ -14,7 +14,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     protected abstract T getThis();
 
-    public T then(ArgumentBuilder<S, ?> argument) {
+    public T then(final ArgumentBuilder<S, ?> argument) {
         arguments.addChild(argument.build());
         return getThis();
     }
@@ -23,7 +23,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return arguments.getChildren();
     }
 
-    public T executes(Command<S> command) {
+    public T executes(final Command<S> command) {
         this.command = command;
         return getThis();
     }
@@ -32,7 +32,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return command;
     }
 
-    public T requires(Predicate<S> requirement) {
+    public T requires(final Predicate<S> requirement) {
         this.requirement = requirement;
         return getThis();
     }

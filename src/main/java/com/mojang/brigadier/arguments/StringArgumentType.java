@@ -4,15 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
 
-    private StringArgumentType(StringType type) {
+    private StringArgumentType(final StringType type) {
         this.type = type;
     }
 
@@ -28,14 +25,14 @@ public class StringArgumentType implements ArgumentType<String> {
         return new StringArgumentType(StringType.GREEDY_PHRASE);
     }
 
-    public static String getString(CommandContext<?> context, String name) {
+    public static String getString(final CommandContext<?> context, final String name) {
         return context.getArgument(name, String.class);
     }
 
     @Override
-    public <S> String parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public <S> String parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
         if (type == StringType.GREEDY_PHRASE) {
-            String text = reader.getRemaining();
+            final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());
             return text;
         } else if (type == StringType.SINGLE_WORD) {
@@ -50,15 +47,15 @@ public class StringArgumentType implements ArgumentType<String> {
         return "string()";
     }
 
-    public static String escapeIfRequired(String input) {
+    public static String escapeIfRequired(final String input) {
         if (input.contains("\\") || input.contains("\"") || input.contains(CommandDispatcher.ARGUMENT_SEPARATOR)) {
             return escape(input);
         }
         return input;
     }
 
-    private static String escape(String input) {
-        StringBuilder result = new StringBuilder("\"");
+    private static String escape(final String input) {
+        final StringBuilder result = new StringBuilder("\"");
 
         for (int i = 0; i < input.length(); i++) {
             final char c = input.charAt(i);

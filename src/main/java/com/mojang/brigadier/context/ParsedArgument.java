@@ -4,7 +4,7 @@ public class ParsedArgument<S, T> {
     private final String raw;
     private final T result;
 
-    public ParsedArgument(String raw, T result) {
+    public ParsedArgument(final String raw, final T result) {
         this.raw = raw;
         this.result = result;
     }
@@ -18,11 +18,11 @@ public class ParsedArgument<S, T> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ParsedArgument)) return false;
 
-        ParsedArgument that = (ParsedArgument) o;
+        final ParsedArgument that = (ParsedArgument) o;
 
         if (!raw.equals(that.raw)) return false;
         if (!result.equals(that.result)) return false;

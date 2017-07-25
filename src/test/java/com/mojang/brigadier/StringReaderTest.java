@@ -1,9 +1,7 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandException;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -15,7 +13,7 @@ import static org.junit.Assert.assertThat;
 public class StringReaderTest {
     @Test
     public void canRead() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         assertThat(reader.canRead(), is(true));
         reader.skip(); // 'a'
         assertThat(reader.canRead(), is(true));
@@ -27,7 +25,7 @@ public class StringReaderTest {
 
     @Test
     public void getRemainingLength() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         assertThat(reader.getRemainingLength(), is(3));
         reader.setCursor(1);
         assertThat(reader.getRemainingLength(), is(2));
@@ -39,7 +37,7 @@ public class StringReaderTest {
 
     @Test
     public void canRead_length() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         assertThat(reader.canRead(1), is(true));
         assertThat(reader.canRead(2), is(true));
         assertThat(reader.canRead(3), is(true));
@@ -49,7 +47,7 @@ public class StringReaderTest {
 
     @Test
     public void peek() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         assertThat(reader.peek(), is('a'));
         assertThat(reader.getCursor(), is(0));
         reader.setCursor(2);
@@ -59,7 +57,7 @@ public class StringReaderTest {
 
     @Test
     public void read() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         assertThat(reader.read(), is('a'));
         assertThat(reader.read(), is('b'));
         assertThat(reader.read(), is('c'));
@@ -68,14 +66,14 @@ public class StringReaderTest {
 
     @Test
     public void skip() throws Exception {
-        StringReader reader = new StringReader("abc");
+        final StringReader reader = new StringReader("abc");
         reader.skip();
         assertThat(reader.getCursor(), is(1));
     }
 
     @Test
     public void getRemaining() throws Exception {
-        StringReader reader = new StringReader("Hello!");
+        final StringReader reader = new StringReader("Hello!");
         assertThat(reader.getRemaining(), equalTo("Hello!"));
         reader.setCursor(3);
         assertThat(reader.getRemaining(), equalTo("lo!"));
@@ -85,7 +83,7 @@ public class StringReaderTest {
 
     @Test
     public void getRead() throws Exception {
-        StringReader reader = new StringReader("Hello!");
+        final StringReader reader = new StringReader("Hello!");
         assertThat(reader.getRead(), equalTo(""));
         reader.setCursor(3);
         assertThat(reader.getRead(), equalTo("Hel"));

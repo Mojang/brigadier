@@ -5,8 +5,6 @@ import com.google.common.testing.EqualsTester;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Map;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,7 +29,7 @@ public class ParameterizedCommandExceptionTypeTest {
 
     @Test
     public void testCreate() throws Exception {
-        CommandException exception = type.create("World");
+        final CommandException exception = type.create("World");
         assertThat(exception.getType(), is(type));
         assertThat(exception.getData(), is(ImmutableMap.<String, Object>of("name", "World")));
         assertThat(exception.getMessage(), is("Hello, World!"));

@@ -2,7 +2,6 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
@@ -13,15 +12,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Map;
 
-import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherUsagesTest {
@@ -93,10 +89,10 @@ public class CommandDispatcherUsagesTest {
         );
     }
 
-    private CommandNode<Object> get(String command) {
+    private CommandNode<Object> get(final String command) {
         try {
             return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
-        } catch (CommandException e) {
+        } catch (final CommandException e) {
             throw new AssertionError("get() failed unexpectedly", e);
         }
     }
@@ -118,7 +114,7 @@ public class CommandDispatcherUsagesTest {
     @Test
     public void testAllUsage_root() throws Exception {
         final String[] results = subject.getAllUsage(subject.getRoot(), source);
-        assertThat(results, equalTo(new String[] {
+        assertThat(results, equalTo(new String[]{
             "a 1 i",
             "a 1 ii",
             "a 2 i",
@@ -147,15 +143,15 @@ public class CommandDispatcherUsagesTest {
     public void testSmartUsage_root() throws Exception {
         final Map<CommandNode<Object>, String> results = subject.getSmartUsage(subject.getRoot(), source);
         assertThat(results, equalTo(ImmutableMap.builder()
-                .put(get("a"), "a (1|2)")
-                .put(get("b"), "b 1")
-                .put(get("c"), "c")
-                .put(get("e"), "e [1]")
-                .put(get("f"), "f (1|2)")
-                .put(get("g"), "g [1]")
-                .put(get("h"), "h [1|2|3]")
-                .put(get("i"), "i [1|2]")
-                .build()
+            .put(get("a"), "a (1|2)")
+            .put(get("b"), "b 1")
+            .put(get("c"), "c")
+            .put(get("e"), "e [1]")
+            .put(get("f"), "f (1|2)")
+            .put(get("g"), "g [1]")
+            .put(get("h"), "h [1|2|3]")
+            .put(get("i"), "i [1|2]")
+            .build()
         ));
     }
 

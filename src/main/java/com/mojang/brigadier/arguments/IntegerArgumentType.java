@@ -1,10 +1,8 @@
 package com.mojang.brigadier.arguments;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
@@ -19,7 +17,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     private final int maximum;
     private final String suffix;
 
-    private IntegerArgumentType(int minimum, int maximum, String suffix) {
+    private IntegerArgumentType(final int minimum, final int maximum, final String suffix) {
         this.minimum = minimum;
         this.maximum = maximum;
         this.suffix = suffix;
@@ -29,25 +27,25 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         return integer(Integer.MIN_VALUE);
     }
 
-    public static IntegerArgumentType integer(int min) {
+    public static IntegerArgumentType integer(final int min) {
         return integer(min, Integer.MAX_VALUE);
     }
 
-    public static IntegerArgumentType integer(int min, int max) {
+    public static IntegerArgumentType integer(final int min, final int max) {
         return integer(min, max, "");
     }
 
-    public static IntegerArgumentType integer(int min, int max, String suffix) {
+    public static IntegerArgumentType integer(final int min, final int max, final String suffix) {
         return new IntegerArgumentType(min, max, suffix);
     }
 
-    public static int getInteger(CommandContext<?> context, String name) {
+    public static int getInteger(final CommandContext<?> context, final String name) {
         return context.getArgument(name, int.class);
     }
 
     @Override
-    public <S> Integer parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        int result = reader.readInt();
+    public <S> Integer parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+        final int result = reader.readInt();
         for (int i = 0; i < suffix.length(); i++) {
             if (reader.canRead() && reader.peek() == suffix.charAt(i)) {
                 reader.skip();
@@ -65,11 +63,11 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof IntegerArgumentType)) return false;
 
-        IntegerArgumentType that = (IntegerArgumentType) o;
+        final IntegerArgumentType that = (IntegerArgumentType) o;
         return maximum == that.maximum && minimum == that.minimum && Objects.equals(suffix, that.suffix);
     }
 

@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.junit.Assert.assertThat;
@@ -21,7 +20,7 @@ public class ArgumentBuilderTest {
 
     @Test
     public void testArguments() throws Exception {
-        RequiredArgumentBuilder<Object, ?> argument = argument("bar", integer());
+        final RequiredArgumentBuilder<Object, ?> argument = argument("bar", integer());
 
         builder.then(argument);
 

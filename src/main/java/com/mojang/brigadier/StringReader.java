@@ -20,7 +20,7 @@ public class StringReader {
     private final String string;
     private int cursor;
 
-    public StringReader(String string) {
+    public StringReader(final String string) {
         this.string = string;
     }
 
@@ -28,7 +28,7 @@ public class StringReader {
         return string;
     }
 
-    public void setCursor(int cursor) {
+    public void setCursor(final int cursor) {
         this.cursor = cursor;
     }
 
@@ -116,7 +116,7 @@ public class StringReader {
             || c == '.' || c == '+';
     }
 
-    public String readUnquotedString() throws CommandException {
+    public String readUnquotedString() {
         final int start = cursor;
         while (canRead() && isAllowedInUnquotedString(peek())) {
             skip();
@@ -163,7 +163,7 @@ public class StringReader {
     }
 
     public boolean readBoolean() throws CommandException {
-        String value = readString();
+        final String value = readString();
         if (value.equals("true")) {
             return true;
         } else if (value.equals("false")) {

@@ -6,11 +6,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
     private final String literal;
 
-    protected LiteralArgumentBuilder(String literal) {
+    protected LiteralArgumentBuilder(final String literal) {
         this.literal = literal;
     }
 
-    public static <S> LiteralArgumentBuilder<S> literal(String name) {
+    public static <S> LiteralArgumentBuilder<S> literal(final String name) {
         return new LiteralArgumentBuilder<>(name);
     }
 
@@ -25,9 +25,9 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
 
     @Override
     public LiteralCommandNode<S> build() {
-        LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement());
+        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement());
 
-        for (CommandNode<S> argument : getArguments()) {
+        for (final CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
         }
 

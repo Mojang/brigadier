@@ -15,12 +15,12 @@ public class CommandContextBuilder<S> {
     private S source;
     private Command<S> command;
 
-    public CommandContextBuilder(CommandDispatcher<S> dispatcher, S source) {
+    public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source) {
         this.dispatcher = dispatcher;
         this.source = source;
     }
 
-    public CommandContextBuilder<S> withSource(S source) {
+    public CommandContextBuilder<S> withSource(final S source) {
         this.source = source;
         return this;
     }
@@ -29,7 +29,7 @@ public class CommandContextBuilder<S> {
         return source;
     }
 
-    public CommandContextBuilder<S> withArgument(String name, ParsedArgument<S, ?> argument) {
+    public CommandContextBuilder<S> withArgument(final String name, final ParsedArgument<S, ?> argument) {
         this.arguments.put(name, argument);
         return this;
     }
@@ -38,12 +38,12 @@ public class CommandContextBuilder<S> {
         return arguments;
     }
 
-    public CommandContextBuilder<S> withCommand(Command<S> command) {
+    public CommandContextBuilder<S> withCommand(final Command<S> command) {
         this.command = command;
         return this;
     }
 
-    public CommandContextBuilder<S> withNode(CommandNode<S> node, String raw) {
+    public CommandContextBuilder<S> withNode(final CommandNode<S> node, final String raw) {
         if (!nodes.isEmpty()) {
             input.append(CommandDispatcher.ARGUMENT_SEPARATOR);
         }
@@ -53,7 +53,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContextBuilder<S> copy() {
-        CommandContextBuilder<S> copy = new CommandContextBuilder<>(dispatcher, source);
+        final CommandContextBuilder<S> copy = new CommandContextBuilder<>(dispatcher, source);
         copy.command = this.command;
         arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
         copy.nodes.putAll(this.nodes);

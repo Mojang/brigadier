@@ -6,7 +6,7 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     private final String name;
     private final String message;
 
-    public SimpleCommandExceptionType(String name, String message) {
+    public SimpleCommandExceptionType(final String name, final String message) {
         this.name = name;
         this.message = message;
     }
@@ -17,7 +17,7 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     }
 
     @Override
-    public String getErrorMessage(CommandException exception) {
+    public String getErrorMessage(final CommandException exception) {
         return message;
     }
 
@@ -26,11 +26,11 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CommandExceptionType)) return false;
 
-        CommandExceptionType that = (CommandExceptionType) o;
+        final CommandExceptionType that = (CommandExceptionType) o;
 
         return getTypeName().equals(that.getTypeName());
     }

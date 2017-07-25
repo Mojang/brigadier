@@ -31,7 +31,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        StringReader reader = new StringReader("hello world");
+        final StringReader reader = new StringReader("hello world");
         node.parse(reader, new CommandContextBuilder<>(new CommandDispatcher<>(), new Object()));
         assertThat(reader.getCursor(), is(0));
     }
@@ -48,7 +48,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        Set<String> set = Sets.newHashSet();
+        final Set<String> set = Sets.newHashSet();
         @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
         node.listSuggestions("", set, context);
         assertThat(set, is(empty()));

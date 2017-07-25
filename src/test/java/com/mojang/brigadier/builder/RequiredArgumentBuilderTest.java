@@ -28,7 +28,7 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuild() throws Exception {
-        ArgumentCommandNode<Object, Integer> node = builder.build();
+        final ArgumentCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
@@ -36,7 +36,7 @@ public class RequiredArgumentBuilderTest {
 
     @Test
     public void testBuildWithExecutor() throws Exception {
-        ArgumentCommandNode<Object, Integer> node = builder.executes(command).build();
+        final ArgumentCommandNode<Object, Integer> node = builder.executes(command).build();
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
@@ -47,7 +47,7 @@ public class RequiredArgumentBuilderTest {
     public void testBuildWithChildren() throws Exception {
         builder.then(argument("bar", integer()));
         builder.then(argument("baz", integer()));
-        ArgumentCommandNode<Object, Integer> node = builder.build();
+        final ArgumentCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getChildren(), hasSize(2));
     }

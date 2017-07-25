@@ -36,22 +36,22 @@ public class CommandDispatcher<S> {
     private final RootCommandNode<S> root = new RootCommandNode<>();
     private final Predicate<CommandNode<S>> hasCommand = new Predicate<CommandNode<S>>() {
         @Override
-        public boolean test(CommandNode<S> input) {
+        public boolean test(final CommandNode<S> input) {
             return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
         }
     };
 
-    public void register(LiteralArgumentBuilder<S> command) {
+    public void register(final LiteralArgumentBuilder<S> command) {
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
     }
 
-    public int execute(String input, S source) throws CommandException {
+    public int execute(final String input, final S source) throws CommandException {
         final ParseResults<S> parse = parse(input, source);
         return execute(parse);
     }
 
-    public int execute(ParseResults<S> parse) throws CommandException {
+    public int execute(final ParseResults<S> parse) throws CommandException {
         if (parse.getRemaining().length() > 0) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -61,32 +61,32 @@ public class CommandDispatcher<S> {
                 throw ERROR_UNKNOWN_ARGUMENT.create(parse.getRemaining());
             }
         }
-        CommandContext<S> context = parse.getContext().build();
-        Command<S> command = context.getCommand();
+        final CommandContext<S> context = parse.getContext().build();
+        final Command<S> command = context.getCommand();
         if (command == null) {
             throw ERROR_UNKNOWN_COMMAND.create();
         }
         return command.run(context);
     }
 
-    public ParseResults<S> parse(String command, S source) throws CommandException {
-        StringReader reader = new StringReader(command);
+    public ParseResults<S> parse(final String command, final S source) throws CommandException {
+        final StringReader reader = new StringReader(command);
         return parseNodes(root, reader, new CommandContextBuilder<>(this, source));
     }
 
-    private ParseResults<S> parseNodes(CommandNode<S> node, StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
         final S source = contextBuilder.getSource();
-        Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
+        final Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
 
-        for (CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
                 continue;
             }
-            CommandContextBuilder<S> context = contextBuilder.copy();
-            int cursor = reader.getCursor();
+            final CommandContextBuilder<S> context = contextBuilder.copy();
+            final int cursor = reader.getCursor();
             try {
                 child.parse(reader, context);
-            } catch (CommandException ex) {
+            } catch (final CommandException ex) {
                 errors.put(child, ex);
                 reader.setCursor(cursor);
                 continue;
@@ -107,13 +107,13 @@ public class CommandDispatcher<S> {
         return new ParseResults<>(contextBuilder, reader.getRemaining(), errors);
     }
 
-    public String[] getAllUsage(CommandNode<S> node, S source) {
+    public String[] getAllUsage(final CommandNode<S> node, final S source) {
         final ArrayList<String> result = Lists.newArrayList();
-        getAllUsage(node, source, result,  "");
+        getAllUsage(node, source, result, "");
         return result.toArray(new String[result.size()]);
     }
 
-    private void getAllUsage(CommandNode<S> node, S source, ArrayList<String> result, String prefix) {
+    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix) {
         if (!node.canUse(source)) {
             return;
         }
@@ -129,12 +129,12 @@ public class CommandDispatcher<S> {
         }
     }
 
-    public Map<CommandNode<S>, String> getSmartUsage(CommandNode<S> node, S source) {
-        Map<CommandNode<S>, String> result = Maps.newLinkedHashMap();
+    public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
+        final Map<CommandNode<S>, String> result = Maps.newLinkedHashMap();
 
         final boolean optional = node.getCommand() != null;
-        for (CommandNode<S> child : node.getChildren()) {
-            String usage = getSmartUsage(child, source, optional, false);
+        for (final CommandNode<S> child : node.getChildren()) {
+            final String usage = getSmartUsage(child, source, optional, false);
             if (usage != null) {
                 result.put(child, usage);
             }
@@ -142,15 +142,15 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    private String getSmartUsage(CommandNode<S> node, S source, boolean optional, boolean deep) {
+    private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final boolean deep) {
         if (!node.canUse(source)) {
             return null;
         }
 
-        String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
-        boolean childOptional = node.getCommand() != null;
-        String open = childOptional ? USAGE_OPTIONAL_OPEN : USAGE_REQUIRED_OPEN;
-        String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
+        final String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
+        final boolean childOptional = node.getCommand() != null;
+        final String open = childOptional ? USAGE_OPTIONAL_OPEN : USAGE_REQUIRED_OPEN;
+        final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
         if (!deep) {
             final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
@@ -160,7 +160,7 @@ public class CommandDispatcher<S> {
                     return self + ARGUMENT_SEPARATOR + usage;
                 }
             } else if (children.size() > 1) {
-                Set<String> childUsage = Sets.newLinkedHashSet();
+                final Set<String> childUsage = Sets.newLinkedHashSet();
                 for (final CommandNode<S> child : children) {
                     final String usage = getSmartUsage(child, source, childOptional, true);
                     if (usage != null) {
@@ -171,7 +171,7 @@ public class CommandDispatcher<S> {
                     final String usage = childUsage.iterator().next();
                     return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
                 } else if (childUsage.size() > 1) {
-                    StringBuilder builder = new StringBuilder(open);
+                    final StringBuilder builder = new StringBuilder(open);
                     int count = 0;
                     for (final CommandNode<S> child : children) {
                         if (count > 0) {
@@ -191,14 +191,14 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    private Set<String> findSuggestions(CommandNode<S> node, StringReader reader, CommandContextBuilder<S> contextBuilder, Set<String> result) {
+    private Set<String> findSuggestions(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, final Set<String> result) {
         final S source = contextBuilder.getSource();
-        for (CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
                 continue;
             }
-            CommandContextBuilder<S> context = contextBuilder.copy();
-            int cursor = reader.getCursor();
+            final CommandContextBuilder<S> context = contextBuilder.copy();
+            final int cursor = reader.getCursor();
             try {
                 child.parse(reader, context);
                 if (reader.canRead()) {
@@ -210,7 +210,7 @@ public class CommandDispatcher<S> {
                     reader.setCursor(cursor);
                     child.listSuggestions(reader.getRemaining(), result, context);
                 }
-            } catch (CommandException e) {
+            } catch (final CommandException e) {
                 reader.setCursor(cursor);
                 child.listSuggestions(reader.getRemaining(), result, context);
             }
@@ -219,8 +219,8 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    public String[] getCompletionSuggestions(String command, S source) {
-        StringReader reader = new StringReader(command);
+    public String[] getCompletionSuggestions(final String command, final S source) {
+        final StringReader reader = new StringReader(command);
         final Set<String> nodes = findSuggestions(root, reader, new CommandContextBuilder<>(this, source), Sets.newLinkedHashSet());
 
         return nodes.toArray(new String[nodes.size()]);

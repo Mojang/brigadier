@@ -6,7 +6,7 @@ public class CommandException extends Exception {
     private final CommandExceptionType type;
     private final Map<String, Object> data;
 
-    public CommandException(CommandExceptionType type, Map<String, Object> data) {
+    public CommandException(final CommandExceptionType type, final Map<String, Object> data) {
         this.type = type;
         this.data = data;
     }

@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
+    private final Predicate<S> requirement;
     private Command<S> command;
-    private Predicate<S> requirement;
 
-    protected CommandNode(Command<S> command, Predicate<S> requirement) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement) {
         this.command = command;
         this.requirement = requirement;
     }
@@ -33,18 +33,18 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return children.values();
     }
 
-    public boolean canUse(S source) {
+    public boolean canUse(final S source) {
         return requirement.test(source);
     }
 
-    public void addChild(CommandNode<S> node) {
-        CommandNode<S> child = children.get(node.getMergeKey());
+    public void addChild(final CommandNode<S> node) {
+        final CommandNode<S> child = children.get(node.getMergeKey());
         if (child != null) {
             // We've found something to merge onto
             if (node.getCommand() != null) {
                 child.command = node.getCommand();
             }
-            for (CommandNode<S> grandchild : node.getChildren()) {
+            for (final CommandNode<S> grandchild : node.getChildren()) {
                 child.addChild(grandchild);
             }
         } else {
@@ -55,11 +55,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
-        CommandNode<S> that = (CommandNode<S>) o;
+        final CommandNode<S> that = (CommandNode<S>) o;
 
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
@@ -89,7 +89,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     protected abstract String getSortedKey();
 
     @Override
-    public int compareTo(CommandNode<S> o) {
+    public int compareTo(final CommandNode<S> o) {
         return ComparisonChain
             .start()
             .compareTrueFirst(this instanceof LiteralCommandNode, o instanceof LiteralCommandNode)

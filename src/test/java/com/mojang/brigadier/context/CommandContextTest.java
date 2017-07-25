@@ -37,13 +37,13 @@ public class CommandContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetArgument_wrongType() throws Exception {
-        CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
         context.getArgument("foo", String.class);
     }
 
     @Test
     public void testGetArgument() throws Exception {
-        CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
         assertThat(context.getArgument("foo", int.class), is(123));
     }
 
@@ -55,11 +55,11 @@ public class CommandContextTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testEquals() throws Exception {
-        Object otherSource = new Object();
-        Command<Object> command = mock(Command.class);
-        Command<Object> otherCommand = mock(Command.class);
-        CommandNode<Object> node = mock(CommandNode.class);
-        CommandNode<Object> otherNode = mock(CommandNode.class);
+        final Object otherSource = new Object();
+        final Command<Object> command = mock(Command.class);
+        final Command<Object> otherCommand = mock(Command.class);
+        final CommandNode<Object> node = mock(CommandNode.class);
+        final CommandNode<Object> otherNode = mock(CommandNode.class);
         new EqualsTester()
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).build(), new CommandContextBuilder<>(dispatcher, source).build())
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, otherSource).build(), new CommandContextBuilder<>(dispatcher, otherSource).build())
@@ -73,7 +73,7 @@ public class CommandContextTest {
 
     @Test
     public void testGetInput() throws Exception {
-        CommandContext<Object> context = builder.withNode(literal("foo").build(), "foo").withNode(argument("bar", integer()).build(), "100").withNode(literal("baz").build(), "baz").build();
+        final CommandContext<Object> context = builder.withNode(literal("foo").build(), "foo").withNode(argument("bar", integer()).build(), "100").withNode(literal("baz").build(), "baz").build();
 
         assertThat(context.getInput(), is("foo 100 baz"));
     }

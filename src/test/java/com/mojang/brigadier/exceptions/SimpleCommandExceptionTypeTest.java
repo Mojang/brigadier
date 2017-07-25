@@ -11,8 +11,8 @@ import static org.junit.Assert.assertThat;
 public class SimpleCommandExceptionTypeTest {
     @Test
     public void testCreate() throws Exception {
-        SimpleCommandExceptionType type = new SimpleCommandExceptionType("foo", "bar");
-        CommandException exception = type.create();
+        final SimpleCommandExceptionType type = new SimpleCommandExceptionType("foo", "bar");
+        final CommandException exception = type.create();
         assertThat(exception.getType(), is(type));
         assertThat(exception.getMessage(), is("bar"));
         assertThat(exception.getData().values(), empty());

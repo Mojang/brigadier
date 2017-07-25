@@ -40,21 +40,21 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        StringReader reader = new StringReader("foo bar");
+        final StringReader reader = new StringReader("foo bar");
         node.parse(reader, contextBuilder);
         assertThat(reader.getRemaining(), equalTo(" bar"));
     }
 
     @Test
     public void testParseExact() throws Exception {
-        StringReader reader = new StringReader("foo");
+        final StringReader reader = new StringReader("foo");
         node.parse(reader, contextBuilder);
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
     @Test
     public void testParseSimilar() throws Exception {
-        StringReader reader = new StringReader("foobar");
+        final StringReader reader = new StringReader("foobar");
         node.parse(reader, contextBuilder);
         assertThat(reader.getRemaining(), equalTo("bar"));
         // This should succeed, because it's the responsibility of the dispatcher to realize there's trailing text
@@ -62,11 +62,11 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParseInvalid() throws Exception {
-        StringReader reader = new StringReader("bar");
+        final StringReader reader = new StringReader("bar");
         try {
             node.parse(reader, contextBuilder);
             fail();
-        } catch (CommandException ex) {
+        } catch (final CommandException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
         }
@@ -79,7 +79,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        Set<String> set = Sets.newHashSet();
+        final Set<String> set = Sets.newHashSet();
         @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
 
         node.listSuggestions("", set, context);
@@ -100,7 +100,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        @SuppressWarnings("unchecked") Command<Object> command = mock(Command.class);
+        @SuppressWarnings("unchecked") final Command<Object> command = mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(
