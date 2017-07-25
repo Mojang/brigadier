@@ -58,17 +58,6 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     }
 
     @Test
-    public void testParseInvalid() throws Exception {
-        try {
-            node.parse("foo", contextBuilder);
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "foo")));
-        }
-    }
-
-    @Test
     public void testUsage() throws Exception {
         assertThat(node.getUsageText(), is("<foo: int>"));
     }

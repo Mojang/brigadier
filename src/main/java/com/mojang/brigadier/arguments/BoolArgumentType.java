@@ -1,6 +1,7 @@
 package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -22,20 +23,8 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> ParsedArgument<S, Boolean> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        int end = command.indexOf(CommandDispatcher.ARGUMENT_SEPARATOR);
-        String raw = command;
-        if (end > -1) {
-            raw = command.substring(0, end);
-        }
-
-        if (raw.equals("true")) {
-            return new ParsedArgument<>(raw, true);
-        } else if (raw.equals("false")) {
-            return new ParsedArgument<>(raw, false);
-        } else {
-            throw ERROR_INVALID.create();
-        }
+    public <S> Boolean parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+        return reader.readBoolean();
     }
 
     @Override

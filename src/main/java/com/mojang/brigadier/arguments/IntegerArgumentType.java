@@ -1,6 +1,7 @@
 package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -10,7 +11,6 @@ import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import java.util.Objects;
 
 public class IntegerArgumentType implements ArgumentType<Integer> {
-    public static final ParameterizedCommandExceptionType ERROR_NOT_A_NUMBER = new ParameterizedCommandExceptionType("argument.integer.invalid", "Expected an integer, found '${found}'", "found");
     public static final ParameterizedCommandExceptionType ERROR_WRONG_SUFFIX = new ParameterizedCommandExceptionType("argument.integer.wrongsuffix", "Expected suffix '${suffix}'", "suffix");
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
@@ -46,38 +46,22 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public <S> ParsedArgument<S, Integer> parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        int end = command.indexOf(CommandDispatcher.ARGUMENT_SEPARATOR);
-        String raw = command;
-        if (end > -1) {
-            raw = command.substring(0, end);
-        }
-
-        if (raw.length() < suffix.length()) {
-            throw ERROR_WRONG_SUFFIX.create(this.suffix);
-        }
-
-        String number = raw.substring(0, raw.length() - suffix.length());
-        String suffix = raw.substring(number.length());
-
-        if (!suffix.equals(this.suffix)) {
-            throw ERROR_WRONG_SUFFIX.create(this.suffix);
-        }
-
-        try {
-            int value = Integer.parseInt(number);
-
-            if (value < minimum) {
-                throw ERROR_TOO_SMALL.create(value, minimum);
+    public <S> Integer parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+        int result = reader.readInt();
+        for (int i = 0; i < suffix.length(); i++) {
+            if (reader.canRead() && reader.peek() == suffix.charAt(i)) {
+                reader.skip();
+            } else {
+                throw ERROR_WRONG_SUFFIX.create(suffix);
             }
-            if (value > maximum) {
-                throw ERROR_TOO_BIG.create(value, maximum);
-            }
-
-            return new ParsedArgument<>(raw, value);
-        } catch (NumberFormatException ignored) {
-            throw ERROR_NOT_A_NUMBER.create(number);
         }
+        if (result < minimum) {
+            throw ERROR_TOO_SMALL.create(result, minimum);
+        }
+        if (result > maximum) {
+            throw ERROR_TOO_BIG.create(result, maximum);
+        }
+        return result;
     }
 
     @Override

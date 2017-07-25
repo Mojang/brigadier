@@ -168,8 +168,8 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "bar")));
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
         }
     }
 }

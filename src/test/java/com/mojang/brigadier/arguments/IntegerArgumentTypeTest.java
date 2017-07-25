@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -40,6 +42,7 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParse() throws Exception {
+
         ParsedArgument<Object, Integer> result = type.parse("50", new CommandContextBuilder<>(dispatcher, source));
 
         assertThat(result.getRaw(), is("50"));
@@ -78,13 +81,8 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testParse_unexpectedSuffix() throws Exception {
-        try {
-            type.parse("50L", new CommandContextBuilder<>(dispatcher, source));
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "50L")));
-        }
+        type.parse("50L", new CommandContextBuilder<>(dispatcher, source));
+        // This has to pass, it's the responsibility of a node to decide "this isn't right, it's followed by text!"
     }
 
     @Test
@@ -93,8 +91,8 @@ public class IntegerArgumentTypeTest {
             type.parse("fifty", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "fifty")));
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
         }
     }
 
@@ -104,8 +102,8 @@ public class IntegerArgumentTypeTest {
             type.parse("", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "")));
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
         }
     }
 
@@ -115,8 +113,8 @@ public class IntegerArgumentTypeTest {
             integer(0, 100, "L").parse("", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("suffix", "L")));
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
         }
     }
 
@@ -126,8 +124,8 @@ public class IntegerArgumentTypeTest {
             integer(0, 100, "L").parse("L", new CommandContextBuilder<>(dispatcher, source));
             fail();
         } catch (CommandException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_NOT_A_NUMBER));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("found", "")));
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
         }
     }
 
