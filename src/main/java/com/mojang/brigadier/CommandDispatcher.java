@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
     public static final ParameterizedCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new ParameterizedCommandExceptionType("command.unknown.argument", "Incorrect argument for command, couldn't parse: ${argument}", "argument");
+    public static final SimpleCommandExceptionType ERROR_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType("command.expected.separator", "Expected whitespace to end one argument, but found trailing data");
 
     public static final String ARGUMENT_SEPARATOR = " ";
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
@@ -69,10 +70,11 @@ public class CommandDispatcher<S> {
     }
 
     public ParseResults<S> parse(String command, S source) throws CommandException {
-        return parseNodes(root, command, new CommandContextBuilder<>(this, source));
+        StringReader reader = new StringReader(command);
+        return parseNodes(root, reader, new CommandContextBuilder<>(this, source));
     }
 
-    private ParseResults<S> parseNodes(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
+    private ParseResults<S> parseNodes(CommandNode<S> node, StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
         final S source = contextBuilder.getSource();
         Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
 
@@ -81,23 +83,28 @@ public class CommandDispatcher<S> {
                 continue;
             }
             CommandContextBuilder<S> context = contextBuilder.copy();
-            String remaining;
+            int cursor = reader.getCursor();
             try {
-                remaining = child.parse(command, context);
+                child.parse(reader, context);
             } catch (CommandException ex) {
                 errors.put(child, ex);
+                reader.setCursor(cursor);
                 continue;
             }
 
             context.withCommand(child.getCommand());
-            if (remaining.isEmpty()) {
-                return new ParseResults<>(context);
+            if (reader.canRead()) {
+                if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
+                    throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.create();
+                }
+                reader.skip();
+                return parseNodes(child, reader, context);
             } else {
-                return parseNodes(child, remaining.substring(1), context);
+                return new ParseResults<>(context);
             }
         }
 
-        return new ParseResults<>(contextBuilder, command, errors);
+        return new ParseResults<>(contextBuilder, reader.getRemaining(), errors);
     }
 
     public String[] getAllUsage(CommandNode<S> node, S source) {
@@ -184,22 +191,28 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    private Set<String> findSuggestions(CommandNode<S> node, String command, CommandContextBuilder<S> contextBuilder, Set<String> result) {
+    private Set<String> findSuggestions(CommandNode<S> node, StringReader reader, CommandContextBuilder<S> contextBuilder, Set<String> result) {
         final S source = contextBuilder.getSource();
         for (CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
                 continue;
             }
             CommandContextBuilder<S> context = contextBuilder.copy();
+            int cursor = reader.getCursor();
             try {
-                String remaining = child.parse(command, context);
-                if (remaining.isEmpty()) {
-                    child.listSuggestions(command, result, context);
+                child.parse(reader, context);
+                if (reader.canRead()) {
+                    if (reader.peek() == ARGUMENT_SEPARATOR_CHAR) {
+                        reader.skip();
+                        return findSuggestions(child, reader, context, result);
+                    }
                 } else {
-                    return findSuggestions(child, remaining.substring(1), context, result);
+                    reader.setCursor(cursor);
+                    child.listSuggestions(reader.getRemaining(), result, context);
                 }
             } catch (CommandException e) {
-                child.listSuggestions(command, result, context);
+                reader.setCursor(cursor);
+                child.listSuggestions(reader.getRemaining(), result, context);
             }
         }
 
@@ -207,7 +220,8 @@ public class CommandDispatcher<S> {
     }
 
     public String[] getCompletionSuggestions(String command, S source) {
-        final Set<String> nodes = findSuggestions(root, command, new CommandContextBuilder<>(this, source), Sets.newLinkedHashSet());
+        StringReader reader = new StringReader(command);
+        final Set<String> nodes = findSuggestions(root, reader, new CommandContextBuilder<>(this, source), Sets.newLinkedHashSet());
 
         return nodes.toArray(new String[nodes.size()]);
     }

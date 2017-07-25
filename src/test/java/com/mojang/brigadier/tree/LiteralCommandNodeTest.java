@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -39,29 +40,31 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("foo bar", contextBuilder), is(" bar"));
+        StringReader reader = new StringReader("foo bar");
+        node.parse(reader, contextBuilder);
+        assertThat(reader.getRemaining(), equalTo(" bar"));
     }
 
     @Test
     public void testParseExact() throws Exception {
-        assertThat(node.parse("foo", contextBuilder), is(""));
+        StringReader reader = new StringReader("foo");
+        node.parse(reader, contextBuilder);
+        assertThat(reader.getRemaining(), equalTo(""));
     }
 
     @Test
     public void testParseSimilar() throws Exception {
-        try {
-            node.parse("foobar", contextBuilder);
-            fail();
-        } catch (CommandException ex) {
-            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
-        }
+        StringReader reader = new StringReader("foobar");
+        node.parse(reader, contextBuilder);
+        assertThat(reader.getRemaining(), equalTo("bar"));
+        // This should succeed, because it's the responsibility of the dispatcher to realize there's trailing text
     }
 
     @Test
     public void testParseInvalid() throws Exception {
+        StringReader reader = new StringReader("bar");
         try {
-            node.parse("bar", contextBuilder);
+            node.parse(reader, contextBuilder);
             fail();
         } catch (CommandException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));

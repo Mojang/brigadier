@@ -3,6 +3,7 @@ package com.mojang.brigadier.tree;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -79,7 +80,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract String getUsageText();
 
-    public abstract String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException;
+    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException;
 
     public abstract void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder);
 

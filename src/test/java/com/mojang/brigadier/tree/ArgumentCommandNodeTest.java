@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -43,15 +44,8 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("123 456", contextBuilder), is(" 456"));
-
-        assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
-        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
-    }
-
-    @Test
-    public void testParseExact() throws Exception {
-        assertThat(node.parse("123", contextBuilder), is(""));
+        StringReader reader = new StringReader("123 456");
+        node.parse(reader, contextBuilder);
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
         assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));

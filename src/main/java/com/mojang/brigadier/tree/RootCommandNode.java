@@ -1,5 +1,6 @@
 package com.mojang.brigadier.tree;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -22,8 +23,7 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        return command;
+    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
     }
 
     @Override

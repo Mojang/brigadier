@@ -2,6 +2,7 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -30,16 +31,16 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public String parse(String command, CommandContextBuilder<S> contextBuilder) throws CommandException {
-        String expected = literal + (command.length() > literal.length() ? CommandDispatcher.ARGUMENT_SEPARATOR : "");
-
-        if (!command.startsWith(expected)) {
-            throw ERROR_INCORRECT_LITERAL.create(literal);
+    public void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException {
+        for (int i = 0; i < literal.length(); i++) {
+            if (reader.canRead() && reader.peek() == literal.charAt(i)) {
+                reader.skip();
+            } else {
+                throw ERROR_INCORRECT_LITERAL.create(literal);
+            }
         }
 
         contextBuilder.withNode(this, literal);
-        int start = literal.length();
-        return command.substring(start);
     }
 
     @Override

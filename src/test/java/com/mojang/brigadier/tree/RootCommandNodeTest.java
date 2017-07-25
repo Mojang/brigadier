@@ -3,6 +3,7 @@ package com.mojang.brigadier.tree;
 import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,9 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testParse() throws Exception {
-        assertThat(node.parse("foo bar baz", new CommandContextBuilder<>(new CommandDispatcher<>(), new Object())), is("foo bar baz"));
+        StringReader reader = new StringReader("hello world");
+        node.parse(reader, new CommandContextBuilder<>(new CommandDispatcher<>(), new Object()));
+        assertThat(reader.getCursor(), is(0));
     }
 
     @Test(expected = UnsupportedOperationException.class)
