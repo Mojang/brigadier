@@ -39,4 +39,9 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     public int hashCode() {
         return getTypeName().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return message;
+    }
 }
