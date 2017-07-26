@@ -16,6 +16,7 @@ public class StringReader {
     public static final SimpleCommandExceptionType ERROR_EXPECTED_INT = new SimpleCommandExceptionType("parsing.int.expected", "Expected integer");
     public static final ParameterizedCommandExceptionType ERROR_INVALID_DOUBLE = new ParameterizedCommandExceptionType("parsing.double.invalid", "Invalid double '${value}'", "value");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_DOUBLE = new SimpleCommandExceptionType("parsing.double.expected", "Expected double");
+    public static final ParameterizedCommandExceptionType ERROR_EXPECTED_SYMBOL = new ParameterizedCommandExceptionType("parsing.expected", "Expected '${symbol}'", "symbol");
 
     private final String string;
     private int cursor;
@@ -64,6 +65,10 @@ public class StringReader {
         return string.charAt(cursor);
     }
 
+    public char peek(final int offset) {
+        return string.charAt(cursor + offset);
+    }
+
     public char read() {
         return string.charAt(cursor++);
     }
@@ -74,6 +79,12 @@ public class StringReader {
 
     private static boolean isAllowedNumber(final char c) {
         return c >= '0' && c <= '9' || c == '.' || c == '-';
+    }
+
+    public void skipWhitespace() {
+        while (canRead() && Character.isWhitespace(peek())) {
+            skip();
+        }
     }
 
     public int readInt() throws CommandException {
@@ -171,5 +182,12 @@ public class StringReader {
         } else {
             throw ERROR_INVALID_BOOL.create(value);
         }
+    }
+
+    public void expect(final char c) throws CommandException {
+        if (!canRead() || peek() != c) {
+            throw ERROR_EXPECTED_SYMBOL.create(String.valueOf(c));
+        }
+        skip();
     }
 }

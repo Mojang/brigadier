@@ -9,6 +9,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class StringReaderTest {
     @Test
@@ -56,6 +57,17 @@ public class StringReaderTest {
     }
 
     @Test
+    public void peek_length() throws Exception {
+        final StringReader reader = new StringReader("abc");
+        assertThat(reader.peek(0), is('a'));
+        assertThat(reader.peek(2), is('c'));
+        assertThat(reader.getCursor(), is(0));
+        reader.setCursor(1);
+        assertThat(reader.peek(1), is('c'));
+        assertThat(reader.getCursor(), is(1));
+    }
+
+    @Test
     public void read() throws Exception {
         final StringReader reader = new StringReader("abc");
         assertThat(reader.read(), is('a'));
@@ -89,6 +101,27 @@ public class StringReaderTest {
         assertThat(reader.getRead(), equalTo("Hel"));
         reader.setCursor(6);
         assertThat(reader.getRead(), equalTo("Hello!"));
+    }
+
+    @Test
+    public void skipWhitespace_none() throws Exception {
+        final StringReader reader = new StringReader("Hello!");
+        reader.skipWhitespace();
+        assertThat(reader.getCursor(), is(0));
+    }
+
+    @Test
+    public void skipWhitespace_mixed() throws Exception {
+        final StringReader reader = new StringReader(" \t \t\nHello!");
+        reader.skipWhitespace();
+        assertThat(reader.getCursor(), is(5));
+    }
+
+    @Test
+    public void skipWhitespace_empty() throws Exception {
+        final StringReader reader = new StringReader("");
+        reader.skipWhitespace();
+        assertThat(reader.getCursor(), is(0));
     }
 
     @Test
@@ -319,5 +352,36 @@ public class StringReaderTest {
         assertThat(reader.readDouble(), is(12.34));
         assertThat(reader.getRead(), equalTo("12.34"));
         assertThat(reader.getRemaining(), equalTo("foo bar"));
+    }
+
+    @Test
+    public void expect_correct() throws Exception {
+        final StringReader reader = new StringReader("abc");
+        reader.expect('a');
+        assertThat(reader.getCursor(), is(1));
+    }
+
+    @Test
+    public void expect_incorrect() throws Exception {
+        final StringReader reader = new StringReader("bcd");
+        try {
+            reader.expect('a');
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
+            assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
+        }
+    }
+
+    @Test
+    public void expect_none() throws Exception {
+        final StringReader reader = new StringReader("");
+        try {
+            reader.expect('a');
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
+            assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
+        }
     }
 }
