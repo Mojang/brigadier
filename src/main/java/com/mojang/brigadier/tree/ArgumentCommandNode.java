@@ -54,10 +54,10 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
         final int start = reader.getCursor();
         final T result = type.parse(reader, contextBuilder);
-        final ParsedArgument<S, T> parsed = new ParsedArgument<>(reader.getString().substring(start, reader.getCursor()), result);
+        final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);
-        contextBuilder.withNode(this, parsed.getRaw());
+        contextBuilder.withNode(this, parsed.getRaw(reader));
     }
 
     @Override

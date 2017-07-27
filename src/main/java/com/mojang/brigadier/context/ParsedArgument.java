@@ -1,16 +1,28 @@
 package com.mojang.brigadier.context;
 
+import com.mojang.brigadier.ImmutableStringReader;
+
 public class ParsedArgument<S, T> {
-    private final String raw;
+    private final int start;
+    private final int end;
     private final T result;
 
-    public ParsedArgument(final String raw, final T result) {
-        this.raw = raw;
+    public ParsedArgument(final int start, final int end, final T result) {
+        this.start = start;
+        this.end = end;
         this.result = result;
     }
 
-    public String getRaw() {
-        return raw;
+    public String getRaw(final ImmutableStringReader reader) {
+        return reader.getString().substring(start, end);
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public int getEnd() {
+        return end;
     }
 
     public T getResult() {
@@ -24,7 +36,8 @@ public class ParsedArgument<S, T> {
 
         final ParsedArgument that = (ParsedArgument) o;
 
-        if (!raw.equals(that.raw)) return false;
+        if (start != that.start) return false;
+        if (end != that.end) return false;
         if (!result.equals(that.result)) return false;
 
         return true;
@@ -32,7 +45,8 @@ public class ParsedArgument<S, T> {
 
     @Override
     public int hashCode() {
-        int result = raw.hashCode();
+        int result = start;
+        result = 31 * result + end;
         result = 31 * result + this.result.hashCode();
         return result;
     }

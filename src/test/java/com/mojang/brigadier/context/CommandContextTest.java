@@ -37,13 +37,13 @@ public class CommandContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetArgument_wrongType() throws Exception {
-        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build();
         context.getArgument("foo", String.class);
     }
 
     @Test
     public void testGetArgument() throws Exception {
-        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>("123", 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build();
         assertThat(context.getArgument("foo", int.class), is(123));
     }
 
@@ -65,7 +65,7 @@ public class CommandContextTest {
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, otherSource).build(), new CommandContextBuilder<>(dispatcher, otherSource).build())
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withCommand(command).build(), new CommandContextBuilder<>(dispatcher, source).withCommand(command).build())
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withCommand(otherCommand).build(), new CommandContextBuilder<>(dispatcher, source).withCommand(otherCommand).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withArgument("foo", new ParsedArgument<>("123", 123)).build(), new CommandContextBuilder<>(dispatcher, source).withArgument("foo", new ParsedArgument<>("123", 123)).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build(), new CommandContextBuilder<>(dispatcher, source).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build())
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withNode(node, "foo").withNode(otherNode, "bar").build(), new CommandContextBuilder<>(dispatcher, source).withNode(node, "foo").withNode(otherNode, "bar").build())
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source).withNode(otherNode, "bar").withNode(node, "foo").build(), new CommandContextBuilder<>(dispatcher, source).withNode(otherNode, "bar").withNode(node, "foo").build())
             .testEquals();
