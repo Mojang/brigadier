@@ -68,6 +68,7 @@ public class CommandDispatcherTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -81,6 +82,7 @@ public class CommandDispatcherTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -94,6 +96,7 @@ public class CommandDispatcherTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -106,7 +109,8 @@ public class CommandDispatcherTest {
             fail();
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
-            assertThat(ex.getData(), is(Collections.singletonMap("argument", "bar")));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(4));
         }
     }
 
@@ -120,6 +124,7 @@ public class CommandDispatcherTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(Collections.singletonMap("expected", "bar")));
+            assertThat(ex.getCursor(), is(4));
         }
     }
 
@@ -136,7 +141,8 @@ public class CommandDispatcherTest {
             fail();
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
-            assertThat(ex.getData(), is(Collections.singletonMap("argument", "unknown")));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(4));
         }
     }
 
@@ -159,6 +165,36 @@ public class CommandDispatcherTest {
     }
 
     @Test
+    public void testExecuteOrphanedSubcommand() throws Exception {
+        subject.register(literal("foo").then(
+            argument("bar", integer())
+        ).executes(command));
+
+        try {
+            subject.execute("foo 5", source);
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void parse_noSpaceSeparator() throws Exception {
+        subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
+
+        try {
+            subject.execute("foo5", source);
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_EXPECTED_ARGUMENT_SEPARATOR));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(3));
+        }
+    }
+
+    @Test
     public void testExecuteInvalidSubcommand() throws Exception {
         subject.register(literal("foo").then(
             argument("bar", integer())
@@ -170,6 +206,7 @@ public class CommandDispatcherTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
             assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(4));
         }
     }
 }

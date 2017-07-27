@@ -4,7 +4,7 @@ import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-public class StringReader {
+public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_QUOTE = '"';
 
@@ -16,6 +16,7 @@ public class StringReader {
     public static final SimpleCommandExceptionType ERROR_EXPECTED_INT = new SimpleCommandExceptionType("parsing.int.expected", "Expected integer");
     public static final ParameterizedCommandExceptionType ERROR_INVALID_DOUBLE = new ParameterizedCommandExceptionType("parsing.double.invalid", "Invalid double '${value}'", "value");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_DOUBLE = new SimpleCommandExceptionType("parsing.double.expected", "Expected double");
+    public static final SimpleCommandExceptionType ERROR_EXPECTED_BOOL = new SimpleCommandExceptionType("parsing.bool.expected", "Expected bool");
     public static final ParameterizedCommandExceptionType ERROR_EXPECTED_SYMBOL = new ParameterizedCommandExceptionType("parsing.expected", "Expected '${symbol}'", "symbol");
 
     private final String string;
@@ -25,6 +26,7 @@ public class StringReader {
         this.string = string;
     }
 
+    @Override
     public String getString() {
         return string;
     }
@@ -33,38 +35,47 @@ public class StringReader {
         this.cursor = cursor;
     }
 
+    @Override
     public int getRemainingLength() {
         return string.length() - cursor;
     }
 
+    @Override
     public int getTotalLength() {
         return string.length();
     }
 
+    @Override
     public int getCursor() {
         return cursor;
     }
 
+    @Override
     public String getRead() {
         return string.substring(0, cursor);
     }
 
+    @Override
     public String getRemaining() {
         return string.substring(cursor);
     }
 
+    @Override
     public boolean canRead(final int length) {
         return cursor + length <= string.length();
     }
 
+    @Override
     public boolean canRead() {
         return canRead(1);
     }
 
+    @Override
     public char peek() {
         return string.charAt(cursor);
     }
 
+    @Override
     public char peek(final int offset) {
         return string.charAt(cursor + offset);
     }
@@ -94,12 +105,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw ERROR_EXPECTED_INT.create();
+            throw ERROR_EXPECTED_INT.createWithContext(this);
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
-            throw ERROR_INVALID_INT.create(number);
+            cursor = start;
+            throw ERROR_INVALID_INT.createWithContext(this, number);
         }
     }
 
@@ -110,12 +122,13 @@ public class StringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw ERROR_EXPECTED_DOUBLE.create();
+            throw ERROR_EXPECTED_DOUBLE.createWithContext(this);
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
-            throw ERROR_INVALID_DOUBLE.create(number);
+            cursor = start;
+            throw ERROR_INVALID_DOUBLE.createWithContext(this, number);
         }
     }
 
@@ -139,7 +152,7 @@ public class StringReader {
         if (!canRead()) {
             return "";
         } else if (peek() != SYNTAX_QUOTE) {
-            throw ERROR_EXPECTED_START_OF_QUOTE.create();
+            throw ERROR_EXPECTED_START_OF_QUOTE.createWithContext(this);
         }
         skip();
         final StringBuilder result = new StringBuilder();
@@ -151,7 +164,8 @@ public class StringReader {
                     result.append(c);
                     escaped = false;
                 } else {
-                    throw ERROR_INVALID_ESCAPE.create(String.valueOf(c));
+                    setCursor(getCursor() - 1);
+                    throw ERROR_INVALID_ESCAPE.createWithContext(this, String.valueOf(c));
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -162,7 +176,7 @@ public class StringReader {
             }
         }
 
-        throw ERROR_EXPECTED_END_OF_QUOTE.create();
+        throw ERROR_EXPECTED_END_OF_QUOTE.createWithContext(this);
     }
 
     public String readString() throws CommandException {
@@ -174,19 +188,25 @@ public class StringReader {
     }
 
     public boolean readBoolean() throws CommandException {
+        final int start = cursor;
         final String value = readString();
+        if (value.isEmpty()) {
+            throw ERROR_EXPECTED_BOOL.createWithContext(this);
+        }
+
         if (value.equals("true")) {
             return true;
         } else if (value.equals("false")) {
             return false;
         } else {
-            throw ERROR_INVALID_BOOL.create(value);
+            cursor = start;
+            throw ERROR_INVALID_BOOL.createWithContext(this, value);
         }
     }
 
     public void expect(final char c) throws CommandException {
         if (!canRead() || peek() != c) {
-            throw ERROR_EXPECTED_SYMBOL.create(String.valueOf(c));
+            throw ERROR_EXPECTED_SYMBOL.createWithContext(this, String.valueOf(c));
         }
         skip();
     }

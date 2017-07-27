@@ -69,6 +69,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 

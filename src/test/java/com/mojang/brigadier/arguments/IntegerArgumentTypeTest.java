@@ -57,6 +57,7 @@ public class IntegerArgumentTypeTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -69,6 +70,7 @@ public class IntegerArgumentTypeTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -80,7 +82,8 @@ public class IntegerArgumentTypeTest {
             fail();
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", -5, "minimum", 0)));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "-5", "minimum", "0")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -92,7 +95,8 @@ public class IntegerArgumentTypeTest {
             fail();
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", 5, "maximum", 0)));
+            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "5", "maximum", "0")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 

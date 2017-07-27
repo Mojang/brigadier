@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
-    public static final ParameterizedCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new ParameterizedCommandExceptionType("command.unknown.argument", "Incorrect argument for command, couldn't parse: ${argument}", "argument");
+    public static final SimpleCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType("command.unknown.argument", "Incorrect argument for command");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType("command.expected.separator", "Expected whitespace to end one argument, but found trailing data");
 
     public static final String ARGUMENT_SEPARATOR = " ";
@@ -52,19 +52,19 @@ public class CommandDispatcher<S> {
     }
 
     public int execute(final ParseResults<S> parse) throws CommandException {
-        if (parse.getRemaining().length() > 0) {
+        if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if (parse.getContext().getInput().isEmpty()) {
-                throw ERROR_UNKNOWN_COMMAND.create();
+                throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
             } else {
-                throw ERROR_UNKNOWN_ARGUMENT.create(parse.getRemaining());
+                throw ERROR_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
             }
         }
         final CommandContext<S> context = parse.getContext().build();
         final Command<S> command = context.getCommand();
         if (command == null) {
-            throw ERROR_UNKNOWN_COMMAND.create();
+            throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
         return command.run(context);
     }
@@ -95,7 +95,7 @@ public class CommandDispatcher<S> {
             context.withCommand(child.getCommand());
             if (reader.canRead()) {
                 if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
-                    throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.create();
+                    throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
                 }
                 reader.skip();
                 return parseNodes(child, reader, context);
@@ -104,7 +104,7 @@ public class CommandDispatcher<S> {
             }
         }
 
-        return new ParseResults<>(contextBuilder, reader.getRemaining(), errors);
+        return new ParseResults<>(contextBuilder, reader, errors);
     }
 
     public String[] getAllUsage(final CommandNode<S> node, final S source) {

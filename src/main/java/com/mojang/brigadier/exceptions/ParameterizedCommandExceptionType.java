@@ -2,7 +2,10 @@ package com.mojang.brigadier.exceptions;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.brigadier.ImmutableStringReader;
+import com.mojang.brigadier.StringReader;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,28 +29,31 @@ public class ParameterizedCommandExceptionType implements CommandExceptionType {
     }
 
     @Override
-    public String getErrorMessage(final CommandException exception) {
+    public String getErrorMessage(final Map<String, String> data) {
         final Matcher matcher = PATTERN.matcher(message);
         final StringBuffer result = new StringBuffer();
         while (matcher.find()) {
-            matcher.appendReplacement(result, Matcher.quoteReplacement(exception.getData().get(matcher.group(1)).toString()));
+            matcher.appendReplacement(result, Matcher.quoteReplacement(data.get(matcher.group(1))));
         }
         matcher.appendTail(result);
         return result.toString();
     }
 
-    public CommandException create(final Object... values) {
+    public CommandException createWithContext(final ImmutableStringReader reader, final Object... values) {
+        return new CommandException(this, createMap(values), reader.getString(), reader.getCursor());
+    }
+
+    public Map<String, String> createMap(final Object... values) {
         if (values.length != keys.length) {
             throw new IllegalArgumentException("Invalid values! (Expected: " + JOINER.join(keys) + ")");
         }
 
-        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
 
         for (int i = 0; i < keys.length; i++) {
-            builder = builder.put(keys[i], values[i]);
+            builder = builder.put(keys[i], String.valueOf(values[i]));
         }
-
-        return new CommandException(this, builder.build());
+        return builder.build();
     }
 
     @Override

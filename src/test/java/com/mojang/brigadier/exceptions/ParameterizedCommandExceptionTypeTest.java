@@ -2,10 +2,12 @@ package com.mojang.brigadier.exceptions;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.testing.EqualsTester;
+import com.mojang.brigadier.StringReader;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
@@ -18,21 +20,19 @@ public class ParameterizedCommandExceptionTypeTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateTooFewArguments() throws Exception {
-        type.create();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateTooManyArguments() throws Exception {
-        type.create("World", "Universe");
+    public void createMap_TooManyArguments() throws Exception {
+        type.createMap("World", "Universe");
     }
 
     @Test
-    public void testCreate() throws Exception {
-        final CommandException exception = type.create("World");
+    public void createWithContext() throws Exception {
+        final StringReader reader = new StringReader("Foo bar");
+        reader.setCursor(5);
+        final CommandException exception = type.createWithContext(reader, "World");
         assertThat(exception.getType(), is(type));
         assertThat(exception.getData(), is(ImmutableMap.<String, Object>of("name", "World")));
-        assertThat(exception.getMessage(), is("Hello, World!"));
+        assertThat(exception.getInput(), is("Foo bar"));
+        assertThat(exception.getCursor(), is(5));
     }
 
     @Test

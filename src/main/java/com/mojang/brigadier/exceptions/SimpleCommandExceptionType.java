@@ -1,6 +1,10 @@
 package com.mojang.brigadier.exceptions;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.brigadier.ImmutableStringReader;
+import com.mojang.brigadier.StringReader;
+
+import java.util.Map;
 
 public class SimpleCommandExceptionType implements CommandExceptionType {
     private final String name;
@@ -17,12 +21,12 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
     }
 
     @Override
-    public String getErrorMessage(final CommandException exception) {
+    public String getErrorMessage(final Map<String, String> data) {
         return message;
     }
 
-    public CommandException create() {
-        return new CommandException(this, ImmutableMap.of());
+    public CommandException createWithContext(final ImmutableStringReader reader) {
+        return new CommandException(this, ImmutableMap.of(), reader.getString(), reader.getCursor());
     }
 
     @Override

@@ -45,19 +45,23 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
 
     @Override
     public <S> Integer parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+        final int start = reader.getCursor();
         final int result = reader.readInt();
         for (int i = 0; i < suffix.length(); i++) {
             if (reader.canRead() && reader.peek() == suffix.charAt(i)) {
                 reader.skip();
             } else {
-                throw ERROR_WRONG_SUFFIX.create(suffix);
+                reader.setCursor(start);
+                throw ERROR_WRONG_SUFFIX.createWithContext(reader, suffix);
             }
         }
         if (result < minimum) {
-            throw ERROR_TOO_SMALL.create(result, minimum);
+            reader.setCursor(start);
+            throw ERROR_TOO_SMALL.createWithContext(reader, result, minimum);
         }
         if (result > maximum) {
-            throw ERROR_TOO_BIG.create(result, maximum);
+            reader.setCursor(start);
+            throw ERROR_TOO_BIG.createWithContext(reader, result, maximum);
         }
         return result;
     }

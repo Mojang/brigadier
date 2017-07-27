@@ -219,6 +219,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_START_OF_QUOTE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -229,6 +230,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_END_OF_QUOTE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(12));
         }
     }
 
@@ -239,6 +241,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_ESCAPE));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("character", "n")));
+            assertThat(ex.getCursor(), is(7));
         }
     }
 
@@ -265,6 +268,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_INT));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "12.34")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -275,6 +279,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -325,6 +330,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_DOUBLE));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "12.34.56")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -335,6 +341,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_DOUBLE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -370,6 +377,7 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 
@@ -382,6 +390,40 @@ public class StringReaderTest {
         } catch (final CommandException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readBoolean_correct() throws Exception {
+        final StringReader reader = new StringReader("true");
+        assertThat(reader.readBoolean(), is(true));
+        assertThat(reader.getRead(), equalTo("true"));
+    }
+
+    @Test
+    public void readBoolean_incorrect() throws Exception {
+        final StringReader reader = new StringReader("tuesday");
+        try {
+            reader.readBoolean();
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_INVALID_BOOL));
+            assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "tuesday")));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readBoolean_none() throws Exception {
+        final StringReader reader = new StringReader("");
+        try {
+            reader.readBoolean();
+            fail();
+        } catch (final CommandException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_BOOL));
+            assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 }

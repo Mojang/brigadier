@@ -31,11 +31,13 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+        final int start = reader.getCursor();
         for (int i = 0; i < literal.length(); i++) {
             if (reader.canRead() && reader.peek() == literal.charAt(i)) {
                 reader.skip();
             } else {
-                throw ERROR_INCORRECT_LITERAL.create(literal);
+                reader.setCursor(start);
+                throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
             }
         }
 

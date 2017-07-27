@@ -9,25 +9,25 @@ import java.util.Map;
 
 public class ParseResults<S> {
     private final CommandContextBuilder<S> context;
-    private final String remaining;
     private final Map<CommandNode<S>, CommandException> exceptions;
+    private final ImmutableStringReader reader;
 
-    public ParseResults(final CommandContextBuilder<S> context, final String remaining, final Map<CommandNode<S>, CommandException> exceptions) {
+    public ParseResults(final CommandContextBuilder<S> context, final ImmutableStringReader reader, final Map<CommandNode<S>, CommandException> exceptions) {
         this.context = context;
-        this.remaining = remaining;
+        this.reader = reader;
         this.exceptions = exceptions;
     }
 
     public ParseResults(final CommandContextBuilder<S> context) {
-        this(context, "", Collections.emptyMap());
+        this(context, new StringReader(""), Collections.emptyMap());
     }
 
     public CommandContextBuilder<S> getContext() {
         return context;
     }
 
-    public String getRemaining() {
-        return remaining;
+    public ImmutableStringReader getReader() {
+        return reader;
     }
 
     public Map<CommandNode<S>, CommandException> getExceptions() {
