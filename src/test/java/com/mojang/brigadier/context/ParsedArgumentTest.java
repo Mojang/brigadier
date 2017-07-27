@@ -16,10 +16,4 @@ public class ParsedArgumentTest {
             .addEqualityGroup(new ParsedArgument<>("foo", "baz"), new ParsedArgument<>("foo", "baz"))
             .testEquals();
     }
-
-    @Test
-    public void copy() throws Exception {
-        final ParsedArgument<Object, String> argument = new ParsedArgument<>("foo", "bar");
-        assertThat(argument.copy(), is(equalTo(argument)));
-    }
 }

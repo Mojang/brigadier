@@ -55,7 +55,7 @@ public class CommandContextBuilder<S> {
     public CommandContextBuilder<S> copy() {
         final CommandContextBuilder<S> copy = new CommandContextBuilder<>(dispatcher, source);
         copy.command = this.command;
-        arguments.forEach((k, v) -> copy.arguments.put(k, v.copy()));
+        copy.arguments.putAll(arguments);
         copy.nodes.putAll(this.nodes);
         copy.input.append(input);
         return copy;

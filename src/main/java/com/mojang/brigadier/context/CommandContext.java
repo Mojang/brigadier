@@ -79,9 +79,4 @@ public class CommandContext<S> {
         return nodes;
     }
 
-    public CommandContext<S> copy() {
-        final Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
-        this.arguments.forEach((k, v) -> arguments.put(k, v.copy()));
-        return new CommandContext<>(source, arguments, command, nodes, input);
-    }
 }

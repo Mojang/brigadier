@@ -37,7 +37,4 @@ public class ParsedArgument<S, T> {
         return result;
     }
 
-    public ParsedArgument<S, T> copy() {
-        return new ParsedArgument<>(raw, result);
-    }
 }
