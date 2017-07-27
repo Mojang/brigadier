@@ -8,7 +8,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.Map;
 
 public class CommandContextBuilder<S> {
-    private final Map<String, ParsedArgument<S, ?>> arguments = Maps.newHashMap();
+    private final Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
     private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
     private final CommandDispatcher<S> dispatcher;
     private final StringBuilder input = new StringBuilder();
