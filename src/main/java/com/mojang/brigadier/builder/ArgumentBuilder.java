@@ -11,10 +11,14 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
+    private CommandNode<S> target;
 
     protected abstract T getThis();
 
     public T then(final ArgumentBuilder<S, ?> argument) {
+        if (target != null) {
+            throw new IllegalStateException("Cannot add children to a redirected node");
+        }
         arguments.addChild(argument.build());
         return getThis();
     }
@@ -39,6 +43,18 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     public Predicate<S> getRequirement() {
         return requirement;
+    }
+
+    public T redirect(final CommandNode<S> target) {
+        if (!arguments.getChildren().isEmpty()) {
+            throw new IllegalStateException("Cannot redirect a node with children");
+        }
+        this.target = target;
+        return getThis();
+    }
+
+    public CommandNode<S> getRedirect() {
+        return target;
     }
 
     public abstract CommandNode<S> build();

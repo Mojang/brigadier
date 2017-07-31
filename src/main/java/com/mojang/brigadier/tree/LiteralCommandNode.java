@@ -15,8 +15,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     private final String literal;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement) {
-        super(command, requirement);
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
+        super(command, requirement, redirect);
         this.literal = literal;
     }
 
@@ -78,6 +78,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     public LiteralArgumentBuilder<S> createBuilder() {
         final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
         builder.requires(getRequirement());
+        builder.redirect(getRedirect());
         if (getCommand() != null) {
             builder.executes(getCommand());
         }

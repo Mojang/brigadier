@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
     private final Predicate<S> requirement;
+    private final CommandNode<S> redirect;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
         this.command = command;
         this.requirement = requirement;
+        this.redirect = redirect;
     }
 
     public Command<S> getCommand() {
@@ -31,6 +33,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public Collection<CommandNode<S>> getChildren() {
         return children.values();
+    }
+
+    public CommandNode<S> getRedirect() {
+        return redirect;
     }
 
     public boolean canUse(final S source) {

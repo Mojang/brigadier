@@ -18,8 +18,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement) {
-        super(command, requirement);
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
+        super(command, requirement, redirect);
         this.name = name;
         this.type = type;
     }
@@ -69,6 +69,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public RequiredArgumentBuilder<S, T> createBuilder() {
         final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
+        builder.redirect(getRedirect());
         if (getCommand() != null) {
             builder.executes(getCommand());
         }

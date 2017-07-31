@@ -87,6 +87,10 @@ public class CommandDispatcherUsagesTest {
                 .then(literal("1").executes(command))
                 .then(literal("2").executes(command))
         );
+        subject.register(
+            literal("j")
+                .redirect(subject.getRoot())
+        );
     }
 
     private CommandNode<Object> get(final String command) {
@@ -136,6 +140,7 @@ public class CommandDispatcherUsagesTest {
             "i",
             "i 1",
             "i 2",
+            "j ...",
         }));
     }
 
@@ -151,6 +156,7 @@ public class CommandDispatcherUsagesTest {
             .put(get("g"), "g [1]")
             .put(get("h"), "h [1|2|3]")
             .put(get("i"), "i [1|2]")
+            .put(get("j"), "j ...")
             .build()
         ));
     }

@@ -40,6 +40,14 @@ public class CommandDispatcherCompletionsTest {
     }
 
     @Test
+    public void testCommand_redirect() throws Exception {
+        subject.register(literal("foo"));
+        subject.register(literal("bar"));
+        subject.register(literal("redirect").redirect(subject.getRoot()));
+        assertThat(subject.getCompletionSuggestions("redirect ", source), equalTo(new String[]{"bar", "foo", "redirect"}));
+    }
+
+    @Test
     public void testSubCommand() throws Exception {
         subject.register(literal("foo").then(literal("abc")).then(literal("def")).then(literal("ghi").requires(s -> false)));
         subject.register(literal("bar"));

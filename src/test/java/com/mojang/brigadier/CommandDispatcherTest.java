@@ -14,9 +14,12 @@ import java.util.Collections;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -162,6 +165,30 @@ public class CommandDispatcherTest {
 
         assertThat(subject.execute("foo b", source), is(100));
         verify(subCommand).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteRedirected() throws Exception {
+        subject.register(literal("actual").executes(command));
+        subject.register(literal("redirected").redirect(subject.getRoot()));
+
+        final ParseResults<Object> parse = subject.parse("redirected redirected actual", source);
+        assertThat(parse.getContext().getInput(), equalTo("actual"));
+        assertThat(parse.getContext().getNodes().size(), is(1));
+
+        final CommandContext<Object> parent1 = parse.getContext().getParent();
+        assertThat(parent1, is(notNullValue()));
+        assertThat(parent1.getInput(), equalTo("redirected"));
+        assertThat(parent1.getNodes().size(), is(1));
+
+        final CommandContext<Object> parent2 = parent1.getParent();
+        assertThat(parent2, is(notNullValue()));
+        assertThat(parent2.getInput(), equalTo("redirected"));
+        assertThat(parent2.getNodes().size(), is(1));
+
+        assertThat(subject.execute(parse), is(42));
+        verify(command).run(any(CommandContext.class));
     }
 
     @Test

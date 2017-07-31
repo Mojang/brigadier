@@ -1,7 +1,6 @@
 package com.mojang.brigadier.context;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.CommandNode;
@@ -14,13 +13,19 @@ public class CommandContext<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments;
     private final Map<CommandNode<S>, String> nodes;
     private final String input;
+    private final CommandContext<S> parent;
 
-    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, String> nodes, final String input) {
+    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, String> nodes, final String input, final CommandContext<S> parent) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
         this.nodes = nodes;
         this.input = input;
+        this.parent = parent;
+    }
+
+    public CommandContext<S> getParent() {
+        return parent;
     }
 
     public Command<S> getCommand() {
@@ -58,6 +63,7 @@ public class CommandContext<S> {
         if (!Iterables.elementsEqual(nodes.entrySet(), that.nodes.entrySet())) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (!source.equals(that.source)) return false;
+        if (parent != null ? !parent.equals(that.parent) : that.parent != null) return false;
 
         return true;
     }
@@ -68,6 +74,7 @@ public class CommandContext<S> {
         result = 31 * result + arguments.hashCode();
         result = 31 * result + (command != null ? command.hashCode() : 0);
         result = 31 * result + nodes.hashCode();
+        result = 31 * result + (parent != null ? parent.hashCode() : 0);
         return result;
     }
 

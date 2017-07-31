@@ -14,6 +14,7 @@ public class CommandContextBuilder<S> {
     private final StringBuilder input = new StringBuilder();
     private S source;
     private Command<S> command;
+    private CommandContext<S> parent;
 
     public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source) {
         this.dispatcher = dispatcher;
@@ -54,11 +55,22 @@ public class CommandContextBuilder<S> {
 
     public CommandContextBuilder<S> copy() {
         final CommandContextBuilder<S> copy = new CommandContextBuilder<>(dispatcher, source);
-        copy.command = this.command;
+        copy.command = command;
         copy.arguments.putAll(arguments);
-        copy.nodes.putAll(this.nodes);
+        copy.nodes.putAll(nodes);
         copy.input.append(input);
+        copy.parent = parent;
         return copy;
+    }
+
+    public CommandContextBuilder<S> redirect() {
+        final CommandContextBuilder<S> result = new CommandContextBuilder<>(dispatcher, source);
+        result.parent = build();
+        return result;
+    }
+
+    public CommandContext<S> getParent() {
+        return parent;
     }
 
     public String getInput() {
@@ -70,7 +82,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContext<S> build() {
-        return new CommandContext<>(source, arguments, command, nodes, input.toString());
+        return new CommandContext<>(source, arguments, command, nodes, input.toString(), parent);
     }
 
     public CommandDispatcher<S> getDispatcher() {

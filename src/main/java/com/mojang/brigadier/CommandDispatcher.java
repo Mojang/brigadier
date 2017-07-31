@@ -7,7 +7,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -98,7 +97,11 @@ public class CommandDispatcher<S> {
                     throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
                 }
                 reader.skip();
-                return parseNodes(child, reader, context);
+                if (child.getRedirect() != null) {
+                    return parseNodes(child.getRedirect(), reader, context.redirect());
+                } else {
+                    return parseNodes(child, reader, context);
+                }
             } else {
                 return new ParseResults<>(context);
             }
@@ -122,7 +125,9 @@ public class CommandDispatcher<S> {
             result.add(prefix);
         }
 
-        if (!node.getChildren().isEmpty()) {
+        if (node.getRedirect() != null) {
+            result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + "..." : prefix + ARGUMENT_SEPARATOR + "...");
+        } else if (!node.getChildren().isEmpty()) {
             for (final CommandNode<S> child : node.getChildren()) {
                 getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText());
             }
@@ -153,36 +158,40 @@ public class CommandDispatcher<S> {
         final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
         if (!deep) {
-            final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
-            if (children.size() == 1) {
-                final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
-                if (usage != null) {
-                    return self + ARGUMENT_SEPARATOR + usage;
-                }
-            } else if (children.size() > 1) {
-                final Set<String> childUsage = Sets.newLinkedHashSet();
-                for (final CommandNode<S> child : children) {
-                    final String usage = getSmartUsage(child, source, childOptional, true);
+            if (node.getRedirect() != null) {
+                return self + ARGUMENT_SEPARATOR + "...";
+            } else {
+                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+                if (children.size() == 1) {
+                    final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                     if (usage != null) {
-                        childUsage.add(usage);
+                        return self + ARGUMENT_SEPARATOR + usage;
                     }
-                }
-                if (childUsage.size() == 1) {
-                    final String usage = childUsage.iterator().next();
-                    return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
-                } else if (childUsage.size() > 1) {
-                    final StringBuilder builder = new StringBuilder(open);
-                    int count = 0;
+                } else if (children.size() > 1) {
+                    final Set<String> childUsage = Sets.newLinkedHashSet();
                     for (final CommandNode<S> child : children) {
-                        if (count > 0) {
-                            builder.append(USAGE_OR);
+                        final String usage = getSmartUsage(child, source, childOptional, true);
+                        if (usage != null) {
+                            childUsage.add(usage);
                         }
-                        builder.append(child.getUsageText());
-                        count++;
                     }
-                    if (count > 0) {
-                        builder.append(close);
-                        return self + ARGUMENT_SEPARATOR + builder.toString();
+                    if (childUsage.size() == 1) {
+                        final String usage = childUsage.iterator().next();
+                        return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
+                    } else if (childUsage.size() > 1) {
+                        final StringBuilder builder = new StringBuilder(open);
+                        int count = 0;
+                        for (final CommandNode<S> child : children) {
+                            if (count > 0) {
+                                builder.append(USAGE_OR);
+                            }
+                            builder.append(child.getUsageText());
+                            count++;
+                        }
+                        if (count > 0) {
+                            builder.append(close);
+                            return self + ARGUMENT_SEPARATOR + builder.toString();
+                        }
                     }
                 }
             }
@@ -192,6 +201,9 @@ public class CommandDispatcher<S> {
     }
 
     private Set<String> findSuggestions(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, final Set<String> result) {
+        if (node.getRedirect() != null) {
+            return findSuggestions(node.getRedirect(), reader, contextBuilder, result);
+        }
         final S source = contextBuilder.getSource();
         for (final CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
