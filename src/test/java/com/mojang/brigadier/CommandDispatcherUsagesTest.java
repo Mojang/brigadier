@@ -91,6 +91,10 @@ public class CommandDispatcherUsagesTest {
             literal("j")
                 .redirect(subject.getRoot())
         );
+        subject.register(
+            literal("k")
+                .redirect(get("h"))
+        );
     }
 
     private CommandNode<Object> get(final String command) {
@@ -141,6 +145,7 @@ public class CommandDispatcherUsagesTest {
             "i 1",
             "i 2",
             "j ...",
+            "k -> h",
         }));
     }
 
@@ -157,6 +162,7 @@ public class CommandDispatcherUsagesTest {
             .put(get("h"), "h [1|2|3]")
             .put(get("i"), "i [1|2]")
             .put(get("j"), "j ...")
+            .put(get("k"), "k -> h")
             .build()
         ));
     }

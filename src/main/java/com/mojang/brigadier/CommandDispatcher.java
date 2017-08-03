@@ -32,7 +32,7 @@ public class CommandDispatcher<S> {
     private static final String USAGE_REQUIRED_CLOSE = ")";
     private static final String USAGE_OR = "|";
 
-    private final RootCommandNode<S> root = new RootCommandNode<>();
+    private final RootCommandNode<S> root;
     private final Predicate<CommandNode<S>> hasCommand = new Predicate<CommandNode<S>>() {
         @Override
         public boolean test(final CommandNode<S> input) {
@@ -40,9 +40,18 @@ public class CommandDispatcher<S> {
         }
     };
 
-    public void register(final LiteralArgumentBuilder<S> command) {
+    public CommandDispatcher(final RootCommandNode<S> root) {
+        this.root = root;
+    }
+
+    public CommandDispatcher() {
+        this(new RootCommandNode<>());
+    }
+
+    public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
+        return build;
     }
 
     public int execute(final String input, final S source) throws CommandException {
@@ -126,7 +135,8 @@ public class CommandDispatcher<S> {
         }
 
         if (node.getRedirect() != null) {
-            result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + "..." : prefix + ARGUMENT_SEPARATOR + "...");
+            final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
+            result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
         } else if (!node.getChildren().isEmpty()) {
             for (final CommandNode<S> child : node.getChildren()) {
                 getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText());
@@ -159,7 +169,8 @@ public class CommandDispatcher<S> {
 
         if (!deep) {
             if (node.getRedirect() != null) {
-                return self + ARGUMENT_SEPARATOR + "...";
+                final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
+                return self + ARGUMENT_SEPARATOR + redirect;
             } else {
                 final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
                 if (children.size() == 1) {
