@@ -94,6 +94,11 @@ public class CommandDispatcher<S> {
             final int cursor = reader.getCursor();
             try {
                 child.parse(reader, context);
+                if (reader.canRead()) {
+                    if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
+                        throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
+                    }
+                }
             } catch (final CommandException ex) {
                 errors.put(child, ex);
                 reader.setCursor(cursor);
@@ -102,9 +107,6 @@ public class CommandDispatcher<S> {
 
             context.withCommand(child.getCommand());
             if (reader.canRead()) {
-                if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
-                    throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
-                }
                 reader.skip();
                 if (child.getRedirect() != null) {
                     return parseNodes(child.getRedirect(), reader, context.redirect());

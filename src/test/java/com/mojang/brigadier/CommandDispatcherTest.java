@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -205,6 +206,17 @@ public class CommandDispatcherTest {
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));
         }
+    }
+
+    @Test
+    public void testExecute_invalidOther() throws Exception {
+        final Command<Object> wrongCommand = mock(Command.class);
+        subject.register(literal("w").executes(wrongCommand));
+        subject.register(literal("world").executes(command));
+
+        assertThat(subject.execute("world", source), is(42));
+        verify(wrongCommand, never()).run(any());
+        verify(command).run(any());
     }
 
     @Test
