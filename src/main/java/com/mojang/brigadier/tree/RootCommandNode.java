@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
-        super(null, c -> true, null, Collections::singleton);
+        super(null, c -> true, null, s -> Collections.singleton(s.getSource()));
     }
 
     @Override

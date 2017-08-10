@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
@@ -20,7 +21,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<S, Collection<S>> modifier) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<CommandContext<S>, Collection<S>> modifier) {
         super(command, requirement, redirect, modifier);
         this.name = name;
         this.type = type;

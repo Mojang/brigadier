@@ -1,9 +1,11 @@
 package com.mojang.brigadier;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -79,11 +81,12 @@ public class CommandDispatcher<S> {
 
         while (!contexts.isEmpty()) {
             final CommandContextBuilder<S> context = contexts.removeLast();
-            if (context.getChild() != null) {
-                if (!context.getNodes().isEmpty()) {
-                    final Function<S, Collection<S>> modifier = context.getNodes().keySet().iterator().next().getRedirectModifier();
-                    for (final S source : modifier.apply(context.getSource())) {
-                        contexts.add(context.getChild().copy().withSource(source));
+            final CommandContextBuilder<S> child = context.getChild();
+            if (child != null) {
+                if (!child.getNodes().isEmpty()) {
+                    final Function<CommandContext<S>, Collection<S>> modifier = Iterators.getLast(context.getNodes().keySet().iterator()).getRedirectModifier();
+                    for (final S source : modifier.apply(context.build())) {
+                        contexts.add(child.copy().withSource(source));
                     }
                 }
             } else if (context.getCommand() != null) {
@@ -149,6 +152,10 @@ public class CommandDispatcher<S> {
             } else {
                 return new ParseResults<>(rootContext);
             }
+        }
+
+        if (parentContext != null) {
+            parentContext.withChild(contextBuilder);
         }
 
         return new ParseResults<>(rootContext, reader, errors);

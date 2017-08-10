@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 
@@ -20,10 +21,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
-    private final Function<S, Collection<S>> modifier;
+    private final Function<CommandContext<S>, Collection<S>> modifier;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<S, Collection<S>> modifier) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<CommandContext<S>, Collection<S>> modifier) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
@@ -42,7 +43,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return redirect;
     }
 
-    public Function<S, Collection<S>> getRedirectModifier() {
+    public Function<CommandContext<S>, Collection<S>> getRedirectModifier() {
         return modifier;
     }
 

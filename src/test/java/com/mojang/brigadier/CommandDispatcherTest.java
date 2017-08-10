@@ -200,11 +200,11 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteRedirectedMultipleTimes() throws Exception {
-        final Function<Object, Collection<Object>> modifier = mock(Function.class);
+        final Function<CommandContext<Object>, Collection<Object>> modifier = mock(Function.class);
         final Object source1 = new Object();
         final Object source2 = new Object();
 
-        when(modifier.apply(source)).thenReturn(Lists.newArrayList(source1, source2));
+        when(modifier.apply(argThat(hasProperty("source", is(source))))).thenReturn(Lists.newArrayList(source1, source2));
 
         subject.register(literal("actual").executes(command));
         subject.register(literal("redirected").redirect(subject.getRoot(), modifier));
