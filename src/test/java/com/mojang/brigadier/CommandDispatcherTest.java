@@ -176,12 +176,12 @@ public class CommandDispatcherTest {
 
         final ParseResults<Object> parse = subject.parse("redirected redirected actual", source);
         assertThat(parse.getContext().getInput(), equalTo("actual"));
-        assertThat(parse.getContext().getNodes().size(), is(1));
+        assertThat(parse.getContext().getNodes().size(), is(2));
 
         final CommandContext<Object> parent1 = parse.getContext().getParent();
         assertThat(parent1, is(notNullValue()));
         assertThat(parent1.getInput(), equalTo("redirected"));
-        assertThat(parent1.getNodes().size(), is(1));
+        assertThat(parent1.getNodes().size(), is(2));
 
         final CommandContext<Object> parent2 = parent1.getParent();
         assertThat(parent2, is(notNullValue()));

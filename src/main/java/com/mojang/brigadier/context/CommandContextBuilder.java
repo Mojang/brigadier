@@ -11,7 +11,6 @@ public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
     private final Map<CommandNode<S>, String> nodes = Maps.newLinkedHashMap();
     private final CommandDispatcher<S> dispatcher;
-    private final StringBuilder input = new StringBuilder();
     private S source;
     private Command<S> command;
     private CommandContext<S> parent;
@@ -45,11 +44,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContextBuilder<S> withNode(final CommandNode<S> node, final String raw) {
-        if (!nodes.isEmpty()) {
-            input.append(CommandDispatcher.ARGUMENT_SEPARATOR);
-        }
         nodes.put(node, raw);
-        input.append(raw);
         return this;
     }
 
@@ -58,7 +53,6 @@ public class CommandContextBuilder<S> {
         copy.command = command;
         copy.arguments.putAll(arguments);
         copy.nodes.putAll(nodes);
-        copy.input.append(input);
         copy.parent = parent;
         return copy;
     }
@@ -75,7 +69,19 @@ public class CommandContextBuilder<S> {
     }
 
     public String getInput() {
-        return input.toString();
+        final StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (final String node : nodes.values()) {
+            if (first) {
+                if (!node.isEmpty()) {
+                    first = false;
+                }
+            } else {
+                result.append(CommandDispatcher.ARGUMENT_SEPARATOR);
+            }
+            result.append(node);
+        }
+        return result.toString();
     }
 
     public Map<CommandNode<S>, String> getNodes() {
@@ -83,7 +89,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContext<S> build() {
-        return new CommandContext<>(source, arguments, command, nodes, input.toString(), parent);
+        return new CommandContext<>(source, arguments, command, nodes, getInput(), parent);
     }
 
     public CommandDispatcher<S> getDispatcher() {
