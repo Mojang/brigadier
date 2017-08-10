@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
+
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.Matchers.equalTo;
@@ -43,7 +45,7 @@ public class CommandDispatcherCompletionsTest {
     public void testCommand_redirect() throws Exception {
         subject.register(literal("foo"));
         subject.register(literal("bar"));
-        subject.register(literal("redirect").redirect(subject.getRoot()));
+        subject.register(literal("redirect").redirect(subject.getRoot(), Collections::singleton));
         assertThat(subject.getCompletionSuggestions("redirect ", source), equalTo(new String[]{"bar", "foo", "redirect"}));
     }
 

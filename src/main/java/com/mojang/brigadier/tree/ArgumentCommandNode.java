@@ -8,7 +8,9 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandException;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
@@ -18,8 +20,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
-        super(command, requirement, redirect);
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<S, Collection<S>> modifier) {
+        super(command, requirement, redirect, modifier);
         this.name = name;
         this.type = type;
     }
@@ -69,7 +71,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public RequiredArgumentBuilder<S, T> createBuilder() {
         final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
-        builder.redirect(getRedirect());
+        builder.redirect(getRedirect(), getRedirectModifier());
         if (getCommand() != null) {
             builder.executes(getCommand());
         }

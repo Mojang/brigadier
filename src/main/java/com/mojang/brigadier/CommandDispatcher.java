@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -12,10 +11,13 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -69,20 +71,41 @@ public class CommandDispatcher<S> {
                 throw ERROR_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
             }
         }
-        final CommandContext<S> context = parse.getContext().build();
-        final Command<S> command = context.getCommand();
-        if (command == null) {
+
+        int result = 0;
+        boolean foundCommand = false;
+        final Deque<CommandContextBuilder<S>> contexts = new ArrayDeque<>();
+        contexts.add(parse.getContext());
+
+        while (!contexts.isEmpty()) {
+            final CommandContextBuilder<S> context = contexts.removeLast();
+            if (context.getChild() != null) {
+                if (!context.getNodes().isEmpty()) {
+                    final Function<S, Collection<S>> modifier = context.getNodes().keySet().iterator().next().getRedirectModifier();
+                    for (final S source : modifier.apply(context.getSource())) {
+                        contexts.add(context.getChild().copy().withSource(source));
+                    }
+                }
+            } else if (context.getCommand() != null) {
+                foundCommand = true;
+                result += context.getCommand().run(context.build());
+            }
+        }
+
+        if (!foundCommand) {
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
-        return command.run(context);
+
+        return result;
     }
 
     public ParseResults<S> parse(final String command, final S source) throws CommandException {
         final StringReader reader = new StringReader(command);
-        return parseNodes(root, reader, new CommandContextBuilder<>(this, source));
+        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source);
+        return parseNodes(root, reader, context, context, null);
     }
 
-    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, CommandContextBuilder<S> rootContext, final CommandContextBuilder<S> parentContext) throws CommandException {
         final S source = contextBuilder.getSource();
         final Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
 
@@ -105,20 +128,30 @@ public class CommandDispatcher<S> {
                 continue;
             }
 
+            if (rootContext == contextBuilder) {
+                rootContext = context;
+            }
+
+            if (parentContext != null) {
+                parentContext.withChild(context);
+            }
+
             context.withCommand(child.getCommand());
             if (reader.canRead()) {
                 reader.skip();
                 if (child.getRedirect() != null) {
-                    return parseNodes(child.getRedirect(), reader, context.redirect(child.getRedirect()));
+                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source);
+                    childContext.withNode(child.getRedirect(), "");
+                    return parseNodes(child.getRedirect(), reader, childContext, rootContext, context);
                 } else {
-                    return parseNodes(child, reader, context);
+                    return parseNodes(child, reader, context, rootContext, parentContext);
                 }
             } else {
-                return new ParseResults<>(context);
+                return new ParseResults<>(rootContext);
             }
         }
 
-        return new ParseResults<>(contextBuilder, reader, errors);
+        return new ParseResults<>(rootContext, reader, errors);
     }
 
     public String[] getAllUsage(final CommandNode<S> node, final S source) {

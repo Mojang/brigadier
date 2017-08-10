@@ -5,6 +5,8 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
@@ -12,6 +14,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
     private CommandNode<S> target;
+    private Function<S, Collection<S>> modifier = Collections::singleton;
 
     protected abstract T getThis();
 
@@ -45,16 +48,21 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return requirement;
     }
 
-    public T redirect(final CommandNode<S> target) {
+    public T redirect(final CommandNode<S> target, final Function<S, Collection<S>> modifier) {
         if (!arguments.getChildren().isEmpty()) {
             throw new IllegalStateException("Cannot redirect a node with children");
         }
         this.target = target;
+        this.modifier = modifier;
         return getThis();
     }
 
     public CommandNode<S> getRedirect() {
         return target;
+    }
+
+    public Function<S, Collection<S>> getRedirectModifier() {
+        return modifier;
     }
 
     public abstract CommandNode<S> build();

@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -19,12 +20,14 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
+    private final Function<S, Collection<S>> modifier;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<S, Collection<S>> modifier) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
+        this.modifier = modifier;
     }
 
     public Command<S> getCommand() {
@@ -37,6 +40,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public CommandNode<S> getRedirect() {
         return redirect;
+    }
+
+    public Function<S, Collection<S>> getRedirectModifier() {
+        return modifier;
     }
 
     public boolean canUse(final S source) {

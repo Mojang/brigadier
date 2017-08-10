@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -89,11 +90,11 @@ public class CommandDispatcherUsagesTest {
         );
         subject.register(
             literal("j")
-                .redirect(subject.getRoot())
+                .redirect(subject.getRoot(), Collections::singleton)
         );
         subject.register(
             literal("k")
-                .redirect(get("h"))
+                .redirect(get("h"), Collections::singleton)
         );
     }
 

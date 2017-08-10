@@ -7,7 +7,9 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
@@ -15,8 +17,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     private final String literal;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect) {
-        super(command, requirement, redirect);
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final Function<S, Collection<S>> modifier) {
+        super(command, requirement, redirect, modifier);
         this.literal = literal;
     }
 
@@ -78,7 +80,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     public LiteralArgumentBuilder<S> createBuilder() {
         final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
         builder.requires(getRequirement());
-        builder.redirect(getRedirect());
+        builder.redirect(getRedirect(), getRedirectModifier());
         if (getCommand() != null) {
             builder.executes(getCommand());
         }

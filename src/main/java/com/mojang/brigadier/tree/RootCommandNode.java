@@ -5,11 +5,13 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
-        super(null, c -> true, null);
+        super(null, c -> true, null, Collections::singleton);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.mojang.brigadier;
 
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
@@ -9,17 +11,20 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.notNull;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -172,24 +177,52 @@ public class CommandDispatcherTest {
     @Test
     public void testExecuteRedirected() throws Exception {
         subject.register(literal("actual").executes(command));
-        subject.register(literal("redirected").redirect(subject.getRoot()));
+        subject.register(literal("redirected").redirect(subject.getRoot(), Collections::singleton));
 
         final ParseResults<Object> parse = subject.parse("redirected redirected actual", source);
-        assertThat(parse.getContext().getInput(), equalTo("actual"));
-        assertThat(parse.getContext().getNodes().size(), is(2));
+        assertThat(parse.getContext().getInput(), equalTo("redirected"));
+        assertThat(parse.getContext().getNodes().size(), is(1));
 
-        final CommandContext<Object> parent1 = parse.getContext().getParent();
-        assertThat(parent1, is(notNullValue()));
-        assertThat(parent1.getInput(), equalTo("redirected"));
-        assertThat(parent1.getNodes().size(), is(2));
+        final CommandContextBuilder<Object> child1 = parse.getContext().getChild();
+        assertThat(child1, is(notNullValue()));
+        assertThat(child1.getInput(), equalTo("redirected"));
+        assertThat(child1.getNodes().size(), is(2));
 
-        final CommandContext<Object> parent2 = parent1.getParent();
-        assertThat(parent2, is(notNullValue()));
-        assertThat(parent2.getInput(), equalTo("redirected"));
-        assertThat(parent2.getNodes().size(), is(1));
+        final CommandContextBuilder<Object> child2 = child1.getChild();
+        assertThat(child2, is(notNullValue()));
+        assertThat(child2.getInput(), equalTo("actual"));
+        assertThat(child2.getNodes().size(), is(2));
 
         assertThat(subject.execute(parse), is(42));
         verify(command).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteRedirectedMultipleTimes() throws Exception {
+        final Function<Object, Collection<Object>> modifier = mock(Function.class);
+        final Object source1 = new Object();
+        final Object source2 = new Object();
+
+        when(modifier.apply(source)).thenReturn(Lists.newArrayList(source1, source2));
+
+        subject.register(literal("actual").executes(command));
+        subject.register(literal("redirected").redirect(subject.getRoot(), modifier));
+
+        final ParseResults<Object> parse = subject.parse("redirected actual", source);
+        assertThat(parse.getContext().getInput(), equalTo("redirected"));
+        assertThat(parse.getContext().getNodes().size(), is(1));
+        assertThat(parse.getContext().getSource(), is(source));
+
+        final CommandContextBuilder<Object> parent = parse.getContext().getChild();
+        assertThat(parent, is(notNullValue()));
+        assertThat(parent.getInput(), equalTo("actual"));
+        assertThat(parent.getNodes().size(), is(2));
+        assertThat(parent.getSource(), is(source));
+
+        assertThat(subject.execute(parse), is(84));
+        verify(command).run(argThat(hasProperty("source", is(source1))));
+        verify(command).run(argThat(hasProperty("source", is(source2))));
     }
 
     @Test
