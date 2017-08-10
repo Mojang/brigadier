@@ -109,7 +109,7 @@ public class CommandDispatcher<S> {
             if (reader.canRead()) {
                 reader.skip();
                 if (child.getRedirect() != null) {
-                    return parseNodes(child.getRedirect(), reader, context.redirect());
+                    return parseNodes(child.getRedirect(), reader, context.redirect(child.getRedirect()));
                 } else {
                     return parseNodes(child, reader, context);
                 }

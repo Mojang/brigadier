@@ -63,8 +63,9 @@ public class CommandContextBuilder<S> {
         return copy;
     }
 
-    public CommandContextBuilder<S> redirect() {
+    public CommandContextBuilder<S> redirect(final CommandNode<S> newRoot) {
         final CommandContextBuilder<S> result = new CommandContextBuilder<>(dispatcher, source);
+        result.withNode(newRoot, "");
         result.parent = build();
         return result;
     }
