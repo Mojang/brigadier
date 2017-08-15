@@ -39,6 +39,10 @@ public class ParameterizedCommandExceptionType implements CommandExceptionType {
         return result.toString();
     }
 
+    public CommandException create(final Object... values) {
+        return new CommandException(this, createMap(values));
+    }
+
     public CommandException createWithContext(final ImmutableStringReader reader, final Object... values) {
         return new CommandException(this, createMap(values), reader.getString(), reader.getCursor());
     }
