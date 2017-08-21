@@ -1,6 +1,6 @@
 package com.mojang.brigadier;
 
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
@@ -98,7 +98,7 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    public int readInt() throws CommandException {
+    public int readInt() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -115,7 +115,7 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    public double readDouble() throws CommandException {
+    public double readDouble() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
             skip();
@@ -148,7 +148,7 @@ public class StringReader implements ImmutableStringReader {
         return string.substring(start, cursor);
     }
 
-    public String readQuotedString() throws CommandException {
+    public String readQuotedString() throws CommandSyntaxException {
         if (!canRead()) {
             return "";
         } else if (peek() != SYNTAX_QUOTE) {
@@ -179,7 +179,7 @@ public class StringReader implements ImmutableStringReader {
         throw ERROR_EXPECTED_END_OF_QUOTE.createWithContext(this);
     }
 
-    public String readString() throws CommandException {
+    public String readString() throws CommandSyntaxException {
         if (canRead() && peek() == SYNTAX_QUOTE) {
             return readQuotedString();
         } else {
@@ -187,7 +187,7 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    public boolean readBoolean() throws CommandException {
+    public boolean readBoolean() throws CommandSyntaxException {
         final int start = cursor;
         final String value = readString();
         if (value.isEmpty()) {
@@ -204,7 +204,7 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    public void expect(final char c) throws CommandException {
+    public void expect(final char c) throws CommandSyntaxException {
         if (!canRead() || peek() != c) {
             throw ERROR_EXPECTED_SYMBOL.createWithContext(this, String.valueOf(c));
         }

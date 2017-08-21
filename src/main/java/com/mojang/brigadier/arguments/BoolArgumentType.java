@@ -3,8 +3,7 @@ package com.mojang.brigadier.arguments;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 public class BoolArgumentType implements ArgumentType<Boolean> {
     private BoolArgumentType() {
@@ -19,7 +18,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> Boolean parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public <S> Boolean parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         return reader.readBoolean();
     }
 

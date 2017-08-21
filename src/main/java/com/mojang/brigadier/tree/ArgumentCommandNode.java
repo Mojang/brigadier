@@ -7,7 +7,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final T result = type.parse(reader, contextBuilder);
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);

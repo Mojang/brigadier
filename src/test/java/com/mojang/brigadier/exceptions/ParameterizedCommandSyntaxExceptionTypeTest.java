@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-public class ParameterizedCommandExceptionTypeTest {
+public class ParameterizedCommandSyntaxExceptionTypeTest {
     private ParameterizedCommandExceptionType type;
 
     @Before
@@ -28,7 +28,7 @@ public class ParameterizedCommandExceptionTypeTest {
     public void createWithContext() throws Exception {
         final StringReader reader = new StringReader("Foo bar");
         reader.setCursor(5);
-        final CommandException exception = type.createWithContext(reader, "World");
+        final CommandSyntaxException exception = type.createWithContext(reader, "World");
         assertThat(exception.getType(), is(type));
         assertThat(exception.getData(), is(ImmutableMap.<String, Object>of("name", "World")));
         assertThat(exception.getInput(), is("Foo bar"));

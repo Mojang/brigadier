@@ -3,7 +3,7 @@ package com.mojang.brigadier;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +74,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -88,7 +88,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -102,7 +102,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -116,7 +116,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo bar", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(4));
@@ -130,7 +130,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo baz", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(Collections.singletonMap("expected", "bar")));
             assertThat(ex.getCursor(), is(4));
@@ -148,7 +148,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo unknown", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(4));
@@ -234,7 +234,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo 5", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -259,7 +259,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo5", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_EXPECTED_ARGUMENT_SEPARATOR));
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(3));
@@ -275,7 +275,7 @@ public class CommandDispatcherTest {
         try {
             subject.execute("foo bar", source);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(4));

@@ -5,7 +5,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         for (int i = 0; i < literal.length(); i++) {
             if (reader.canRead() && reader.peek() == literal.charAt(i)) {

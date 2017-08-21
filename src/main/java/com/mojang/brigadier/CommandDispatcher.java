@@ -7,7 +7,7 @@ import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -27,6 +27,7 @@ public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType("command.unknown.argument", "Incorrect argument for command");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType("command.expected.separator", "Expected whitespace to end one argument, but found trailing data");
+    public static final SimpleCommandExceptionType ERROR_COMMAND_FAILED = new SimpleCommandExceptionType("command.failed", "Expected whitespace to end one argument, but found trailing data");
 
     public static final String ARGUMENT_SEPARATOR = " ";
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
@@ -58,12 +59,12 @@ public class CommandDispatcher<S> {
         return build;
     }
 
-    public int execute(final String input, final S source) throws CommandException {
+    public int execute(final String input, final S source) throws CommandSyntaxException {
         final ParseResults<S> parse = parse(input, source);
         return execute(parse);
     }
 
-    public int execute(final ParseResults<S> parse) throws CommandException {
+    public int execute(final ParseResults<S> parse) throws CommandSyntaxException {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -102,15 +103,15 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    public ParseResults<S> parse(final String command, final S source) throws CommandException {
+    public ParseResults<S> parse(final String command, final S source) throws CommandSyntaxException {
         final StringReader reader = new StringReader(command);
         final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source);
         return parseNodes(root, reader, context, context, null);
     }
 
-    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, CommandContextBuilder<S> rootContext, final CommandContextBuilder<S> parentContext) throws CommandException {
+    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, CommandContextBuilder<S> rootContext, final CommandContextBuilder<S> parentContext) throws CommandSyntaxException {
         final S source = contextBuilder.getSource();
-        final Map<CommandNode<S>, CommandException> errors = Maps.newHashMap();
+        final Map<CommandNode<S>, CommandSyntaxException> errors = Maps.newHashMap();
 
         for (final CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
@@ -125,7 +126,7 @@ public class CommandDispatcher<S> {
                         throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
                     }
                 }
-            } catch (final CommandException ex) {
+            } catch (final CommandSyntaxException ex) {
                 errors.put(child, ex);
                 reader.setCursor(cursor);
                 continue;
@@ -275,7 +276,7 @@ public class CommandDispatcher<S> {
                     reader.setCursor(cursor);
                     child.listSuggestions(reader.getRemaining(), result, context);
                 }
-            } catch (final CommandException e) {
+            } catch (final CommandSyntaxException e) {
                 reader.setCursor(cursor);
                 child.listSuggestions(reader.getRemaining(), result, context);
             }

@@ -8,7 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -66,7 +66,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
         try {
             node.parse(reader, contextBuilder);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
             assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
             assertThat(ex.getCursor(), is(0));

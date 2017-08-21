@@ -2,7 +2,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,7 +101,7 @@ public class CommandDispatcherUsagesTest {
     private CommandNode<Object> get(final String command) {
         try {
             return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
-        } catch (final CommandException e) {
+        } catch (final CommandSyntaxException e) {
             throw new AssertionError("get() failed unexpectedly", e);
         }
     }

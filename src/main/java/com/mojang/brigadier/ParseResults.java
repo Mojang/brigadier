@@ -1,7 +1,7 @@
 package com.mojang.brigadier;
 
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Collections;
@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class ParseResults<S> {
     private final CommandContextBuilder<S> context;
-    private final Map<CommandNode<S>, CommandException> exceptions;
+    private final Map<CommandNode<S>, CommandSyntaxException> exceptions;
     private final ImmutableStringReader reader;
 
-    public ParseResults(final CommandContextBuilder<S> context, final ImmutableStringReader reader, final Map<CommandNode<S>, CommandException> exceptions) {
+    public ParseResults(final CommandContextBuilder<S> context, final ImmutableStringReader reader, final Map<CommandNode<S>, CommandSyntaxException> exceptions) {
         this.context = context;
         this.reader = reader;
         this.exceptions = exceptions;
@@ -30,7 +30,7 @@ public class ParseResults<S> {
         return reader;
     }
 
-    public Map<CommandNode<S>, CommandException> getExceptions() {
+    public Map<CommandNode<S>, CommandSyntaxException> getExceptions() {
         return exceptions;
     }
 }

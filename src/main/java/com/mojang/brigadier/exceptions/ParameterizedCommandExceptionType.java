@@ -3,7 +3,6 @@ package com.mojang.brigadier.exceptions;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.ImmutableStringReader;
-import com.mojang.brigadier.StringReader;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,12 +38,12 @@ public class ParameterizedCommandExceptionType implements CommandExceptionType {
         return result.toString();
     }
 
-    public CommandException create(final Object... values) {
-        return new CommandException(this, createMap(values));
+    public CommandSyntaxException create(final Object... values) {
+        return new CommandSyntaxException(this, createMap(values));
     }
 
-    public CommandException createWithContext(final ImmutableStringReader reader, final Object... values) {
-        return new CommandException(this, createMap(values), reader.getString(), reader.getCursor());
+    public CommandSyntaxException createWithContext(final ImmutableStringReader reader, final Object... values) {
+        return new CommandSyntaxException(this, createMap(values), reader.getString(), reader.getCursor());
     }
 
     public Map<String, String> createMap(final Object... values) {

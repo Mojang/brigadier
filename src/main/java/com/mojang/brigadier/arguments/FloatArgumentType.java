@@ -3,7 +3,7 @@ package com.mojang.brigadier.arguments;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Objects;
@@ -44,7 +44,7 @@ public class FloatArgumentType implements ArgumentType<Float> {
     }
 
     @Override
-    public <S> Float parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public <S> Float parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final float result = (float) reader.readDouble();
         for (int i = 0; i < suffix.length(); i++) {

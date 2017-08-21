@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
@@ -30,7 +30,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public <S> String parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandException {
+    public <S> String parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         if (type == StringType.GREEDY_PHRASE) {
             final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());

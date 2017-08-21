@@ -2,7 +2,6 @@ package com.mojang.brigadier.exceptions;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.ImmutableStringReader;
-import com.mojang.brigadier.StringReader;
 
 import java.util.Map;
 
@@ -25,12 +24,12 @@ public class SimpleCommandExceptionType implements CommandExceptionType {
         return message;
     }
 
-    public CommandException create() {
-        return new CommandException(this, ImmutableMap.of());
+    public CommandSyntaxException create() {
+        return new CommandSyntaxException(this, ImmutableMap.of());
     }
 
-    public CommandException createWithContext(final ImmutableStringReader reader) {
-        return new CommandException(this, ImmutableMap.of(), reader.getString(), reader.getCursor());
+    public CommandSyntaxException createWithContext(final ImmutableStringReader reader) {
+        return new CommandSyntaxException(this, ImmutableMap.of(), reader.getString(), reader.getCursor());
     }
 
     @Override

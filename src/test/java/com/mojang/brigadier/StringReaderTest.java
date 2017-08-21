@@ -1,7 +1,7 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -216,7 +216,7 @@ public class StringReaderTest {
     public void readQuotedString_noOpen() throws Exception {
         try {
             new StringReader("hello world\"").readQuotedString();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_START_OF_QUOTE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -227,7 +227,7 @@ public class StringReaderTest {
     public void readQuotedString_noClose() throws Exception {
         try {
             new StringReader("\"hello world").readQuotedString();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_END_OF_QUOTE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(12));
@@ -238,7 +238,7 @@ public class StringReaderTest {
     public void readQuotedString_invalidEscape() throws Exception {
         try {
             new StringReader("\"hello\\nworld\"").readQuotedString();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_ESCAPE));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("character", "n")));
             assertThat(ex.getCursor(), is(7));
@@ -265,7 +265,7 @@ public class StringReaderTest {
     public void readInt_invalid() throws Exception {
         try {
             new StringReader("12.34").readInt();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_INT));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "12.34")));
             assertThat(ex.getCursor(), is(0));
@@ -276,7 +276,7 @@ public class StringReaderTest {
     public void readInt_none() throws Exception {
         try {
             new StringReader("").readInt();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -327,7 +327,7 @@ public class StringReaderTest {
     public void readDouble_invalid() throws Exception {
         try {
             new StringReader("12.34.56").readDouble();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_DOUBLE));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "12.34.56")));
             assertThat(ex.getCursor(), is(0));
@@ -338,7 +338,7 @@ public class StringReaderTest {
     public void readDouble_none() throws Exception {
         try {
             new StringReader("").readDouble();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_DOUBLE));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));
@@ -374,7 +374,7 @@ public class StringReaderTest {
         try {
             reader.expect('a');
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
             assertThat(ex.getCursor(), is(0));
@@ -387,7 +387,7 @@ public class StringReaderTest {
         try {
             reader.expect('a');
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_SYMBOL));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("symbol", "a")));
             assertThat(ex.getCursor(), is(0));
@@ -407,7 +407,7 @@ public class StringReaderTest {
         try {
             reader.readBoolean();
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_INVALID_BOOL));
             assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "tuesday")));
             assertThat(ex.getCursor(), is(0));
@@ -420,7 +420,7 @@ public class StringReaderTest {
         try {
             reader.readBoolean();
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_BOOL));
             assertThat(ex.getData(), equalTo(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(0));

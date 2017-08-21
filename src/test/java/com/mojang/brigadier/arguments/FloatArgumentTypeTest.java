@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +54,7 @@ public class FloatArgumentTypeTest {
         try {
             floatArg(0, 100, "L").parse(reader, context);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
             assertThat(ex.getCursor(), is(0));
@@ -67,7 +67,7 @@ public class FloatArgumentTypeTest {
         try {
             floatArg(0, 100, "L").parse(reader, context);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_WRONG_SUFFIX));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
             assertThat(ex.getCursor(), is(0));
@@ -80,7 +80,7 @@ public class FloatArgumentTypeTest {
         try {
             floatArg(0, 100).parse(reader, context);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_TOO_SMALL));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "-5.0", "minimum", "0.0")));
             assertThat(ex.getCursor(), is(0));
@@ -93,7 +93,7 @@ public class FloatArgumentTypeTest {
         try {
             floatArg(-100, 0).parse(reader, context);
             fail();
-        } catch (final CommandException ex) {
+        } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_TOO_BIG));
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "5.0", "maximum", "0.0")));
             assertThat(ex.getCursor(), is(0));

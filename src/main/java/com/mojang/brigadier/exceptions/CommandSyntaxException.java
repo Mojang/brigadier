@@ -2,7 +2,7 @@ package com.mojang.brigadier.exceptions;
 
 import java.util.Map;
 
-public class CommandException extends Exception {
+public class CommandSyntaxException extends Exception {
     public static final int CONTEXT_AMOUNT = 10;
     public static boolean ENABLE_COMMAND_STACK_TRACES = true;
 
@@ -11,7 +11,7 @@ public class CommandException extends Exception {
     private final String input;
     private final int cursor;
 
-    public CommandException(final CommandExceptionType type, final Map<String, String> data) {
+    public CommandSyntaxException(final CommandExceptionType type, final Map<String, String> data) {
         super(type.getTypeName(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
         this.data = data;
@@ -19,7 +19,7 @@ public class CommandException extends Exception {
         this.cursor = -1;
     }
 
-    public CommandException(final CommandExceptionType type, final Map<String, String> data, final String input, final int cursor) {
+    public CommandSyntaxException(final CommandExceptionType type, final Map<String, String> data, final String input, final int cursor) {
         super(type.getTypeName(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
         this.data = data;

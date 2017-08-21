@@ -7,7 +7,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.exceptions.CommandException;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -94,7 +94,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract String getUsageText();
 
-    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandException;
+    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
     public abstract void listSuggestions(String command, Set<String> output, CommandContextBuilder<S> contextBuilder);
 
