@@ -162,14 +162,14 @@ public class CommandDispatcher<S> {
         return new ParseResults<>(rootContext, reader, errors);
     }
 
-    public String[] getAllUsage(final CommandNode<S> node, final S source) {
+    public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
         final ArrayList<String> result = Lists.newArrayList();
-        getAllUsage(node, source, result, "");
+        getAllUsage(node, source, result, "", restricted);
         return result.toArray(new String[result.size()]);
     }
 
-    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix) {
-        if (!node.canUse(source)) {
+    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
+        if (restricted && !node.canUse(source)) {
             return;
         }
 
@@ -182,7 +182,7 @@ public class CommandDispatcher<S> {
             result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
         } else if (!node.getChildren().isEmpty()) {
             for (final CommandNode<S> child : node.getChildren()) {
-                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText());
+                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), restricted);
             }
         }
     }

@@ -109,7 +109,7 @@ public class CommandDispatcherUsagesTest {
     @Test
     public void testAllUsage_noCommands() throws Exception {
         subject = new CommandDispatcher<>();
-        final String[] results = subject.getAllUsage(subject.getRoot(), source);
+        final String[] results = subject.getAllUsage(subject.getRoot(), source, true);
         assertThat(results, is(emptyArray()));
     }
 
@@ -122,7 +122,7 @@ public class CommandDispatcherUsagesTest {
 
     @Test
     public void testAllUsage_root() throws Exception {
-        final String[] results = subject.getAllUsage(subject.getRoot(), source);
+        final String[] results = subject.getAllUsage(subject.getRoot(), source, true);
         assertThat(results, equalTo(new String[]{
             "a 1 i",
             "a 1 ii",

@@ -39,8 +39,8 @@ public class FloatArgumentType implements ArgumentType<Float> {
         return new FloatArgumentType(min, max, suffix);
     }
 
-    public static int getInteger(final CommandContext<?> context, final String name) {
-        return context.getArgument(name, int.class);
+    public static float getFloat(final CommandContext<?> context, final String name) {
+        return context.getArgument(name, Float.class);
     }
 
     @Override
