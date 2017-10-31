@@ -16,7 +16,9 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -103,22 +105,34 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    public ParseResults<S> parse(final String command, final S source) throws CommandSyntaxException {
+    public ParseResults<S> parse(final String command, final S source) {
         final StringReader reader = new StringReader(command);
         final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source);
-        return parseNodes(root, reader, context, context, null);
+        return parseNodes(root, reader, context);
     }
 
-    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, CommandContextBuilder<S> rootContext, final CommandContextBuilder<S> parentContext) throws CommandSyntaxException {
-        final S source = contextBuilder.getSource();
-        final Map<CommandNode<S>, CommandSyntaxException> errors = Maps.newHashMap();
+    private static class PartialParse<S> {
+        public final CommandContextBuilder<S> context;
+        public final ParseResults<S> parse;
+
+        private PartialParse(final CommandContextBuilder<S> context, final ParseResults<S> parse) {
+            this.context = context;
+            this.parse = parse;
+        }
+    }
+
+    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextSoFar) {
+        final S source = contextSoFar.getSource();
+        final Map<CommandNode<S>, CommandSyntaxException> errors = Maps.newLinkedHashMap();
+        final List<PartialParse<S>> potentials = Lists.newArrayList();
+        final int cursor = originalReader.getCursor();
 
         for (final CommandNode<S> child : node.getChildren()) {
             if (!child.canUse(source)) {
                 continue;
             }
-            final CommandContextBuilder<S> context = contextBuilder.copy();
-            final int cursor = reader.getCursor();
+            final CommandContextBuilder<S> context = contextSoFar.copy();
+            final StringReader reader = new StringReader(originalReader);
             try {
                 child.parse(reader, context);
                 if (reader.canRead()) {
@@ -132,34 +146,46 @@ public class CommandDispatcher<S> {
                 continue;
             }
 
-            if (rootContext == contextBuilder) {
-                rootContext = context;
-            }
-
-            if (parentContext != null) {
-                parentContext.withChild(context);
-            }
-
             context.withCommand(child.getCommand());
             if (reader.canRead()) {
                 reader.skip();
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source);
                     childContext.withNode(child.getRedirect(), "");
-                    return parseNodes(child.getRedirect(), reader, childContext, rootContext, context);
+                    final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
+                    context.withChild(parse.getContext());
+                    return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
-                    return parseNodes(child, reader, context, rootContext, parentContext);
+                    final ParseResults<S> parse = parseNodes(child, reader, context);
+                    potentials.add(new PartialParse<>(context, parse));
                 }
             } else {
-                return new ParseResults<>(rootContext);
+                potentials.add(new PartialParse<>(context, new ParseResults<>(context, reader, Collections.emptyMap())));
             }
         }
 
-        if (parentContext != null) {
-            parentContext.withChild(contextBuilder);
+        if (!potentials.isEmpty()) {
+            final List<PartialParse<S>> sorted = Lists.newArrayList(potentials);
+            sorted.sort((a, b) -> {
+                if (!a.parse.getReader().canRead() && b.parse.getReader().canRead()) {
+                    return -1;
+                }
+                if (a.parse.getReader().canRead() && !b.parse.getReader().canRead()) {
+                    return 1;
+                }
+                if (a.parse.getExceptions().isEmpty() && !b.parse.getExceptions().isEmpty()) {
+                    return -1;
+                }
+                if (!a.parse.getExceptions().isEmpty() && b.parse.getExceptions().isEmpty()) {
+                    return 1;
+                }
+                return 0;
+            });
+            final PartialParse<S> likely = sorted.get(0);
+            return likely.parse;
         }
 
-        return new ParseResults<>(rootContext, reader, errors);
+        return new ParseResults<>(contextSoFar, originalReader, errors);
     }
 
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {

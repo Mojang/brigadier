@@ -22,6 +22,11 @@ public class StringReader implements ImmutableStringReader {
     private final String string;
     private int cursor;
 
+    public StringReader(final StringReader other) {
+        this.string = other.string;
+        this.cursor = other.cursor;
+    }
+
     public StringReader(final String string) {
         this.string = string;
     }

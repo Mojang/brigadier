@@ -99,11 +99,7 @@ public class CommandDispatcherUsagesTest {
     }
 
     private CommandNode<Object> get(final String command) {
-        try {
-            return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
-        } catch (final CommandSyntaxException e) {
-            throw new AssertionError("get() failed unexpectedly", e);
-        }
+        return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
     }
 
     @Test

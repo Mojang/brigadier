@@ -175,7 +175,61 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExecuteRedirected() throws Exception {
+    public void testExecuteAmbiguiousParentSubcommand() throws Exception {
+        final Command<Object> subCommand = mock(Command.class);
+        when(subCommand.run(any())).thenReturn(100);
+
+        subject.register(
+            literal("test")
+                .then(
+                    argument("incorrect", integer())
+                        .executes(command)
+                )
+                .then(
+                    argument("right", integer())
+                        .then(
+                            argument("sub", integer())
+                                .executes(subCommand)
+                        )
+                )
+        );
+
+        assertThat(subject.execute("test 1 2", source), is(100));
+        verify(subCommand).run(any(CommandContext.class));
+        verify(command, never()).run(any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteAmbiguiousParentSubcommandViaRedirect() throws Exception {
+        final Command<Object> subCommand = mock(Command.class);
+        when(subCommand.run(any())).thenReturn(100);
+
+        final LiteralCommandNode<Object> real = subject.register(
+            literal("test")
+                .then(
+                    argument("incorrect", integer())
+                        .executes(command)
+                )
+                .then(
+                    argument("right", integer())
+                        .then(
+                            argument("sub", integer())
+                                .executes(subCommand)
+                        )
+                )
+        );
+
+        subject.register(literal("redirect").redirect(real));
+
+        assertThat(subject.execute("redirect 1 2", source), is(100));
+        verify(subCommand).run(any(CommandContext.class));
+        verify(command, never()).run(any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteRedirectedMultipleTimes() throws Exception {
         subject.register(literal("actual").executes(command));
         subject.register(literal("redirected").redirect(subject.getRoot(), Collections::singleton));
 
@@ -199,7 +253,7 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExecuteRedirectedMultipleTimes() throws Exception {
+    public void testExecuteRedirected() throws Exception {
         final Function<CommandContext<Object>, Collection<Object>> modifier = mock(Function.class);
         final Object source1 = new Object();
         final Object source2 = new Object();
@@ -237,7 +291,7 @@ public class CommandDispatcherTest {
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.emptyMap()));
-            assertThat(ex.getCursor(), is(0));
+            assertThat(ex.getCursor(), is(5));
         }
     }
 
