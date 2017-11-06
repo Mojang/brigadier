@@ -52,12 +52,6 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     }
 
     @Test
-    public void testUsage_suffix() throws Exception {
-        node = argument("foo", integer(0, 100, "L")).build();
-        assertThat(node.getUsageText(), is("<foo>L"));
-    }
-
-    @Test
     public void testSuggestions() throws Exception {
         final Set<String> set = Sets.newHashSet();
         @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);

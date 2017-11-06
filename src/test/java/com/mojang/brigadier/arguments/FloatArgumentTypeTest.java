@@ -35,43 +35,10 @@ public class FloatArgumentTypeTest {
     }
 
     @Test
-    public void parse_noSuffix() throws Exception {
+    public void parse() throws Exception {
         final StringReader reader = new StringReader("15");
         assertThat(floatArg().parse(reader, context), is(15f));
         assertThat(reader.canRead(), is(false));
-    }
-
-    @Test
-    public void parse_suffix() throws Exception {
-        final StringReader reader = new StringReader("15L");
-        assertThat(floatArg(0, 100, "L").parse(reader, context), is(15f));
-        assertThat(reader.canRead(), is(false));
-    }
-
-    @Test
-    public void parse_suffix_incorrect() throws Exception {
-        final StringReader reader = new StringReader("15W");
-        try {
-            floatArg(0, 100, "L").parse(reader, context);
-            fail();
-        } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(FloatArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
-            assertThat(ex.getCursor(), is(0));
-        }
-    }
-
-    @Test
-    public void parse_suffix_missing() throws Exception {
-        final StringReader reader = new StringReader("15");
-        try {
-            floatArg(0, 100, "L").parse(reader, context);
-            fail();
-        } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(FloatArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
-            assertThat(ex.getCursor(), is(0));
-        }
     }
 
     @Test
@@ -115,8 +82,6 @@ public class FloatArgumentTypeTest {
             .addEqualityGroup(floatArg(-100, 100), floatArg(-100, 100))
             .addEqualityGroup(floatArg(-100, 50), floatArg(-100, 50))
             .addEqualityGroup(floatArg(-50, 100), floatArg(-50, 100))
-            .addEqualityGroup(floatArg(-50, 100, "foo"), floatArg(-50, 100, "foo"))
-            .addEqualityGroup(floatArg(-50, 100, "bar"), floatArg(-50, 100, "bar"))
             .testEquals();
     }
 
@@ -126,15 +91,5 @@ public class FloatArgumentTypeTest {
         assertThat(floatArg(-100), hasToString("float(-100.0)"));
         assertThat(floatArg(-100, 100), hasToString("float(-100.0, 100.0)"));
         assertThat(floatArg(Integer.MIN_VALUE, 100), hasToString("float(-2.14748365E9, 100.0)"));
-    }
-
-    @Test
-    public void testUsageSuffix() throws Exception {
-        assertThat(floatArg().getUsageSuffix(), equalTo(null));
-    }
-
-    @Test
-    public void testUsageSuffix_suffix() throws Exception {
-        assertThat(floatArg(0, 100, "L").getUsageSuffix(), equalTo("L"));
     }
 }

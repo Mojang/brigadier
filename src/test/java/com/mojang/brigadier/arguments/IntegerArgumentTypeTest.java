@@ -35,43 +35,10 @@ public class IntegerArgumentTypeTest {
     }
 
     @Test
-    public void parse_noSuffix() throws Exception {
+    public void parse() throws Exception {
         final StringReader reader = new StringReader("15");
         assertThat(integer().parse(reader, context), is(15));
         assertThat(reader.canRead(), is(false));
-    }
-
-    @Test
-    public void parse_suffix() throws Exception {
-        final StringReader reader = new StringReader("15L");
-        assertThat(integer(0, 100, "L").parse(reader, context), is(15));
-        assertThat(reader.canRead(), is(false));
-    }
-
-    @Test
-    public void parse_suffix_incorrect() throws Exception {
-        final StringReader reader = new StringReader("15W");
-        try {
-            integer(0, 100, "L").parse(reader, context);
-            fail();
-        } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
-            assertThat(ex.getCursor(), is(0));
-        }
-    }
-
-    @Test
-    public void parse_suffix_missing() throws Exception {
-        final StringReader reader = new StringReader("15");
-        try {
-            integer(0, 100, "L").parse(reader, context);
-            fail();
-        } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_WRONG_SUFFIX));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("suffix", "L")));
-            assertThat(ex.getCursor(), is(0));
-        }
     }
 
     @Test
@@ -115,8 +82,6 @@ public class IntegerArgumentTypeTest {
             .addEqualityGroup(integer(-100, 100), integer(-100, 100))
             .addEqualityGroup(integer(-100, 50), integer(-100, 50))
             .addEqualityGroup(integer(-50, 100), integer(-50, 100))
-            .addEqualityGroup(integer(-50, 100, "foo"), integer(-50, 100, "foo"))
-            .addEqualityGroup(integer(-50, 100, "bar"), integer(-50, 100, "bar"))
             .testEquals();
     }
 
@@ -126,15 +91,5 @@ public class IntegerArgumentTypeTest {
         assertThat(integer(-100), hasToString("integer(-100)"));
         assertThat(integer(-100, 100), hasToString("integer(-100, 100)"));
         assertThat(integer(Integer.MIN_VALUE, 100), hasToString("integer(-2147483648, 100)"));
-    }
-
-    @Test
-    public void testUsageSuffix() throws Exception {
-        assertThat(integer().getUsageSuffix(), equalTo(null));
-    }
-
-    @Test
-    public void testUsageSuffix_suffix() throws Exception {
-        assertThat(integer(0, 100, "L").getUsageSuffix(), equalTo("L"));
     }
 }

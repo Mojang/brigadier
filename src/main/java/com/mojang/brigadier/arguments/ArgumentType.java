@@ -11,9 +11,4 @@ public interface ArgumentType<T> {
 
     default <S> void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
     }
-
-    default String getUsageSuffix() {
-        return null;
-    }
-
 }
