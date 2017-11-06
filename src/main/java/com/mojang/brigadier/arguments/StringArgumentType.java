@@ -69,11 +69,6 @@ public class StringArgumentType implements ArgumentType<String> {
         return result.toString();
     }
 
-    @Override
-    public String getUsageText() {
-        return "string";
-    }
-
     public enum StringType {
         SINGLE_WORD,
         QUOTABLE_PHRASE,

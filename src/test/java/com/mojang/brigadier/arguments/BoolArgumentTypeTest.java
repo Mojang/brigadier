@@ -34,9 +34,4 @@ public class BoolArgumentTypeTest {
         assertThat(type.parse(reader, context), is(true));
         verify(reader).readBoolean();
     }
-
-    @Test
-    public void usageText() throws Exception {
-        assertThat(type.getUsageText(), equalTo("bool"));
-    }
 }

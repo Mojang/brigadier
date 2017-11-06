@@ -48,21 +48,13 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testUsage() throws Exception {
-        assertThat(node.getUsageText(), is("<foo: int>"));
+        assertThat(node.getUsageText(), is("<foo>"));
     }
 
     @Test
     public void testUsage_suffix() throws Exception {
         node = argument("foo", integer(0, 100, "L")).build();
-        assertThat(node.getUsageText(), is("<foo: int>L"));
-    }
-
-    @Test
-    public void testUsage_empty() throws Exception {
-        @SuppressWarnings("unchecked") final ArgumentType<String> type = mock(ArgumentType.class);
-        when(type.getUsageText()).thenReturn(null);
-        final ArgumentCommandNode<Object, String> node = argument("foo", type).build();
-        assertThat(node.getUsageText(), is("<foo>"));
+        assertThat(node.getUsageText(), is("<foo>L"));
     }
 
     @Test

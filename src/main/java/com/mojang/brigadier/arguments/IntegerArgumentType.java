@@ -95,9 +95,4 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     public String getUsageSuffix() {
         return suffix.length() == 0 ? null : suffix;
     }
-
-    @Override
-    public String getUsageText() {
-        return "int";
-    }
 }

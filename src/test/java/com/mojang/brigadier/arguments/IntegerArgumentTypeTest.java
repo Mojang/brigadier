@@ -137,14 +137,4 @@ public class IntegerArgumentTypeTest {
     public void testUsageSuffix_suffix() throws Exception {
         assertThat(integer(0, 100, "L").getUsageSuffix(), equalTo("L"));
     }
-
-    @Test
-    public void testUsageText() throws Exception {
-        assertThat(integer().getUsageText(), equalTo("int"));
-    }
-
-    @Test
-    public void testUsageText_suffix() throws Exception {
-        assertThat(integer(0, 100, "L").getUsageText(), equalTo("int"));
-    }
 }

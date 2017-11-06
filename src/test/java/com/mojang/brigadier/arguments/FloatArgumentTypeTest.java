@@ -137,14 +137,4 @@ public class FloatArgumentTypeTest {
     public void testUsageSuffix_suffix() throws Exception {
         assertThat(floatArg(0, 100, "L").getUsageSuffix(), equalTo("L"));
     }
-
-    @Test
-    public void testUsageText() throws Exception {
-        assertThat(floatArg().getUsageText(), equalTo("float"));
-    }
-
-    @Test
-    public void testUsageText_suffix() throws Exception {
-        assertThat(floatArg(0, 100, "L").getUsageText(), equalTo("float"));
-    }
 }

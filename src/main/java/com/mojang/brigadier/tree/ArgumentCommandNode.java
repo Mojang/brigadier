@@ -43,11 +43,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public String getUsageText() {
-        String usage = name;
-        if (type.getUsageText() != null) {
-            usage += ": " + type.getUsageText();
-        }
-        usage = USAGE_ARGUMENT_OPEN + usage + USAGE_ARGUMENT_CLOSE;
+        String usage = USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
         if (type.getUsageSuffix() != null) {
             usage += type.getUsageSuffix();
         }

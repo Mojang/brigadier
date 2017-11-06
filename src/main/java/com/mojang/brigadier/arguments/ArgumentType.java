@@ -16,7 +16,4 @@ public interface ArgumentType<T> {
         return null;
     }
 
-    default String getUsageText() {
-        return null;
-    }
 }
