@@ -87,7 +87,7 @@ public class CommandDispatcher<S> {
             final CommandContextBuilder<S> child = context.getChild();
             if (child != null) {
                 if (!child.getNodes().isEmpty()) {
-                    final Function<CommandContext<S>, Collection<S>> modifier = Iterators.getLast(context.getNodes().keySet().iterator()).getRedirectModifier();
+                    final RedirectModifier<S> modifier = Iterators.getLast(context.getNodes().keySet().iterator()).getRedirectModifier();
                     for (final S source : modifier.apply(context.build())) {
                         contexts.add(child.copy().withSource(source));
                     }

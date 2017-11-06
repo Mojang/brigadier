@@ -254,7 +254,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteRedirected() throws Exception {
-        final Function<CommandContext<Object>, Collection<Object>> modifier = mock(Function.class);
+        final RedirectModifier<Object> modifier = mock(RedirectModifier.class);
         final Object source1 = new Object();
         final Object source2 = new Object();
 
