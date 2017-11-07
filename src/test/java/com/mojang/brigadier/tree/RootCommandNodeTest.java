@@ -32,7 +32,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testParse() throws Exception {
         final StringReader reader = new StringReader("hello world");
-        node.parse(reader, new CommandContextBuilder<>(new CommandDispatcher<>(), new Object()));
+        node.parse(reader, new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), 0));
         assertThat(reader.getCursor(), is(0));
     }
 

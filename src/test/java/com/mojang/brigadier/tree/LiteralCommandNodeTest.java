@@ -35,7 +35,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = literal("foo").build();
-        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object());
+        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), 0);
     }
 
     @Test

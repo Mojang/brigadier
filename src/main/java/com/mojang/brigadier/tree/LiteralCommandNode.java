@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
@@ -45,7 +46,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             }
         }
 
-        contextBuilder.withNode(this, literal);
+        contextBuilder.withNode(this, new StringRange(start, reader.getCursor()));
     }
 
     @Override

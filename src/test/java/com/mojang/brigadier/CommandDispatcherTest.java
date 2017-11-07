@@ -233,18 +233,19 @@ public class CommandDispatcherTest {
         subject.register(literal("actual").executes(command));
         subject.register(literal("redirected").redirect(subject.getRoot(), Collections::singleton));
 
-        final ParseResults<Object> parse = subject.parse("redirected redirected actual", source);
-        assertThat(parse.getContext().getInput(), equalTo("redirected"));
+        final String input = "redirected redirected actual";
+        final ParseResults<Object> parse = subject.parse(input, source);
+        assertThat(parse.getContext().getRange().get(input), equalTo("redirected"));
         assertThat(parse.getContext().getNodes().size(), is(1));
 
         final CommandContextBuilder<Object> child1 = parse.getContext().getChild();
         assertThat(child1, is(notNullValue()));
-        assertThat(child1.getInput(), equalTo("redirected"));
+        assertThat(child1.getRange().get(input), equalTo("redirected"));
         assertThat(child1.getNodes().size(), is(2));
 
         final CommandContextBuilder<Object> child2 = child1.getChild();
         assertThat(child2, is(notNullValue()));
-        assertThat(child2.getInput(), equalTo("actual"));
+        assertThat(child2.getRange().get(input), equalTo("actual"));
         assertThat(child2.getNodes().size(), is(2));
 
         assertThat(subject.execute(parse), is(42));
@@ -263,14 +264,15 @@ public class CommandDispatcherTest {
         subject.register(literal("actual").executes(command));
         subject.register(literal("redirected").redirect(subject.getRoot(), modifier));
 
-        final ParseResults<Object> parse = subject.parse("redirected actual", source);
-        assertThat(parse.getContext().getInput(), equalTo("redirected"));
+        final String input = "redirected actual";
+        final ParseResults<Object> parse = subject.parse(input, source);
+        assertThat(parse.getContext().getRange().get(input), equalTo("redirected"));
         assertThat(parse.getContext().getNodes().size(), is(1));
         assertThat(parse.getContext().getSource(), is(source));
 
         final CommandContextBuilder<Object> parent = parse.getContext().getChild();
         assertThat(parent, is(notNullValue()));
-        assertThat(parent.getInput(), equalTo("actual"));
+        assertThat(parent.getRange().get(input), equalTo("actual"));
         assertThat(parent.getNodes().size(), is(2));
         assertThat(parent.getSource(), is(source));
 

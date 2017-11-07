@@ -53,7 +53,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);
-        contextBuilder.withNode(this, parsed.getRaw(reader));
+        contextBuilder.withNode(this, parsed.getRange());
     }
 
     @Override

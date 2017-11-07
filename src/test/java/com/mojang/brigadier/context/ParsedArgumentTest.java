@@ -22,6 +22,6 @@ public class ParsedArgumentTest {
     public void getRaw() throws Exception {
         final StringReader reader = new StringReader("0123456789");
         final ParsedArgument<Object, String> argument = new ParsedArgument<>(2, 5, "");
-        assertThat(argument.getRaw(reader), equalTo("234"));
+        assertThat(argument.getRange().get(reader), equalTo("234"));
     }
 }

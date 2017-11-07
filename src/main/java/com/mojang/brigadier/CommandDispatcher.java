@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
@@ -70,7 +71,7 @@ public class CommandDispatcher<S> {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
-            } else if (parse.getContext().getInput().isEmpty()) {
+            } else if (parse.getContext().getRange().isEmpty()) {
                 throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
             } else {
                 throw ERROR_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
@@ -111,7 +112,7 @@ public class CommandDispatcher<S> {
 
     public ParseResults<S> parse(final String command, final S source) {
         final StringReader reader = new StringReader(command);
-        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source);
+        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, 0);
         return parseNodes(root, reader, context);
     }
 
@@ -154,8 +155,8 @@ public class CommandDispatcher<S> {
             if (reader.canRead()) {
                 reader.skip();
                 if (child.getRedirect() != null) {
-                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source);
-                    childContext.withNode(child.getRedirect(), "");
+                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, reader.getCursor());
+                    childContext.withNode(child.getRedirect(), new StringRange(reader.getCursor(), reader.getCursor()));
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
@@ -317,7 +318,7 @@ public class CommandDispatcher<S> {
 
     public String[] getCompletionSuggestions(final String command, final S source) {
         final StringReader reader = new StringReader(command);
-        final Set<String> nodes = findSuggestions(root, reader, new CommandContextBuilder<>(this, source), Sets.newLinkedHashSet());
+        final Set<String> nodes = findSuggestions(root, reader, new CommandContextBuilder<>(this, source, 0), Sets.newLinkedHashSet());
 
         return nodes.toArray(new String[nodes.size()]);
     }

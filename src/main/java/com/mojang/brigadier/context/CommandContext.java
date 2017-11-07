@@ -11,16 +11,16 @@ public class CommandContext<S> {
     private final S source;
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
-    private final Map<CommandNode<S>, String> nodes;
-    private final String input;
+    private final Map<CommandNode<S>, StringRange> nodes;
+    private final StringRange range;
     private final CommandContext<S> child;
 
-    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, String> nodes, final String input, final CommandContext<S> child) {
+    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child) {
         this.source = source;
         this.arguments = arguments;
         this.command = command;
         this.nodes = nodes;
-        this.input = input;
+        this.range = range;
         this.child = child;
     }
 
@@ -78,12 +78,11 @@ public class CommandContext<S> {
         return result;
     }
 
-    public String getInput() {
-        return input;
+    public StringRange getRange() {
+        return range;
     }
 
-    public Map<CommandNode<S>, String> getNodes() {
+    public Map<CommandNode<S>, StringRange> getNodes() {
         return nodes;
     }
-
 }
