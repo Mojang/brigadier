@@ -4,11 +4,14 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 
 public interface ArgumentType<T> {
     <S> T parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
-    default <S> void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
+    default <S> CompletableFuture<Collection<String>> listSuggestions(final String command) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
     }
 }

@@ -23,6 +23,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -285,11 +291,8 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    public CommandSuggestions getCompletionSuggestions(final ParseResults<S> parse) {
+    public CompletableFuture<CommandSuggestions> getCompletionSuggestions(final ParseResults<S> parse) {
         final CommandContextBuilder<S> context = parse.getContext();
-
-        final Set<String> suggestions = new LinkedHashSet<>();
-
         final CommandNode<S> parent;
         final int start;
 
@@ -309,13 +312,24 @@ public class CommandDispatcher<S> {
             start = 0;
         }
 
+        @SuppressWarnings("unchecked") final CompletableFuture<Collection<String>>[] futures = new CompletableFuture[parent.getChildren().size()];
+        int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
-            node.listSuggestions(parse.getReader().getString().substring(start), suggestions, context);
+            futures[i++] = node.listSuggestions(parse.getReader().getString().substring(start));
         }
 
-        final List<String> result = new ArrayList<>(suggestions);
-        Collections.sort(result);
-        return new CommandSuggestions(new StringRange(start, parse.getReader().getTotalLength()), result);
+        final CompletableFuture<CommandSuggestions> result = new CompletableFuture<>();
+        CompletableFuture.allOf(futures).thenRun(() -> {
+            final Set<String> suggestions = Sets.newHashSet();
+            for (final CompletableFuture<Collection<String>> future : futures) {
+                suggestions.addAll(future.join());
+            }
+            final List<String> sorted = new ArrayList<>(suggestions);
+            Collections.sort(sorted);
+            result.complete(new CommandSuggestions(new StringRange(start, parse.getReader().getTotalLength()), sorted));
+        });
+
+        return result;
     }
 
     public RootCommandNode<S> getRoot() {

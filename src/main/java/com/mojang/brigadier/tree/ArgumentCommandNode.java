@@ -5,14 +5,12 @@ import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
@@ -57,8 +55,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
-        type.listSuggestions(command, output, contextBuilder);
+    public CompletableFuture<Collection<String>> listSuggestions(final String command) {
+        return type.listSuggestions(command);
     }
 
     @Override

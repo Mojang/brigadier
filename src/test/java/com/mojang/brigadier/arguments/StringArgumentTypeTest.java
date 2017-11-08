@@ -52,13 +52,6 @@ public class StringArgumentTypeTest {
     }
 
     @Test
-    public void testSuggestions() throws Exception {
-        final Set<String> set = Sets.newHashSet();
-        string().listSuggestions("", set, context);
-        assertThat(set, is(empty()));
-    }
-
-    @Test
     public void testToString() throws Exception {
         assertThat(string(), hasToString("string()"));
     }

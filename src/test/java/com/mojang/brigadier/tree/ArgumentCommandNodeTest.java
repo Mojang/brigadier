@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -53,10 +54,8 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Set<String> set = Sets.newHashSet();
-        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
-        node.listSuggestions("", set, context);
-        assertThat(set, is(empty()));
+        final Collection<String> result = node.listSuggestions("").join();
+        assertThat(result, is(empty()));
     }
 
     @Test

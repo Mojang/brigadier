@@ -29,7 +29,7 @@ public class CommandSuggestionsTest {
         subject.register(literal("bar"));
         subject.register(literal("baz"));
 
-        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("", source));
+        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(0, 0)));
         assertThat(result.getSuggestions(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
@@ -41,7 +41,7 @@ public class CommandSuggestionsTest {
         subject.register(literal("bar"));
         subject.register(literal("baz"));
 
-        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("b", source));
+        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("b", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(0, 1)));
         assertThat(result.getSuggestions(), equalTo(Lists.newArrayList("bar", "baz")));
@@ -56,7 +56,7 @@ public class CommandSuggestionsTest {
                 .then(literal("baz"))
         );
 
-        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("parent ", source));
+        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("parent ", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(7, 7)));
         assertThat(result.getSuggestions(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
@@ -71,7 +71,7 @@ public class CommandSuggestionsTest {
                 .then(literal("baz"))
         );
 
-        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("parent b", source));
+        final CommandSuggestions result = subject.getCompletionSuggestions(subject.parse("parent b", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(7, 8)));
         assertThat(result.getSuggestions(), equalTo(Lists.newArrayList("bar", "baz")));

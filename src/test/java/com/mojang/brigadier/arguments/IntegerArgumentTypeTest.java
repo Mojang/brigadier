@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
@@ -69,10 +70,8 @@ public class IntegerArgumentTypeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Set<String> set = Sets.newHashSet();
-        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
-        type.listSuggestions("", set, context);
-        assertThat(set, is(empty()));
+        final Collection<String> result = type.listSuggestions("").join();
+        assertThat(result, is(empty()));
     }
 
     @Test

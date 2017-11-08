@@ -4,15 +4,16 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
@@ -50,9 +51,11 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
+    public CompletableFuture<Collection<String>> listSuggestions(final String command) {
         if (literal.startsWith(command)) {
-            output.add(literal);
+            return CompletableFuture.completedFuture(Collections.singleton(literal));
+        } else {
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
     }
 

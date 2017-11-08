@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Collection;
 import java.util.Set;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -80,23 +81,17 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Set<String> set = Sets.newHashSet();
-        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
+        final Collection<String> empty = node.listSuggestions("").join();
+        assertThat(empty, equalTo(Sets.newHashSet("foo")));
 
-        node.listSuggestions("", set, context);
-        assertThat(set, equalTo(Sets.newHashSet("foo")));
+        final Collection<String> foo = node.listSuggestions("foo").join();
+        assertThat(foo, equalTo(Sets.newHashSet("foo")));
 
-        set.clear();
-        node.listSuggestions("foo", set, context);
-        assertThat(set, equalTo(Sets.newHashSet("foo")));
+        final Collection<String> food = node.listSuggestions("food").join();
+        assertThat(food, is(empty()));
 
-        set.clear();
-        node.listSuggestions("food", set, context);
-        assertThat(set, is(empty()));
-
-        set.clear();
-        node.listSuggestions("b", set, context);
-        assertThat(set, is(empty()));
+        final Collection<String> b = node.listSuggestions("b").join();
+        assertThat(b, is(empty()));
     }
 
     @Test

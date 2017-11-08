@@ -68,14 +68,6 @@ public class FloatArgumentTypeTest {
     }
 
     @Test
-    public void testSuggestions() throws Exception {
-        final Set<String> set = Sets.newHashSet();
-        @SuppressWarnings("unchecked") final CommandContextBuilder<Object> context = Mockito.mock(CommandContextBuilder.class);
-        type.listSuggestions("", set, context);
-        assertThat(set, is(empty()));
-    }
-
-    @Test
     public void testEquals() throws Exception {
         new EqualsTester()
             .addEqualityGroup(floatArg(), floatArg())

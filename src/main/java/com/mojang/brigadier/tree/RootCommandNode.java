@@ -5,8 +5,9 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
@@ -28,7 +29,8 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void listSuggestions(final String command, final Set<String> output, final CommandContextBuilder<S> contextBuilder) {
+    public CompletableFuture<Collection<String>> listSuggestions(final String command) {
+        return CompletableFuture.completedFuture(Collections.emptyList());
     }
 
     @Override
