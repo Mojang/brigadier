@@ -153,7 +153,9 @@ public class CommandDispatcher<S> {
 
             context.withCommand(child.getCommand());
             if (reader.canRead()) {
-                reader.skip();
+                if (reader.canRead(2)) {
+                    reader.skip();
+                }
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, reader.getCursor());
                     childContext.withNode(child.getRedirect(), new StringRange(reader.getCursor(), reader.getCursor()));

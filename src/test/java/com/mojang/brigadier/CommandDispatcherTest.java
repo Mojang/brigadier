@@ -175,6 +175,16 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testParseIncomplete() throws Exception {
+        subject.register(literal("foo").then(literal("bar").executes(command)));
+
+        final ParseResults<Object> parse = subject.parse("foo ", source);
+        assertThat(parse.getReader().getRemaining(), equalTo(" "));
+        assertThat(parse.getContext().getNodes().size(), is(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void testExecuteAmbiguiousParentSubcommand() throws Exception {
         final Command<Object> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
