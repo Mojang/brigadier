@@ -53,4 +53,12 @@ public class StringRange {
     public int hashCode() {
         return Objects.hash(start, end);
     }
+
+    @Override
+    public String toString() {
+        return "StringRange{" +
+            "start=" + start +
+            ", end=" + end +
+            '}';
+    }
 }

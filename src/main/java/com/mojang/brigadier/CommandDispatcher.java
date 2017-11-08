@@ -1,11 +1,11 @@
 package com.mojang.brigadier;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -285,42 +285,37 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    private Set<String> findSuggestions(final CommandNode<S> node, final StringReader reader, final CommandContextBuilder<S> contextBuilder, final Set<String> result) {
-        if (node.getRedirect() != null) {
-            return findSuggestions(node.getRedirect(), reader, contextBuilder, result);
-        }
-        final S source = contextBuilder.getSource();
-        for (final CommandNode<S> child : node.getChildren()) {
-            if (!child.canUse(source)) {
-                continue;
-            }
-            final CommandContextBuilder<S> context = contextBuilder.copy();
-            final int cursor = reader.getCursor();
-            try {
-                child.parse(reader, context);
-                if (reader.canRead()) {
-                    if (reader.peek() == ARGUMENT_SEPARATOR_CHAR) {
-                        reader.skip();
-                        return findSuggestions(child, reader, context, result);
-                    }
-                } else {
-                    reader.setCursor(cursor);
-                    child.listSuggestions(reader.getRemaining(), result, context);
-                }
-            } catch (final CommandSyntaxException e) {
-                reader.setCursor(cursor);
-                child.listSuggestions(reader.getRemaining(), result, context);
-            }
+    public CommandSuggestions getCompletionSuggestions(final ParseResults<S> parse) {
+        final CommandContextBuilder<S> context = parse.getContext();
+
+        final Set<String> suggestions = new LinkedHashSet<>();
+
+        final CommandNode<S> parent;
+        final int start;
+
+        if (context.getNodes().isEmpty()) {
+            parent = root;
+            start = 0;
+        } else if (parse.getReader().canRead()) {
+            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.getLast(context.getNodes().entrySet());
+            parent = entry.getKey();
+            start = entry.getValue().getEnd() + 1;
+        } else if (context.getNodes().size() > 1) {
+            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.get(context.getNodes().entrySet(), context.getNodes().size() - 2);
+            parent = entry.getKey();
+            start = entry.getValue().getEnd() + 1;
+        } else {
+            parent = root;
+            start = 0;
         }
 
-        return result;
-    }
+        for (final CommandNode<S> node : parent.getChildren()) {
+            node.listSuggestions(parse.getReader().getString().substring(start), suggestions, context);
+        }
 
-    public String[] getCompletionSuggestions(final String command, final S source) {
-        final StringReader reader = new StringReader(command);
-        final Set<String> nodes = findSuggestions(root, reader, new CommandContextBuilder<>(this, source, 0), Sets.newLinkedHashSet());
-
-        return nodes.toArray(new String[nodes.size()]);
+        final List<String> result = new ArrayList<>(suggestions);
+        Collections.sort(result);
+        return new CommandSuggestions(new StringRange(start, parse.getReader().getTotalLength()), result);
     }
 
     public RootCommandNode<S> getRoot() {
