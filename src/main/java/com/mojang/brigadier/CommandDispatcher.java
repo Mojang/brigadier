@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -47,6 +48,8 @@ public class CommandDispatcher<S> {
             return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
         }
     };
+    private ResultConsumer<S> consumer = (c, s, r) -> {
+    };
 
     public CommandDispatcher(final RootCommandNode<S> root) {
         this.root = root;
@@ -60,6 +63,10 @@ public class CommandDispatcher<S> {
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
         return build;
+    }
+
+    public void setConsumer(final ResultConsumer<S> consumer) {
+        this.consumer = consumer;
     }
 
     public int execute(final String input, final S source) throws CommandSyntaxException {
@@ -84,26 +91,36 @@ public class CommandDispatcher<S> {
         contexts.add(parse.getContext());
 
         while (!contexts.isEmpty()) {
-            final CommandContextBuilder<S> context = contexts.removeLast();
-            final CommandContextBuilder<S> child = context.getChild();
+            final CommandContextBuilder<S> builder = contexts.removeLast();
+            final CommandContextBuilder<S> child = builder.getChild();
+            final CommandContext<S> context = builder.build();
             if (child != null) {
                 if (!child.getNodes().isEmpty()) {
-                    final RedirectModifier<S> modifier = Iterators.getLast(context.getNodes().keySet().iterator()).getRedirectModifier();
-                    final Collection<S> results = modifier.apply(context.build());
+                    final RedirectModifier<S> modifier = Iterators.getLast(builder.getNodes().keySet().iterator()).getRedirectModifier();
+                    final Collection<S> results = modifier.apply(context);
                     if (results.isEmpty()) {
+                        consumer.onCommandComplete(context, false, 0);
                         return 0;
                     }
                     for (final S source : results) {
                         contexts.add(child.copy().withSource(source));
                     }
                 }
-            } else if (context.getCommand() != null) {
+            } else if (builder.getCommand() != null) {
                 foundCommand = true;
-                result += context.getCommand().run(context.build());
+                try {
+                    final int value = builder.getCommand().run(context);
+                    result += value;
+                    consumer.onCommandComplete(context, true, value);
+                } catch (final CommandSyntaxException ex) {
+                    consumer.onCommandComplete(context, false, 0);
+                    throw ex;
+                }
             }
         }
 
         if (!foundCommand) {
+            consumer.onCommandComplete(parse.getContext().build(), false, 0);
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
 
