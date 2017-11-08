@@ -175,8 +175,18 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testParseIncomplete() throws Exception {
+    public void testParseIncompleteLiteral() throws Exception {
         subject.register(literal("foo").then(literal("bar").executes(command)));
+
+        final ParseResults<Object> parse = subject.parse("foo ", source);
+        assertThat(parse.getReader().getRemaining(), equalTo(" "));
+        assertThat(parse.getContext().getNodes().size(), is(1));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testParseIncompleteArgument() throws Exception {
+        subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
 
         final ParseResults<Object> parse = subject.parse("foo ", source);
         assertThat(parse.getReader().getRemaining(), equalTo(" "));
