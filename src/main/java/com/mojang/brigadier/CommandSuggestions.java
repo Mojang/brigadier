@@ -1,9 +1,13 @@
 package com.mojang.brigadier;
 
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class CommandSuggestions {
     private final StringRange range;
@@ -41,5 +45,10 @@ public class CommandSuggestions {
 
     public boolean isEmpty() {
         return suggestions.isEmpty();
+    }
+
+    @FunctionalInterface
+    public interface Provider<S> {
+        CompletableFuture<Collection<String>> getSuggestions(final CommandContext<S> context, final String prefix);
     }
 }

@@ -2,12 +2,12 @@ package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Predicate;
 

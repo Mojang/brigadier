@@ -1,21 +1,20 @@
 package com.mojang.brigadier.tree;
 
-import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Collection;
-import java.util.Set;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class RootCommandNodeTest extends AbstractCommandNodeTest {
     private RootCommandNode<Object> node;
@@ -49,7 +48,8 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Collection<String> result = node.listSuggestions("").join();
+        final CommandContext<Object> context = mock(CommandContext.class);
+        final Collection<String> result = node.listSuggestions(context, "").join();
         assertThat(result, is(empty()));
     }
 

@@ -11,10 +11,8 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.Collection;
-import java.util.Set;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.empty;
@@ -81,16 +79,16 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Collection<String> empty = node.listSuggestions("").join();
+        final Collection<String> empty = node.listSuggestions(contextBuilder.build(), "").join();
         assertThat(empty, equalTo(Sets.newHashSet("foo")));
 
-        final Collection<String> foo = node.listSuggestions("foo").join();
+        final Collection<String> foo = node.listSuggestions(contextBuilder.build(), "foo").join();
         assertThat(foo, equalTo(Sets.newHashSet("foo")));
 
-        final Collection<String> food = node.listSuggestions("food").join();
+        final Collection<String> food = node.listSuggestions(contextBuilder.build(), "food").join();
         assertThat(food, is(empty()));
 
-        final Collection<String> b = node.listSuggestions("b").join();
+        final Collection<String> b = node.listSuggestions(contextBuilder.build(), "b").join();
         assertThat(b, is(empty()));
     }
 

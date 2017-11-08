@@ -1,6 +1,7 @@
 package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.CompletableFuture;
 public interface ArgumentType<T> {
     <S> T parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
-    default <S> CompletableFuture<Collection<String>> listSuggestions(final String command) {
+    default <S> CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) {
         return CompletableFuture.completedFuture(Collections.emptyList());
     }
 }

@@ -19,16 +19,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -315,7 +309,7 @@ public class CommandDispatcher<S> {
         @SuppressWarnings("unchecked") final CompletableFuture<Collection<String>>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
-            futures[i++] = node.listSuggestions(parse.getReader().getString().substring(start));
+            futures[i++] = node.listSuggestions(context.build(), parse.getReader().getString().substring(start));
         }
 
         final CompletableFuture<CommandSuggestions> result = new CompletableFuture<>();

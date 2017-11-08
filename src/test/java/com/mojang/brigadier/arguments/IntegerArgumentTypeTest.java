@@ -1,7 +1,6 @@
 package com.mojang.brigadier.arguments;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -10,14 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collection;
-import java.util.Set;
-
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -66,12 +60,6 @@ public class IntegerArgumentTypeTest {
             assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "5", "maximum", "0")));
             assertThat(ex.getCursor(), is(0));
         }
-    }
-
-    @Test
-    public void testSuggestions() throws Exception {
-        final Collection<String> result = type.listSuggestions("").join();
-        assertThat(result, is(empty()));
     }
 
     @Test

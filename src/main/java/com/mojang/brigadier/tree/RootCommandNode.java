@@ -2,6 +2,7 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -29,7 +30,7 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Collection<String>> listSuggestions(final String command) {
+    public CompletableFuture<Collection<String>> listSuggestions(CommandContext<S> context, final String command) {
         return CompletableFuture.completedFuture(Collections.emptyList());
     }
 

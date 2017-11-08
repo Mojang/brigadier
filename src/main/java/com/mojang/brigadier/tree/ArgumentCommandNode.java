@@ -1,16 +1,19 @@
 package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandSuggestions;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
@@ -19,11 +22,13 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     private final String name;
     private final ArgumentType<T> type;
+    private final CommandSuggestions.Provider<S> suggestionsProvider;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final CommandSuggestions.Provider<S> suggestionsProvider) {
         super(command, requirement, redirect, modifier);
         this.name = name;
         this.type = type;
+        this.suggestionsProvider = suggestionsProvider;
     }
 
     public String getName() {
@@ -55,8 +60,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Collection<String>> listSuggestions(final String command) {
-        return type.listSuggestions(command);
+    public CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) {
+        return suggestionsProvider.getSuggestions(context, command);
     }
 
     @Override
@@ -64,6 +69,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
         builder.redirect(getRedirect(), getRedirectModifier());
+        builder.suggests(suggestionsProvider);
         if (getCommand() != null) {
             builder.executes(getCommand());
         }
