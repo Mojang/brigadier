@@ -51,7 +51,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     @Override
     public CompletableFuture<Collection<String>> listSuggestions(CommandContext<S> context, final String command) {
-        if (literal.startsWith(command)) {
+        if (literal.toLowerCase().startsWith(command.toLowerCase())) {
             return CompletableFuture.completedFuture(Collections.singleton(literal));
         } else {
             return CompletableFuture.completedFuture(Collections.emptyList());
