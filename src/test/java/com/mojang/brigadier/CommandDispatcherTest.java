@@ -296,7 +296,7 @@ public class CommandDispatcherTest {
         assertThat(parent.getNodes().size(), is(2));
         assertThat(parent.getSource(), is(source));
 
-        assertThat(subject.execute(parse), is(84));
+        assertThat(subject.execute(parse), is(2));
         verify(command).run(argThat(hasProperty("source", is(source1))));
         verify(command).run(argThat(hasProperty("source", is(source2))));
     }

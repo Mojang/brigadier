@@ -86,6 +86,8 @@ public class CommandDispatcher<S> {
         }
 
         int result = 0;
+        int successfulForks = 0;
+        boolean forked = false;
         boolean foundCommand = false;
         final Deque<CommandContextBuilder<S>> contexts = new ArrayDeque<>();
         contexts.add(parse.getContext());
@@ -102,6 +104,9 @@ public class CommandDispatcher<S> {
                         consumer.onCommandComplete(context, false, 0);
                         return 0;
                     }
+                    if (results.size() > 1) {
+                        forked = true;
+                    }
                     for (final S source : results) {
                         contexts.add(child.copy().withSource(source));
                     }
@@ -112,9 +117,12 @@ public class CommandDispatcher<S> {
                     final int value = builder.getCommand().run(context);
                     result += value;
                     consumer.onCommandComplete(context, true, value);
+                    successfulForks++;
                 } catch (final CommandSyntaxException ex) {
                     consumer.onCommandComplete(context, false, 0);
-                    throw ex;
+                    if (!forked) {
+                        throw ex;
+                    }
                 }
             }
         }
@@ -124,7 +132,7 @@ public class CommandDispatcher<S> {
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
 
-        return result;
+        return forked ? successfulForks : result;
     }
 
     public ParseResults<S> parse(final String command, final S source) {
