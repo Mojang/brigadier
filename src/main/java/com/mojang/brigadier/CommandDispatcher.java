@@ -93,7 +93,7 @@ public class CommandDispatcher<S> {
         contexts.add(parse.getContext());
 
         while (!contexts.isEmpty()) {
-            final CommandContextBuilder<S> builder = contexts.removeLast();
+            final CommandContextBuilder<S> builder = contexts.removeFirst();
             final CommandContextBuilder<S> child = builder.getChild();
             final CommandContext<S> context = builder.build();
             if (child != null) {
