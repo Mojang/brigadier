@@ -13,7 +13,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
@@ -31,16 +30,12 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         this.suggestionsProvider = suggestionsProvider;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public ArgumentType<T> getType() {
         return type;
     }
 
     @Override
-    protected Object getMergeKey() {
+    public String getName() {
         return name;
     }
 

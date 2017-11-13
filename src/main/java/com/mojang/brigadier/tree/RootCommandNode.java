@@ -16,8 +16,8 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    protected Object getMergeKey() {
-        throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
+    public String getName() {
+        return "";
     }
 
     @Override

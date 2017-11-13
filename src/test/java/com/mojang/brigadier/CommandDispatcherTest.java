@@ -11,9 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Function;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -22,6 +20,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
@@ -356,5 +355,26 @@ public class CommandDispatcherTest {
             assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(4));
         }
+    }
+
+    @Test
+    public void testGetPath() {
+        final LiteralCommandNode<Object> bar = literal("bar").build();
+        subject.register(literal("foo").then(bar));
+
+        assertThat(subject.getPath(bar), equalTo(Lists.newArrayList("foo", "bar")));
+    }
+
+    @Test
+    public void testFindNodeExists() {
+        final LiteralCommandNode<Object> bar = literal("bar").build();
+        subject.register(literal("foo").then(bar));
+
+        assertThat(subject.findNode(Lists.newArrayList("foo", "bar")), is(bar));
+    }
+
+    @Test
+    public void testFindNodeDoesntExist() {
+        assertThat(subject.findNode(Lists.newArrayList("foo", "bar")), is(nullValue()));
     }
 }

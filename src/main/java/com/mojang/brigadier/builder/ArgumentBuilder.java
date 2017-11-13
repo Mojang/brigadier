@@ -7,8 +7,6 @@ import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
@@ -25,6 +23,14 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
             throw new IllegalStateException("Cannot add children to a redirected node");
         }
         arguments.addChild(argument.build());
+        return getThis();
+    }
+
+    public T then(final CommandNode<S> argument) {
+        if (target != null) {
+            throw new IllegalStateException("Cannot add children to a redirected node");
+        }
+        arguments.addChild(argument);
         return getThis();
     }
 

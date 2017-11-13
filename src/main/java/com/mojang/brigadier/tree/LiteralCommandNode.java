@@ -30,7 +30,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    protected Object getMergeKey() {
+    public String getName() {
         return literal;
     }
 

@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
-    private Map<Object, CommandNode<S>> children = Maps.newLinkedHashMap();
+    private Map<String, CommandNode<S>> children = Maps.newLinkedHashMap();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
@@ -39,6 +39,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return children.values();
     }
 
+    public CommandNode<S> getChild(final String name) {
+        return children.get(name);
+    }
+
     public CommandNode<S> getRedirect() {
         return redirect;
     }
@@ -52,7 +56,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     }
 
     public void addChild(final CommandNode<S> node) {
-        final CommandNode<S> child = children.get(node.getMergeKey());
+        if (node instanceof RootCommandNode) {
+            throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
+        }
+
+        final CommandNode<S> child = children.get(node.getName());
         if (child != null) {
             // We've found something to merge onto
             if (node.getCommand() != null) {
@@ -62,7 +70,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
                 child.addChild(grandchild);
             }
         } else {
-            children.put(node.getMergeKey(), node);
+            children.put(node.getName(), node);
         }
 
         children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -90,7 +98,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return requirement;
     }
 
-    protected abstract Object getMergeKey();
+    public abstract String getName();
 
     public abstract String getUsageText();
 

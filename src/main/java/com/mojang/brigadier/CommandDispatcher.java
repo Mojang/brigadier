@@ -354,4 +354,44 @@ public class CommandDispatcher<S> {
     public RootCommandNode<S> getRoot() {
         return root;
     }
+
+    public Collection<String> getPath(final CommandNode<S> target) {
+        final List<List<CommandNode<S>>> nodes = new ArrayList<>();
+        addPaths(root, nodes, new ArrayList<>());
+
+        for (final List<CommandNode<S>> list : nodes) {
+            if (list.get(list.size() - 1) == target) {
+                final List<String> result = new ArrayList<>(list.size());
+                for (final CommandNode<S> node : list) {
+                    if (node != root) {
+                        result.add(node.getName());
+                    }
+                }
+                return result;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    public CommandNode<S> findNode(final Collection<String> path) {
+        CommandNode<S> node = root;
+        for (final String name : path) {
+            node = node.getChild(name);
+            if (node == null) {
+                return null;
+            }
+        }
+        return node;
+    }
+
+    private void addPaths(final CommandNode<S> node, final List<List<CommandNode<S>>> result, final List<CommandNode<S>> parents) {
+        final List<CommandNode<S>> current = new ArrayList<>(parents);
+        current.add(node);
+        result.add(current);
+
+        for (final CommandNode<S> child : node.getChildren()) {
+            addPaths(child, result, current);
+        }
+    }
 }
