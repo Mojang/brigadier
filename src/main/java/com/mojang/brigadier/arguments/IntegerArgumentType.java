@@ -34,6 +34,14 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         return context.getArgument(name, int.class);
     }
 
+    public int getMinimum() {
+        return minimum;
+    }
+
+    public int getMaximum() {
+        return maximum;
+    }
+
     @Override
     public <S> Integer parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();

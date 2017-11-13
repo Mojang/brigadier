@@ -29,6 +29,10 @@ public class StringArgumentType implements ArgumentType<String> {
         return context.getArgument(name, String.class);
     }
 
+    public StringType getType() {
+        return type;
+    }
+
     @Override
     public <S> String parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         if (type == StringType.GREEDY_PHRASE) {

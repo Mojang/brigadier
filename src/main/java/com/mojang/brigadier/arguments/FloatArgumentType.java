@@ -34,6 +34,14 @@ public class FloatArgumentType implements ArgumentType<Float> {
         return context.getArgument(name, Float.class);
     }
 
+    public float getMinimum() {
+        return minimum;
+    }
+
+    public float getMaximum() {
+        return maximum;
+    }
+
     @Override
     public <S> Float parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
