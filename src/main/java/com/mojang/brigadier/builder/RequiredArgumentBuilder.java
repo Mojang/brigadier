@@ -5,11 +5,6 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-
 public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
     private final ArgumentType<T> type;
@@ -30,7 +25,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     public CommandSuggestions.Provider<S> getSuggestionsProvider() {
-        return suggestionsProvider == null ? type::listSuggestions : suggestionsProvider;
+        return suggestionsProvider;
     }
 
     @Override

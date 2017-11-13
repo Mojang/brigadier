@@ -21,13 +21,13 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     private final String name;
     private final ArgumentType<T> type;
-    private final CommandSuggestions.Provider<S> suggestionsProvider;
+    private final CommandSuggestions.Provider<S> customSuggestions;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final CommandSuggestions.Provider<S> suggestionsProvider) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final CommandSuggestions.Provider<S> customSuggestions) {
         super(command, requirement, redirect, modifier);
         this.name = name;
         this.type = type;
-        this.suggestionsProvider = suggestionsProvider;
+        this.customSuggestions = customSuggestions;
     }
 
     public ArgumentType<T> getType() {
@@ -44,6 +44,10 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
     }
 
+    public CommandSuggestions.Provider<S> getCustomSuggestions() {
+        return customSuggestions;
+    }
+
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
@@ -56,7 +60,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) {
-        return suggestionsProvider.getSuggestions(context, command);
+        if (customSuggestions == null) {
+            return type.listSuggestions(context, command);
+        } else {
+            return customSuggestions.getSuggestions(context, command);
+        }
     }
 
     @Override
@@ -64,7 +72,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
         builder.redirect(getRedirect(), getRedirectModifier());
-        builder.suggests(suggestionsProvider);
+        builder.suggests(customSuggestions);
         if (getCommand() != null) {
             builder.executes(getCommand());
         }
