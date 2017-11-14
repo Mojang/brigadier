@@ -52,8 +52,10 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     public static String escapeIfRequired(final String input) {
-        if (input.contains("\\") || input.contains("\"") || input.contains(CommandDispatcher.ARGUMENT_SEPARATOR)) {
-            return escape(input);
+        for (final char c : input.toCharArray()) {
+            if (!StringReader.isAllowedInUnquotedString(c)) {
+                return escape(input);
+            }
         }
         return input;
     }

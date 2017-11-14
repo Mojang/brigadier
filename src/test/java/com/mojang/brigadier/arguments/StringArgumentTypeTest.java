@@ -58,7 +58,7 @@ public class StringArgumentTypeTest {
 
     @Test
     public void testEscapeIfRequired_notRequired() throws Exception {
-        assertThat(escapeIfRequired("hello!"), is(equalTo("hello!")));
+        assertThat(escapeIfRequired("hello"), is(equalTo("hello")));
         assertThat(escapeIfRequired(""), is(equalTo("")));
     }
 

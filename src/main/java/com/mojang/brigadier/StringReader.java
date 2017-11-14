@@ -137,7 +137,7 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
-    private static boolean isAllowedInUnquotedString(final char c) {
+    public static boolean isAllowedInUnquotedString(final char c) {
         return c >= '0' && c <= '9'
             || c >= 'A' && c <= 'Z'
             || c >= 'a' && c <= 'z'
