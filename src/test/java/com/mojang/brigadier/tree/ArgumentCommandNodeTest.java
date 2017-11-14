@@ -50,7 +50,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Collection<String> result = node.listSuggestions(contextBuilder.build(), "").join();
+        final Collection<String> result = node.listSuggestions(contextBuilder.build(""), "").join();
         assertThat(result, is(empty()));
     }
 

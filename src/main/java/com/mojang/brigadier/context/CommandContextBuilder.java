@@ -78,8 +78,8 @@ public class CommandContextBuilder<S> {
         return nodes;
     }
 
-    public CommandContext<S> build() {
-        return new CommandContext<>(source, arguments, command, nodes, range, child == null ? null : child.build());
+    public CommandContext<S> build(final String input) {
+        return new CommandContext<>(source, input, arguments, command, nodes, range, child == null ? null : child.build(input));
     }
 
     public CommandDispatcher<S> getDispatcher() {

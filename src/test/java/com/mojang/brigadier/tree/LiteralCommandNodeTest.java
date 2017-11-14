@@ -79,16 +79,16 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Collection<String> empty = node.listSuggestions(contextBuilder.build(), "").join();
+        final Collection<String> empty = node.listSuggestions(contextBuilder.build(""), "").join();
         assertThat(empty, equalTo(Sets.newHashSet("foo")));
 
-        final Collection<String> foo = node.listSuggestions(contextBuilder.build(), "foo").join();
+        final Collection<String> foo = node.listSuggestions(contextBuilder.build("foo"), "foo").join();
         assertThat(foo, equalTo(Sets.newHashSet("foo")));
 
-        final Collection<String> food = node.listSuggestions(contextBuilder.build(), "food").join();
+        final Collection<String> food = node.listSuggestions(contextBuilder.build("food"), "food").join();
         assertThat(food, is(empty()));
 
-        final Collection<String> b = node.listSuggestions(contextBuilder.build(), "b").join();
+        final Collection<String> b = node.listSuggestions(contextBuilder.build("b"), "b").join();
         assertThat(b, is(empty()));
     }
 

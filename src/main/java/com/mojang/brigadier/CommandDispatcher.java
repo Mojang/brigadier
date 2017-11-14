@@ -95,7 +95,7 @@ public class CommandDispatcher<S> {
         while (!contexts.isEmpty()) {
             final CommandContextBuilder<S> builder = contexts.removeFirst();
             final CommandContextBuilder<S> child = builder.getChild();
-            final CommandContext<S> context = builder.build();
+            final CommandContext<S> context = builder.build(parse.getReader().getString());
             if (child != null) {
                 if (!child.getNodes().isEmpty()) {
                     final RedirectModifier<S> modifier = Iterators.getLast(builder.getNodes().keySet().iterator()).getRedirectModifier();
@@ -128,7 +128,7 @@ public class CommandDispatcher<S> {
         }
 
         if (!foundCommand) {
-            consumer.onCommandComplete(parse.getContext().build(), false, 0);
+            consumer.onCommandComplete(parse.getContext().build(parse.getReader().getString()), false, 0);
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
 
@@ -334,7 +334,11 @@ public class CommandDispatcher<S> {
         @SuppressWarnings("unchecked") final CompletableFuture<Collection<String>>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
-            futures[i++] = node.listSuggestions(context.build(), parse.getReader().getString().substring(start));
+            try {
+                futures[i++] = node.listSuggestions(context.build(parse.getReader().getString()), parse.getReader().getString().substring(start));
+            } catch (final CommandSyntaxException e) {
+                futures[i++] = CompletableFuture.completedFuture(Collections.emptyList());
+            }
         }
 
         final CompletableFuture<CommandSuggestions> result = new CompletableFuture<>();

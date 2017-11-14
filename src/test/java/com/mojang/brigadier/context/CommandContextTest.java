@@ -32,24 +32,24 @@ public class CommandContextTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetArgument_nonexistent() throws Exception {
-        builder.build().getArgument("foo", Object.class);
+        builder.build("").getArgument("foo", Object.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetArgument_wrongType() throws Exception {
-        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
         context.getArgument("foo", String.class);
     }
 
     @Test
     public void testGetArgument() throws Exception {
-        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build();
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
         assertThat(context.getArgument("foo", int.class), is(123));
     }
 
     @Test
     public void testSource() throws Exception {
-        assertThat(builder.build().getSource(), is(source));
+        assertThat(builder.build("").getSource(), is(source));
     }
 
     @SuppressWarnings("unchecked")
@@ -61,13 +61,13 @@ public class CommandContextTest {
         final CommandNode<Object> node = mock(CommandNode.class);
         final CommandNode<Object> otherNode = mock(CommandNode.class);
         new EqualsTester()
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).build(), new CommandContextBuilder<>(dispatcher, source, 0).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, otherSource, 0).build(), new CommandContextBuilder<>(dispatcher, otherSource, 0).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build(), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build(), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build(), new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build(), new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build())
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build(), new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build())
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).build(""), new CommandContextBuilder<>(dispatcher, source, 0).build(""))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, otherSource, 0).build(""), new CommandContextBuilder<>(dispatcher, otherSource, 0).build(""))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build(""), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build(""))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build(""), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build(""))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123"), new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123"))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build("123 456"))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build("123 456"))
             .testEquals();
     }
 }

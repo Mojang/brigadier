@@ -9,14 +9,16 @@ import java.util.Map;
 
 public class CommandContext<S> {
     private final S source;
+    private final String input;
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
     private final Map<CommandNode<S>, StringRange> nodes;
     private final StringRange range;
     private final CommandContext<S> child;
 
-    public CommandContext(final S source, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child) {
         this.source = source;
+        this.input = input;
         this.arguments = arguments;
         this.command = command;
         this.nodes = nodes;
@@ -80,6 +82,10 @@ public class CommandContext<S> {
 
     public StringRange getRange() {
         return range;
+    }
+
+    public String getInput() {
+        return input;
     }
 
     public Map<CommandNode<S>, StringRange> getNodes() {

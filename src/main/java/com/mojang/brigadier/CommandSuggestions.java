@@ -2,6 +2,7 @@ package com.mojang.brigadier;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +50,6 @@ public class CommandSuggestions {
 
     @FunctionalInterface
     public interface Provider<S> {
-        CompletableFuture<Collection<String>> getSuggestions(final CommandContext<S> context, final String prefix);
+        CompletableFuture<Collection<String>> getSuggestions(final CommandContext<S> context, final String prefix) throws CommandSyntaxException;
     }
 }

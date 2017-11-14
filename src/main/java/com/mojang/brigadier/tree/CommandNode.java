@@ -104,7 +104,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
-    public abstract CompletableFuture<Collection<String>> listSuggestions(CommandContext<S> context, String command);
+    public abstract CompletableFuture<Collection<String>> listSuggestions(CommandContext<S> context, String command) throws CommandSyntaxException;
 
     public abstract ArgumentBuilder<S, ?> createBuilder();
 

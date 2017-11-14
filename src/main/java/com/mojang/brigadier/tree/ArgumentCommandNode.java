@@ -59,7 +59,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) {
+    public CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) throws CommandSyntaxException {
         if (customSuggestions == null) {
             return type.listSuggestions(context, command);
         } else {
