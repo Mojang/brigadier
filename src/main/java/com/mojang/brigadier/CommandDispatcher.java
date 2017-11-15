@@ -177,11 +177,11 @@ public class CommandDispatcher<S> {
             }
 
             context.withCommand(child.getCommand());
-            if (reader.canRead(2)) {
+            if (reader.canRead(child.getRedirect() == null ? 2 : 1)) {
                 reader.skip();
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, reader.getCursor());
-                    childContext.withNode(child.getRedirect(), new StringRange(reader.getCursor(), reader.getCursor()));
+                    childContext.withNode(child.getRedirect(), new StringRange(cursor, reader.getCursor() - 1));
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
@@ -311,7 +311,8 @@ public class CommandDispatcher<S> {
     }
 
     public CompletableFuture<CommandSuggestions> getCompletionSuggestions(final ParseResults<S> parse) {
-        final CommandContextBuilder<S> context = parse.getContext();
+        final CommandContextBuilder<S> rootContext = parse.getContext();
+        final CommandContextBuilder<S> context = rootContext.getLastChild();
         final CommandNode<S> parent;
         final int start;
 
@@ -324,6 +325,10 @@ public class CommandDispatcher<S> {
             start = entry.getValue().getEnd() + 1;
         } else if (context.getNodes().size() > 1) {
             final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.get(context.getNodes().entrySet(), context.getNodes().size() - 2);
+            parent = entry.getKey();
+            start = entry.getValue().getEnd() + 1;
+        } else if (rootContext != context && context.getNodes().size() > 0) {
+            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.getLast(context.getNodes().entrySet());
             parent = entry.getKey();
             start = entry.getValue().getEnd() + 1;
         } else {

@@ -70,6 +70,14 @@ public class CommandContextBuilder<S> {
         return child;
     }
 
+    public CommandContextBuilder<S> getLastChild() {
+        CommandContextBuilder<S> result = this;
+        while (result.getChild() != null) {
+            result = result.getChild();
+        }
+        return result;
+    }
+
     public Command<S> getCommand() {
         return command;
     }

@@ -259,12 +259,12 @@ public class CommandDispatcherTest {
 
         final CommandContextBuilder<Object> child1 = parse.getContext().getChild();
         assertThat(child1, is(notNullValue()));
-        assertThat(child1.getRange().get(input), equalTo("redirected"));
+        assertThat(child1.getRange().get(input), equalTo("redirected redirected"));
         assertThat(child1.getNodes().size(), is(2));
 
         final CommandContextBuilder<Object> child2 = child1.getChild();
         assertThat(child2, is(notNullValue()));
-        assertThat(child2.getRange().get(input), equalTo("actual"));
+        assertThat(child2.getRange().get(input), equalTo("redirected actual"));
         assertThat(child2.getNodes().size(), is(2));
 
         assertThat(subject.execute(parse), is(42));
@@ -291,7 +291,7 @@ public class CommandDispatcherTest {
 
         final CommandContextBuilder<Object> parent = parse.getContext().getChild();
         assertThat(parent, is(notNullValue()));
-        assertThat(parent.getRange().get(input), equalTo("actual"));
+        assertThat(parent.getRange().get(input), equalTo("redirected actual"));
         assertThat(parent.getNodes().size(), is(2));
         assertThat(parent.getSource(), is(source));
 
