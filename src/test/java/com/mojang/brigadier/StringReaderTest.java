@@ -362,6 +362,68 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readFloat() throws Exception {
+        final StringReader reader = new StringReader("123");
+        assertThat(reader.readFloat(), is(123.0f));
+        assertThat(reader.getRead(), equalTo("123"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readFloat_withDecimal() throws Exception {
+        final StringReader reader = new StringReader("12.34");
+        assertThat(reader.readFloat(), is(12.34f));
+        assertThat(reader.getRead(), equalTo("12.34"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readFloat_negative() throws Exception {
+        final StringReader reader = new StringReader("-123");
+        assertThat(reader.readFloat(), is(-123.0f));
+        assertThat(reader.getRead(), equalTo("-123"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readFloat_invalid() throws Exception {
+        try {
+            new StringReader("12.34.56").readFloat();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_INVALID_FLOAT));
+            assertThat(ex.getData(), equalTo(ImmutableMap.of("value", "12.34.56")));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readFloat_none() throws Exception {
+        try {
+            new StringReader("").readFloat();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_FLOAT));
+            assertThat(ex.getData(), equalTo(Collections.emptyMap()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readFloat_withRemaining() throws Exception {
+        final StringReader reader = new StringReader("12.34 foo bar");
+        assertThat(reader.readFloat(), is(12.34f));
+        assertThat(reader.getRead(), equalTo("12.34"));
+        assertThat(reader.getRemaining(), equalTo(" foo bar"));
+    }
+
+    @Test
+    public void readFloat_withRemainingImmediate() throws Exception {
+        final StringReader reader = new StringReader("12.34foo bar");
+        assertThat(reader.readFloat(), is(12.34f));
+        assertThat(reader.getRead(), equalTo("12.34"));
+        assertThat(reader.getRemaining(), equalTo("foo bar"));
+    }
+
+    @Test
     public void expect_correct() throws Exception {
         final StringReader reader = new StringReader("abc");
         reader.expect('a');

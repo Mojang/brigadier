@@ -16,6 +16,8 @@ public class StringReader implements ImmutableStringReader {
     public static final SimpleCommandExceptionType ERROR_EXPECTED_INT = new SimpleCommandExceptionType("parsing.int.expected", "Expected integer");
     public static final ParameterizedCommandExceptionType ERROR_INVALID_DOUBLE = new ParameterizedCommandExceptionType("parsing.double.invalid", "Invalid double '${value}'", "value");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_DOUBLE = new SimpleCommandExceptionType("parsing.double.expected", "Expected double");
+    public static final ParameterizedCommandExceptionType ERROR_INVALID_FLOAT = new ParameterizedCommandExceptionType("parsing.float.invalid", "Invalid float '${value}'", "value");
+    public static final SimpleCommandExceptionType ERROR_EXPECTED_FLOAT = new SimpleCommandExceptionType("parsing.float.expected", "Expected float");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_BOOL = new SimpleCommandExceptionType("parsing.bool.expected", "Expected bool");
     public static final ParameterizedCommandExceptionType ERROR_EXPECTED_SYMBOL = new ParameterizedCommandExceptionType("parsing.expected", "Expected '${symbol}'", "symbol");
 
@@ -93,7 +95,7 @@ public class StringReader implements ImmutableStringReader {
         cursor++;
     }
 
-    private static boolean isAllowedNumber(final char c) {
+    public static boolean isAllowedNumber(final char c) {
         return c >= '0' && c <= '9' || c == '.' || c == '-';
     }
 
@@ -134,6 +136,23 @@ public class StringReader implements ImmutableStringReader {
         } catch (final NumberFormatException ex) {
             cursor = start;
             throw ERROR_INVALID_DOUBLE.createWithContext(this, number);
+        }
+    }
+
+    public float readFloat() throws CommandSyntaxException {
+        final int start = cursor;
+        while (canRead() && isAllowedNumber(peek())) {
+            skip();
+        }
+        final String number = string.substring(start, cursor);
+        if (number.isEmpty()) {
+            throw ERROR_EXPECTED_FLOAT.createWithContext(this);
+        }
+        try {
+            return Float.parseFloat(number);
+        } catch (final NumberFormatException ex) {
+            cursor = start;
+            throw ERROR_INVALID_FLOAT.createWithContext(this, number);
         }
     }
 
