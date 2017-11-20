@@ -5,13 +5,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -49,8 +48,8 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testSuggestions() throws Exception {
         final CommandContext<Object> context = mock(CommandContext.class);
-        final Collection<String> result = node.listSuggestions(context, "").join();
-        assertThat(result, is(empty()));
+        final Suggestions result = node.listSuggestions(context, new SuggestionsBuilder("", 0)).join();
+        assertThat(result.isEmpty(), is(true));
     }
 
     @Test(expected = IllegalStateException.class)

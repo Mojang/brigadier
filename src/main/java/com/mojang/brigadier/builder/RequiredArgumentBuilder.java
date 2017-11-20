@@ -1,14 +1,14 @@
 package com.mojang.brigadier.builder;
 
-import com.mojang.brigadier.CommandSuggestions;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 
 public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
     private final ArgumentType<T> type;
-    private CommandSuggestions.Provider<S> suggestionsProvider = null;
+    private SuggestionProvider<S> suggestionsProvider = null;
 
     private RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
         this.name = name;
@@ -19,12 +19,12 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         return new RequiredArgumentBuilder<>(name, type);
     }
 
-    public RequiredArgumentBuilder<S, T> suggests(final CommandSuggestions.Provider<S> provider) {
+    public RequiredArgumentBuilder<S, T> suggests(final SuggestionProvider<S> provider) {
         this.suggestionsProvider = provider;
         return getThis();
     }
 
-    public CommandSuggestions.Provider<S> getSuggestionsProvider() {
+    public SuggestionProvider<S> getSuggestionsProvider() {
         return suggestionsProvider;
     }
 

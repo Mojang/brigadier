@@ -1,7 +1,6 @@
 package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandSuggestions;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -10,8 +9,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -21,9 +22,9 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     private final String name;
     private final ArgumentType<T> type;
-    private final CommandSuggestions.Provider<S> customSuggestions;
+    private final SuggestionProvider<S> customSuggestions;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final CommandSuggestions.Provider<S> customSuggestions) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final SuggestionProvider<S> customSuggestions) {
         super(command, requirement, redirect, modifier);
         this.name = name;
         this.type = type;
@@ -44,7 +45,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
     }
 
-    public CommandSuggestions.Provider<S> getCustomSuggestions() {
+    public SuggestionProvider<S> getCustomSuggestions() {
         return customSuggestions;
     }
 
@@ -59,11 +60,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
         if (customSuggestions == null) {
-            return type.listSuggestions(context, command);
+            return type.listSuggestions(context, builder);
         } else {
-            return customSuggestions.getSuggestions(context, command);
+            return customSuggestions.getSuggestions(context, builder);
         }
     }
 

@@ -1,21 +1,22 @@
 package com.mojang.brigadier.tree;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
-
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -79,17 +80,17 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
-        final Collection<String> empty = node.listSuggestions(contextBuilder.build(""), "").join();
-        assertThat(empty, equalTo(Sets.newHashSet("foo")));
+        final Suggestions empty = node.listSuggestions(contextBuilder.build(""), new SuggestionsBuilder("", 0)).join();
+        assertThat(empty.getList(), equalTo(Lists.newArrayList(new Suggestion(new StringRange(0, 0), "foo"))));
 
-        final Collection<String> foo = node.listSuggestions(contextBuilder.build("foo"), "foo").join();
-        assertThat(foo, equalTo(Sets.newHashSet("foo")));
+        final Suggestions foo = node.listSuggestions(contextBuilder.build("foo"), new SuggestionsBuilder("foo", 0)).join();
+        assertThat(foo.isEmpty(), is(true));
 
-        final Collection<String> food = node.listSuggestions(contextBuilder.build("food"), "food").join();
-        assertThat(food, is(empty()));
+        final Suggestions food = node.listSuggestions(contextBuilder.build("food"), new SuggestionsBuilder("food", 0)).join();
+        assertThat(food.isEmpty(), is(true));
 
-        final Collection<String> b = node.listSuggestions(contextBuilder.build("b"), "b").join();
-        assertThat(b, is(empty()));
+        final Suggestions b = node.listSuggestions(contextBuilder.build("b"), new SuggestionsBuilder("b", 0)).join();
+        assertThat(food.isEmpty(), is(true));
     }
 
     @Test

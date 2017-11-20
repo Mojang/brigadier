@@ -11,6 +11,8 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -310,7 +312,7 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    public CompletableFuture<CommandSuggestions> getCompletionSuggestions(final ParseResults<S> parse) {
+    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse) {
         final CommandContextBuilder<S> rootContext = parse.getContext();
         final CommandContextBuilder<S> context = rootContext.getLastChild();
         final CommandNode<S> parent;
@@ -336,25 +338,23 @@ public class CommandDispatcher<S> {
             start = 0;
         }
 
-        @SuppressWarnings("unchecked") final CompletableFuture<Collection<String>>[] futures = new CompletableFuture[parent.getChildren().size()];
+        @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
             try {
-                futures[i++] = node.listSuggestions(context.build(parse.getReader().getString()), parse.getReader().getString().substring(start));
+                futures[i++] = node.listSuggestions(context.build(parse.getReader().getString()), new SuggestionsBuilder(parse.getReader().getString(), start));
             } catch (final CommandSyntaxException e) {
-                futures[i++] = CompletableFuture.completedFuture(Collections.emptyList());
+                futures[i++] = Suggestions.empty();
             }
         }
 
-        final CompletableFuture<CommandSuggestions> result = new CompletableFuture<>();
+        final CompletableFuture<Suggestions> result = new CompletableFuture<>();
         CompletableFuture.allOf(futures).thenRun(() -> {
-            final Set<String> suggestions = Sets.newHashSet();
-            for (final CompletableFuture<Collection<String>> future : futures) {
-                suggestions.addAll(future.join());
+            final List<Suggestions> suggestions = Lists.newArrayList();
+            for (final CompletableFuture<Suggestions> future : futures) {
+                suggestions.add(future.join());
             }
-            final List<String> sorted = new ArrayList<>(suggestions);
-            Collections.sort(sorted);
-            result.complete(new CommandSuggestions(new StringRange(start, parse.getReader().getTotalLength()), sorted));
+            result.complete(Suggestions.merge(suggestions));
         });
 
         return result;

@@ -9,6 +9,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -104,7 +106,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
 
-    public abstract CompletableFuture<Collection<String>> listSuggestions(CommandContext<S> context, String command) throws CommandSyntaxException;
+    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) throws CommandSyntaxException;
 
     public abstract ArgumentBuilder<S, ?> createBuilder();
 

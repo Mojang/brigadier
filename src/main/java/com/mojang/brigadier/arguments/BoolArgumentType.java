@@ -1,13 +1,12 @@
 package com.mojang.brigadier.arguments;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BoolArgumentType implements ArgumentType<Boolean> {
@@ -28,16 +27,13 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> CompletableFuture<Collection<String>> listSuggestions(final CommandContext<S> context, final String command) {
-        final List<String> result = Lists.newArrayList();
-
-        if ("true".startsWith(command)) {
-            result.add("true");
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        if ("true".startsWith(builder.getRemaining().toLowerCase())) {
+            builder.suggest("true");
         }
-        if ("false".startsWith(command)) {
-            result.add("false");
+        if ("false".startsWith(builder.getRemaining().toLowerCase())) {
+            builder.suggest("false");
         }
-
-        return CompletableFuture.completedFuture(result);
+        return builder.buildFuture();
     }
 }
