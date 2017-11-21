@@ -32,11 +32,11 @@ public class SuggestionsBuilder {
     }
 
     public Suggestions build() {
-        return new Suggestions(input, result);
+        return Suggestions.create(input, result);
     }
 
     public CompletableFuture<Suggestions> buildFuture() {
-        return CompletableFuture.completedFuture(new Suggestions(input, result));
+        return CompletableFuture.completedFuture(build());
     }
 
     public SuggestionsBuilder suggest(final String text) {

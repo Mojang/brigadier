@@ -2,7 +2,6 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.StringRange;
-import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
@@ -39,11 +38,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(0, 0)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(0, 0), "bar"),
-            new Suggestion(new StringRange(0, 0), "baz"),
-            new Suggestion(new StringRange(0, 0), "foo")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
     }
 
     @Test
@@ -55,10 +50,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("b", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(1, 1)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(1, 1), "ar"),
-            new Suggestion(new StringRange(1, 1), "az")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("ar", "az")));
     }
 
     @Test
@@ -73,11 +65,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("parent ", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(7, 7)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(7, 7), "bar"),
-            new Suggestion(new StringRange(7, 7), "baz"),
-            new Suggestion(new StringRange(7, 7), "foo")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
     }
 
     @Test
@@ -93,10 +81,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(8, 8)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(8, 8), "ar"),
-            new Suggestion(new StringRange(8, 8), "az")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("ar", "az")));
     }
 
     @Test
@@ -108,9 +93,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(9, 9)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(9, 9), "sub")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("sub")));
     }
 
     @Test
@@ -122,9 +105,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(10, 10)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(10, 10), "ub")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("ub")));
     }
 
     @Test
@@ -144,9 +125,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("redirect loop 1 loop 02 loop 003 ", source)).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(33, 33)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(33, 33), "loop")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("loop")));
     }
 
     @Test
@@ -207,9 +186,6 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(new StringRange(18, 18)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList(
-            new Suggestion(new StringRange(18, 18), "bar"),
-            new Suggestion(new StringRange(18, 18), "baz")
-        )));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz")));
     }
 }

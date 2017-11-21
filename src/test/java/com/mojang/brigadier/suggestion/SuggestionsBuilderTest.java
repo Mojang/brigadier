@@ -21,7 +21,7 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_appends() {
         final Suggestions result = builder.suggest("world!").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(new StringRange(7, 7), "orld!"))));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("orld!")));
         assertThat(result.getRange(), equalTo(new StringRange(7, 7)));
         assertThat(result.isEmpty(), is(false));
     }
@@ -29,7 +29,7 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_replaces() {
         final Suggestions result = builder.suggest("everybody").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(new StringRange(6, 7), "everybody"))));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("everybody")));
         assertThat(result.getRange(), equalTo(new StringRange(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }
@@ -38,14 +38,13 @@ public class SuggestionsBuilderTest {
     public void suggest_noop() {
         final Suggestions result = builder.suggest("w").build();
         assertThat(result.getList(), equalTo(Lists.newArrayList()));
-        assertThat(result.getRange(), equalTo(new StringRange(7, 7)));
         assertThat(result.isEmpty(), is(true));
     }
 
     @Test
     public void suggest_multiple() {
         final Suggestions result = builder.suggest("world!").suggest("everybody").suggest("weekend").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(new StringRange(7, 7), "orld!"), new Suggestion(new StringRange(6, 7), "everybody"), new Suggestion(new StringRange(7, 7), "eekend"))));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("everybody", "weekend", "world!")));
         assertThat(result.getRange(), equalTo(new StringRange(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }

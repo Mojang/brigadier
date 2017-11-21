@@ -354,7 +354,7 @@ public class CommandDispatcher<S> {
             for (final CompletableFuture<Suggestions> future : futures) {
                 suggestions.add(future.join());
             }
-            result.complete(Suggestions.merge(suggestions));
+            result.complete(Suggestions.merge(parse.getReader().getString(), suggestions));
         });
 
         return result;

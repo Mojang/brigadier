@@ -13,26 +13,22 @@ import static org.junit.Assert.assertThat;
 public class SuggestionsTest {
     @Test
     public void merge_empty() {
-        final Suggestions merged = Suggestions.merge(Collections.emptyList());
+        final Suggestions merged = Suggestions.merge("foo b", Collections.emptyList());
         assertThat(merged.isEmpty(), is(true));
     }
 
     @Test
     public void merge_single() {
-        final Suggestions suggestions = new Suggestions("", Lists.newArrayList(new Suggestion(new StringRange(0, 0), "foo")));
-        final Suggestions merged = Suggestions.merge(Collections.singleton(suggestions));
+        final Suggestions suggestions = new Suggestions(new StringRange(5, 5), Lists.newArrayList("ar"));
+        final Suggestions merged = Suggestions.merge("foo b", Collections.singleton(suggestions));
         assertThat(merged, equalTo(suggestions));
     }
 
     @Test
     public void merge_multiple() {
-        final Suggestion foo = new Suggestion(new StringRange(0, 0), "foo");
-        final Suggestion bar = new Suggestion(new StringRange(0, 0), "bar");
-        final Suggestion baz = new Suggestion(new StringRange(0, 0), "baz");
-        final Suggestion qux = new Suggestion(new StringRange(0, 0), "qux");
-        final Suggestions a = new Suggestions("", Lists.newArrayList(foo, bar));
-        final Suggestions b = new Suggestions("", Lists.newArrayList(baz, qux));
-        final Suggestions merged = Suggestions.merge(Lists.newArrayList(a, b));
-        assertThat(merged.getList(), equalTo(Lists.newArrayList(bar, baz, foo, qux)));
+        final Suggestions a = new Suggestions(new StringRange(5, 5), Lists.newArrayList("ar", "az"));
+        final Suggestions b = new Suggestions(new StringRange(4, 5), Lists.newArrayList("foo", "qux", "apple"));
+        final Suggestions merged = Suggestions.merge("foo b", Lists.newArrayList(a, b));
+        assertThat(merged.getList(), equalTo(Lists.newArrayList("apple", "bar", "baz", "foo", "qux")));
     }
 }

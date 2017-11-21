@@ -65,4 +65,19 @@ public class Suggestion implements Comparable<Suggestion> {
     public int compareTo(final Suggestion o) {
         return text.compareTo(o.text);
     }
+
+    public String expand(final String command, final StringRange range) {
+        if (range.equals(this.range)) {
+            return text;
+        }
+        final StringBuilder result = new StringBuilder();
+        if (range.getStart() < this.range.getStart()) {
+            result.append(command.substring(range.getStart(), this.range.getStart()));
+        }
+        result.append(text);
+        if (range.getEnd() > this.range.getEnd()) {
+            result.append(command.substring(this.range.getEnd(), range.getEnd()));
+        }
+        return result.toString();
+    }
 }
