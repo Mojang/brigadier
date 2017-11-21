@@ -19,15 +19,15 @@ public class SuggestionsTest {
 
     @Test
     public void merge_single() {
-        final Suggestions suggestions = new Suggestions(new StringRange(5, 5), Lists.newArrayList("ar"));
+        final Suggestions suggestions = new Suggestions(StringRange.at(5), Lists.newArrayList("ar"));
         final Suggestions merged = Suggestions.merge("foo b", Collections.singleton(suggestions));
         assertThat(merged, equalTo(suggestions));
     }
 
     @Test
     public void merge_multiple() {
-        final Suggestions a = new Suggestions(new StringRange(5, 5), Lists.newArrayList("ar", "az"));
-        final Suggestions b = new Suggestions(new StringRange(4, 5), Lists.newArrayList("foo", "qux", "apple"));
+        final Suggestions a = new Suggestions(StringRange.at(5), Lists.newArrayList("ar", "az"));
+        final Suggestions b = new Suggestions(StringRange.between(4, 5), Lists.newArrayList("foo", "qux", "apple"));
         final Suggestions merged = Suggestions.merge("foo b", Lists.newArrayList(a, b));
         assertThat(merged.getList(), equalTo(Lists.newArrayList("apple", "bar", "baz", "foo", "qux")));
     }

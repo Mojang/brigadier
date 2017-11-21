@@ -19,7 +19,7 @@ public class CommandContextBuilder<S> {
     public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final int start) {
         this.dispatcher = dispatcher;
         this.source = source;
-        this.range = new StringRange(start, start);
+        this.range = StringRange.at(start);
     }
 
     public CommandContextBuilder<S> withSource(final S source) {
@@ -47,7 +47,7 @@ public class CommandContextBuilder<S> {
 
     public CommandContextBuilder<S> withNode(final CommandNode<S> node, final StringRange range) {
         nodes.put(node, range);
-        this.range = new StringRange(Math.min(this.range.getStart(), range.getStart()), Math.max(this.range.getEnd(), range.getEnd()));
+        this.range = StringRange.encompassing(this.range, range);
         return this;
     }
 

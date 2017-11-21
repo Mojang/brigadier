@@ -46,7 +46,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             }
         }
 
-        contextBuilder.withNode(this, new StringRange(start, reader.getCursor()));
+        contextBuilder.withNode(this, StringRange.between(start, reader.getCursor()));
     }
 
     @Override

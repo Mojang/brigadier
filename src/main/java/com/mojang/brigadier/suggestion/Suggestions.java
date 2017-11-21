@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class Suggestions {
-    private static final Suggestions EMPTY = new Suggestions(new StringRange(0, 0), Lists.newArrayList());
+    private static final Suggestions EMPTY = new Suggestions(StringRange.at(0), Lists.newArrayList());
 
     private final StringRange range;
     private final List<String> suggestions;

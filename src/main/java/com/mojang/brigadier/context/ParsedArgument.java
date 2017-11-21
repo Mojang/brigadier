@@ -7,7 +7,7 @@ public class ParsedArgument<S, T> {
     private final T result;
 
     public ParsedArgument(final int start, final int end, final T result) {
-        this.range = new StringRange(start, end);
+        this.range = StringRange.between(start, end);
         this.result = result;
     }
 

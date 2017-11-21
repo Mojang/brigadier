@@ -11,8 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -66,8 +64,8 @@ public class CommandContextTest {
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build(""), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(command).build(""))
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build(""), new CommandContextBuilder<>(dispatcher, source, 0).withCommand(otherCommand).build(""))
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123"), new CommandContextBuilder<>(dispatcher, source, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123"))
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, new StringRange(0, 3)).withNode(otherNode, new StringRange(4, 6)).build("123 456"))
-            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, new StringRange(0, 3)).withNode(node, new StringRange(4, 6)).build("123 456"))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, StringRange.between(0, 3)).withNode(otherNode, StringRange.between(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(node, StringRange.between(0, 3)).withNode(otherNode, StringRange.between(4, 6)).build("123 456"))
+            .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, StringRange.between(0, 3)).withNode(node, StringRange.between(4, 6)).build("123 456"), new CommandContextBuilder<>(dispatcher, source, 0).withNode(otherNode, StringRange.between(0, 3)).withNode(node, StringRange.between(4, 6)).build("123 456"))
             .testEquals();
     }
 }

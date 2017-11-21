@@ -37,7 +37,7 @@ public class CommandSuggestionsTest {
 
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("", source)).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(0, 0)));
+        assertThat(result.getRange(), equalTo(StringRange.at(0)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
     }
 
@@ -49,7 +49,7 @@ public class CommandSuggestionsTest {
 
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("b", source)).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(1, 1)));
+        assertThat(result.getRange(), equalTo(StringRange.at(1)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("ar", "az")));
     }
 
@@ -64,7 +64,7 @@ public class CommandSuggestionsTest {
 
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("parent ", source)).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(7, 7)));
+        assertThat(result.getRange(), equalTo(StringRange.at(7)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
     }
 
@@ -80,7 +80,7 @@ public class CommandSuggestionsTest {
         final ParseResults<Object> parse = subject.parse("parent b", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(8, 8)));
+        assertThat(result.getRange(), equalTo(StringRange.at(8)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("ar", "az")));
     }
 
@@ -92,7 +92,7 @@ public class CommandSuggestionsTest {
         final ParseResults<Object> parse = subject.parse("redirect ", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(9, 9)));
+        assertThat(result.getRange(), equalTo(StringRange.at(9)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("sub")));
     }
 
@@ -104,7 +104,7 @@ public class CommandSuggestionsTest {
         final ParseResults<Object> parse = subject.parse("redirect s", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(10, 10)));
+        assertThat(result.getRange(), equalTo(StringRange.at(10)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("ub")));
     }
 
@@ -124,7 +124,7 @@ public class CommandSuggestionsTest {
 
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("redirect loop 1 loop 02 loop 003 ", source)).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(33, 33)));
+        assertThat(result.getRange(), equalTo(StringRange.at(33)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("loop")));
     }
 
@@ -185,7 +185,7 @@ public class CommandSuggestionsTest {
         final ParseResults<Object> parse = subject.parse("execute as bar as ", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
-        assertThat(result.getRange(), equalTo(new StringRange(18, 18)));
+        assertThat(result.getRange(), equalTo(StringRange.at(18)));
         assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz")));
     }
 }

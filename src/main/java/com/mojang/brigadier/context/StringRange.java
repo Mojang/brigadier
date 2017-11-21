@@ -13,6 +13,18 @@ public class StringRange {
         this.end = end;
     }
 
+    public static StringRange at(final int pos) {
+        return new StringRange(pos, pos);
+    }
+
+    public static StringRange between(final int start, final int end) {
+        return new StringRange(start, end);
+    }
+
+    public static StringRange encompassing(final StringRange a, final StringRange b) {
+        return new StringRange(Math.min(a.getStart(), b.getStart()), Math.max(a.getEnd(), b.getEnd()));
+    }
+
     public int getStart() {
         return start;
     }
@@ -61,5 +73,4 @@ public class StringRange {
             ", end=" + end +
             '}';
     }
-
 }
