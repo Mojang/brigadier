@@ -10,6 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -33,7 +34,7 @@ public class CommandDispatcher<S> {
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
     public static final SimpleCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType("command.unknown.argument", "Incorrect argument for command");
     public static final SimpleCommandExceptionType ERROR_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType("command.expected.separator", "Expected whitespace to end one argument, but found trailing data");
-    public static final SimpleCommandExceptionType ERROR_COMMAND_FAILED = new SimpleCommandExceptionType("command.failed", "Expected whitespace to end one argument, but found trailing data");
+    public static final ParameterizedCommandExceptionType ERROR_PARSE_EXCEPTION = new ParameterizedCommandExceptionType("command.exception", "Could not parse command: ${message}", "message");
 
     public static final String ARGUMENT_SEPARATOR = " ";
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
@@ -166,7 +167,11 @@ public class CommandDispatcher<S> {
             final CommandContextBuilder<S> context = contextSoFar.copy();
             final StringReader reader = new StringReader(originalReader);
             try {
-                child.parse(reader, context);
+                try {
+                    child.parse(reader, context);
+                } catch (final RuntimeException ex) {
+                    throw ERROR_PARSE_EXCEPTION.createWithContext(reader, ex.getMessage());
+                }
                 if (reader.canRead()) {
                     if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
                         throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
