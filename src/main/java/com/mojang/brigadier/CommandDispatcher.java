@@ -101,12 +101,9 @@ public class CommandDispatcher<S> {
             final CommandContext<S> context = builder.build(parse.getReader().getString());
             if (child != null) {
                 if (!child.getNodes().isEmpty()) {
+                    foundCommand = true;
                     final RedirectModifier<S> modifier = Iterators.getLast(builder.getNodes().keySet().iterator()).getRedirectModifier();
                     final Collection<S> results = modifier.apply(context);
-                    if (results.isEmpty()) {
-                        consumer.onCommandComplete(context, false, 0);
-                        return 0;
-                    }
                     if (results.size() > 1) {
                         forked = true;
                     }
