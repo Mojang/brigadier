@@ -108,7 +108,7 @@ public class CommandDispatcher<S> {
                             if (next == null) {
                                 next = new ArrayList<>(1);
                             }
-                            next.add(child);
+                            next.add(child.copyFor(context.getSource()));
                         } else {
                             final Collection<S> results = modifier.apply(context);
                             if (!results.isEmpty()) {

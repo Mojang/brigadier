@@ -30,6 +30,9 @@ public class CommandContext<S> {
     }
 
     public CommandContext<S> copyFor(final S source) {
+        if (this.source == source) {
+            return this;
+        }
         return new CommandContext<>(source, input, arguments, command, nodes, range, child, modifier);
     }
 
