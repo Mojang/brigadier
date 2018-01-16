@@ -1,7 +1,6 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -92,29 +91,33 @@ public class CommandDispatcher<S> {
         int successfulForks = 0;
         boolean forked = false;
         boolean foundCommand = false;
-        final Deque<CommandContextBuilder<S>> contexts = new ArrayDeque<>();
-        contexts.add(parse.getContext());
+        final Deque<CommandContext<S>> contexts = new ArrayDeque<>(8);
+        final String command = parse.getReader().getString();
+        contexts.add(parse.getContext().build(command));
 
         while (!contexts.isEmpty()) {
-            final CommandContextBuilder<S> builder = contexts.removeFirst();
-            final CommandContextBuilder<S> child = builder.getChild();
-            final CommandContext<S> context = builder.build(parse.getReader().getString());
+            final CommandContext<S> context = contexts.removeFirst();
+            final CommandContext<S> child = context.getChild();
             if (child != null) {
                 if (!child.getNodes().isEmpty()) {
                     foundCommand = true;
-                    final RedirectModifier<S> modifier = Iterators.getLast(builder.getNodes().keySet().iterator()).getRedirectModifier();
-                    final Collection<S> results = modifier.apply(context);
-                    if (results.size() > 1) {
-                        forked = true;
-                    }
-                    for (final S source : results) {
-                        contexts.add(child.copy().withSource(source));
+                    final RedirectModifier<S> modifier = context.getRedirectModifier();
+                    if (modifier == null) {
+                        contexts.add(child);
+                    } else {
+                        final Collection<S> results = modifier.apply(context);
+                        if (results.size() > 1) {
+                            forked = true;
+                        }
+                        for (final S source : results) {
+                            contexts.add(child.copyFor(source));
+                        }
                     }
                 }
-            } else if (builder.getCommand() != null) {
+            } else if (context.getCommand() != null) {
                 foundCommand = true;
                 try {
-                    final int value = builder.getCommand().run(context);
+                    final int value = context.getCommand().run(context);
                     result += value;
                     consumer.onCommandComplete(context, true, value);
                     successfulForks++;
@@ -128,7 +131,7 @@ public class CommandDispatcher<S> {
         }
 
         if (!foundCommand) {
-            consumer.onCommandComplete(parse.getContext().build(parse.getReader().getString()), false, 0);
+            consumer.onCommandComplete(parse.getContext().build(command), false, 0);
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
 

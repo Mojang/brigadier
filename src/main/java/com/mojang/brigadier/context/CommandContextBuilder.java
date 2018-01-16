@@ -3,6 +3,7 @@ package com.mojang.brigadier.context;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ public class CommandContextBuilder<S> {
     private Command<S> command;
     private CommandContextBuilder<S> child;
     private StringRange range;
+    private RedirectModifier<S> modifier = null;
 
     public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final int start) {
         this.dispatcher = dispatcher;
@@ -48,6 +50,7 @@ public class CommandContextBuilder<S> {
     public CommandContextBuilder<S> withNode(final CommandNode<S> node, final StringRange range) {
         nodes.put(node, range);
         this.range = StringRange.encompassing(this.range, range);
+        this.modifier = node.getRedirectModifier();
         return this;
     }
 
@@ -87,7 +90,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContext<S> build(final String input) {
-        return new CommandContext<>(source, input, arguments, command, nodes, range, child == null ? null : child.build(input));
+        return new CommandContext<>(source, input, arguments, command, nodes, range, child == null ? null : child.build(input), modifier);
     }
 
     public CommandDispatcher<S> getDispatcher() {

@@ -90,11 +90,11 @@ public class CommandDispatcherUsagesTest {
         );
         subject.register(
             literal("j")
-                .redirect(subject.getRoot(), Collections::singleton)
+                .redirect(subject.getRoot())
         );
         subject.register(
             literal("k")
-                .redirect(get("h"), Collections::singleton)
+                .redirect(get("h"))
         );
     }
 

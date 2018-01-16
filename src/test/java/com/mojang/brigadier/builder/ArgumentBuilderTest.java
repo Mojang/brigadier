@@ -3,9 +3,6 @@ package com.mojang.brigadier.builder;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.util.Collections;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -37,7 +34,7 @@ public class ArgumentBuilderTest {
     @Test
     public void testRedirect() throws Exception {
         final CommandNode<Object> target = mock(CommandNode.class);
-        builder.redirect(target, Collections::singleton);
+        builder.redirect(target);
         assertThat(builder.getRedirect(), is(target));
     }
 
@@ -45,13 +42,13 @@ public class ArgumentBuilderTest {
     public void testRedirect_withChild() throws Exception {
         final CommandNode<Object> target = mock(CommandNode.class);
         builder.then(literal("foo"));
-        builder.redirect(target, Collections::singleton);
+        builder.redirect(target);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testThen_withRedirect() throws Exception {
         final CommandNode<Object> target = mock(CommandNode.class);
-        builder.redirect(target, Collections::singleton);
+        builder.redirect(target);
         builder.then(literal("foo"));
     }
 

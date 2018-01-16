@@ -250,7 +250,7 @@ public class CommandDispatcherTest {
     @Test
     public void testExecuteRedirectedMultipleTimes() throws Exception {
         subject.register(literal("actual").executes(command));
-        subject.register(literal("redirected").redirect(subject.getRoot(), Collections::singleton));
+        subject.register(literal("redirected").redirect(subject.getRoot()));
 
         final String input = "redirected redirected actual";
         final ParseResults<Object> parse = subject.parse(input, source);

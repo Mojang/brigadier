@@ -3,6 +3,7 @@ package com.mojang.brigadier.context;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Map;
@@ -15,8 +16,9 @@ public class CommandContext<S> {
     private final Map<CommandNode<S>, StringRange> nodes;
     private final StringRange range;
     private final CommandContext<S> child;
+    private final RedirectModifier<S> modifier;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -24,6 +26,11 @@ public class CommandContext<S> {
         this.nodes = nodes;
         this.range = range;
         this.child = child;
+        this.modifier = modifier;
+    }
+
+    public CommandContext<S> copyFor(final S source) {
+        return new CommandContext<>(source, input, arguments, command, nodes, range, child, modifier);
     }
 
     public CommandContext<S> getChild() {
@@ -86,6 +93,10 @@ public class CommandContext<S> {
         result = 31 * result + nodes.hashCode();
         result = 31 * result + (child != null ? child.hashCode() : 0);
         return result;
+    }
+
+    public RedirectModifier<S> getRedirectModifier() {
+        return modifier;
     }
 
     public StringRange getRange() {
