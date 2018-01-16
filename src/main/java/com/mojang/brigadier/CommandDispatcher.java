@@ -17,10 +17,10 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,11 +170,11 @@ public class CommandDispatcher<S> {
 
     private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextSoFar) {
         final S source = contextSoFar.getSource();
-        final Map<CommandNode<S>, CommandSyntaxException> errors = Maps.newLinkedHashMap();
+        Map<CommandNode<S>, CommandSyntaxException> errors = null;
         final List<PartialParse<S>> potentials = Lists.newArrayList();
         final int cursor = originalReader.getCursor();
 
-        for (final CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
             if (!child.canUse(source)) {
                 continue;
             }
@@ -192,6 +192,9 @@ public class CommandDispatcher<S> {
                     }
                 }
             } catch (final CommandSyntaxException ex) {
+                if (errors == null) {
+                    errors = new LinkedHashMap<>();
+                }
                 errors.put(child, ex);
                 reader.setCursor(cursor);
                 continue;
@@ -216,27 +219,32 @@ public class CommandDispatcher<S> {
         }
 
         if (!potentials.isEmpty()) {
-            final List<PartialParse<S>> sorted = Lists.newArrayList(potentials);
-            sorted.sort((a, b) -> {
-                if (!a.parse.getReader().canRead() && b.parse.getReader().canRead()) {
-                    return -1;
-                }
-                if (a.parse.getReader().canRead() && !b.parse.getReader().canRead()) {
-                    return 1;
-                }
-                if (a.parse.getExceptions().isEmpty() && !b.parse.getExceptions().isEmpty()) {
-                    return -1;
-                }
-                if (!a.parse.getExceptions().isEmpty() && b.parse.getExceptions().isEmpty()) {
-                    return 1;
-                }
-                return 0;
-            });
-            final PartialParse<S> likely = sorted.get(0);
+            final PartialParse<S> likely;
+            if (potentials.size() > 1) {
+                final List<PartialParse<S>> sorted = Lists.newArrayList(potentials);
+                sorted.sort((a, b) -> {
+                    if (!a.parse.getReader().canRead() && b.parse.getReader().canRead()) {
+                        return -1;
+                    }
+                    if (a.parse.getReader().canRead() && !b.parse.getReader().canRead()) {
+                        return 1;
+                    }
+                    if (a.parse.getExceptions().isEmpty() && !b.parse.getExceptions().isEmpty()) {
+                        return -1;
+                    }
+                    if (!a.parse.getExceptions().isEmpty() && b.parse.getExceptions().isEmpty()) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                likely = sorted.get(0);
+            } else {
+                likely = potentials.get(0);
+            }
             return likely.parse;
         }
 
-        return new ParseResults<>(contextSoFar, originalReader, errors);
+        return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
     }
 
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {

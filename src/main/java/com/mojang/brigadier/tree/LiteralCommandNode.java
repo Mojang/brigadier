@@ -37,16 +37,17 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
-        for (int i = 0; i < literal.length(); i++) {
-            if (reader.canRead() && reader.peek() == literal.charAt(i)) {
-                reader.skip();
-            } else {
-                reader.setCursor(start);
-                throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
+        if (reader.canRead(literal.length())) {
+            final int end = start + literal.length();
+            if (reader.getString().substring(start, end).equals(literal)) {
+                reader.setCursor(end);
+                contextBuilder.withNode(this, StringRange.between(start, end));
+                return;
             }
         }
 
-        contextBuilder.withNode(this, StringRange.between(start, reader.getCursor()));
+        reader.setCursor(start);
+        throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
     }
 
     @Override

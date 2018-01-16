@@ -13,6 +13,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<String, CommandNode<S>> children = Maps.newLinkedHashMap();
+    private Map<String, LiteralCommandNode<S>> literals = Maps.newLinkedHashMap();
+    private Map<String, ArgumentCommandNode<S, ?>> arguments = Maps.newLinkedHashMap();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
@@ -73,6 +76,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
             }
         } else {
             children.put(node.getName(), node);
+            if (node instanceof LiteralCommandNode) {
+                literals.put(node.getName(), (LiteralCommandNode<S>) node);
+            } else if (node instanceof ArgumentCommandNode) {
+                arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
+            }
         }
 
         children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
@@ -111,6 +119,22 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     public abstract ArgumentBuilder<S, ?> createBuilder();
 
     protected abstract String getSortedKey();
+
+    public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
+        if (literals.size() > 0) {
+            final int cursor = input.getCursor();
+            final String text = input.readUnquotedString();
+            input.setCursor(cursor);
+            final LiteralCommandNode<S> literal = literals.get(text);
+            if (literal != null) {
+                return Collections.singleton(literal);
+            } else {
+                return arguments.values();
+            }
+        } else {
+            return arguments.values();
+        }
+    }
 
     @Override
     public int compareTo(final CommandNode<S> o) {

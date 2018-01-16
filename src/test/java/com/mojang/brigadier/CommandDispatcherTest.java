@@ -130,8 +130,8 @@ public class CommandDispatcherTest {
             subject.execute("foo baz", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is(Collections.singletonMap("expected", "bar")));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
+            assertThat(ex.getData(), is(Collections.emptyMap()));
             assertThat(ex.getCursor(), is(4));
         }
     }
@@ -332,7 +332,7 @@ public class CommandDispatcherTest {
         subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
 
         try {
-            subject.execute("foo5", source);
+            subject.execute("foo$", source);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandDispatcher.ERROR_EXPECTED_ARGUMENT_SEPARATOR));
