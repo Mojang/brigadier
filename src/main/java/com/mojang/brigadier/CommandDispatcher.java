@@ -17,11 +17,10 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import java.util.ArrayDeque;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,47 +90,62 @@ public class CommandDispatcher<S> {
         int successfulForks = 0;
         boolean forked = false;
         boolean foundCommand = false;
-        final Deque<CommandContext<S>> contexts = new ArrayDeque<>(8);
         final String command = parse.getReader().getString();
-        contexts.add(parse.getContext().build(command));
+        final CommandContext<S> original = parse.getContext().build(command);
+        List<CommandContext<S>> contexts = Collections.singletonList(original);
+        ArrayList<CommandContext<S>> next = null;
 
-        while (!contexts.isEmpty()) {
-            final CommandContext<S> context = contexts.removeFirst();
-            final CommandContext<S> child = context.getChild();
-            if (child != null) {
-                if (!child.getNodes().isEmpty()) {
-                    foundCommand = true;
-                    final RedirectModifier<S> modifier = context.getRedirectModifier();
-                    if (modifier == null) {
-                        contexts.add(child);
-                    } else {
-                        final Collection<S> results = modifier.apply(context);
-                        if (results.size() > 1) {
-                            forked = true;
-                        }
-                        for (final S source : results) {
-                            contexts.add(child.copyFor(source));
+        while (contexts != null) {
+            final int size = contexts.size();
+            for (int i = 0; i < size; i++) {
+                final CommandContext<S> context = contexts.get(i);
+                final CommandContext<S> child = context.getChild();
+                if (child != null) {
+                    if (!child.getNodes().isEmpty()) {
+                        foundCommand = true;
+                        final RedirectModifier<S> modifier = context.getRedirectModifier();
+                        if (modifier == null) {
+                            if (next == null) {
+                                next = new ArrayList<>(1);
+                            }
+                            next.add(child);
+                        } else {
+                            final Collection<S> results = modifier.apply(context);
+                            if (!results.isEmpty()) {
+                                if (results.size() > 1) {
+                                    forked = true;
+                                }
+                                if (next == null) {
+                                    next = new ArrayList<>(results.size());
+                                }
+                                for (final S source : results) {
+                                    next.add(child.copyFor(source));
+                                }
+                            }
                         }
                     }
-                }
-            } else if (context.getCommand() != null) {
-                foundCommand = true;
-                try {
-                    final int value = context.getCommand().run(context);
-                    result += value;
-                    consumer.onCommandComplete(context, true, value);
-                    successfulForks++;
-                } catch (final CommandSyntaxException ex) {
-                    consumer.onCommandComplete(context, false, 0);
-                    if (!forked) {
-                        throw ex;
+                } else if (context.getCommand() != null) {
+                    foundCommand = true;
+                    try {
+                        final int value = context.getCommand().run(context);
+                        result += value;
+                        consumer.onCommandComplete(context, true, value);
+                        successfulForks++;
+                    } catch (final CommandSyntaxException ex) {
+                        consumer.onCommandComplete(context, false, 0);
+                        if (!forked) {
+                            throw ex;
+                        }
                     }
                 }
             }
+
+            contexts = next;
+            next = null;
         }
 
         if (!foundCommand) {
-            consumer.onCommandComplete(parse.getContext().build(command), false, 0);
+            consumer.onCommandComplete(original, false, 0);
             throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
         }
 
