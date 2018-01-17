@@ -2,10 +2,13 @@ package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
@@ -14,6 +17,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private Predicate<S> requirement = s -> true;
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
+    private boolean forks;
 
     protected abstract T getThis();
 
@@ -56,15 +60,24 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public T redirect(final CommandNode<S> target) {
-        return redirect(target, null);
+        return forward(target, null, false);
     }
 
-    public T redirect(final CommandNode<S> target, final RedirectModifier<S> modifier) {
+    public T redirect(final CommandNode<S> target, final Function<CommandContext<S>, S> modifier) {
+        return forward(target, modifier == null ? null : o -> Collections.singleton(modifier.apply(o)), false);
+    }
+
+    public T fork(final CommandNode<S> target, final RedirectModifier<S> modifier) {
+        return forward(target, modifier, true);
+    }
+
+    public T forward(final CommandNode<S> target, final RedirectModifier<S> modifier, final boolean fork) {
         if (!arguments.getChildren().isEmpty()) {
-            throw new IllegalStateException("Cannot redirect a node with children");
+            throw new IllegalStateException("Cannot forward a node with children");
         }
         this.target = target;
         this.modifier = modifier;
+        this.forks = fork;
         return getThis();
     }
 
@@ -74,6 +87,10 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     public RedirectModifier<S> getRedirectModifier() {
         return modifier;
+    }
+
+    public boolean isFork() {
+        return forks;
     }
 
     public abstract CommandNode<S> build();

@@ -20,8 +20,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     private final String literal;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier) {
-        super(command, requirement, redirect, modifier);
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+        super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
     }
 
@@ -86,7 +86,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     public LiteralArgumentBuilder<S> createBuilder() {
         final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
         builder.requires(getRequirement());
-        builder.redirect(getRedirect(), getRedirectModifier());
+        builder.forward(getRedirect(), getRedirectModifier(), isFork());
         if (getCommand() != null) {
             builder.executes(getCommand());
         }

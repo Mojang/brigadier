@@ -17,8 +17,9 @@ public class CommandContext<S> {
     private final StringRange range;
     private final CommandContext<S> child;
     private final RedirectModifier<S> modifier;
+    private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -27,13 +28,14 @@ public class CommandContext<S> {
         this.range = range;
         this.child = child;
         this.modifier = modifier;
+        this.forks = forks;
     }
 
     public CommandContext<S> copyFor(final S source) {
         if (this.source == source) {
             return this;
         }
-        return new CommandContext<>(source, input, arguments, command, nodes, range, child, modifier);
+        return new CommandContext<>(source, input, arguments, command, nodes, range, child, modifier, forks);
     }
 
     public CommandContext<S> getChild() {
@@ -112,5 +114,9 @@ public class CommandContext<S> {
 
     public Map<CommandNode<S>, StringRange> getNodes() {
         return nodes;
+    }
+
+    public boolean isForked() {
+        return forks;
     }
 }

@@ -17,6 +17,7 @@ public class CommandContextBuilder<S> {
     private CommandContextBuilder<S> child;
     private StringRange range;
     private RedirectModifier<S> modifier = null;
+    private boolean forks;
 
     public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final int start) {
         this.dispatcher = dispatcher;
@@ -51,6 +52,7 @@ public class CommandContextBuilder<S> {
         nodes.put(node, range);
         this.range = StringRange.encompassing(this.range, range);
         this.modifier = node.getRedirectModifier();
+        this.forks = node.isFork();
         return this;
     }
 
@@ -61,6 +63,7 @@ public class CommandContextBuilder<S> {
         copy.nodes.putAll(nodes);
         copy.child = child;
         copy.range = range;
+        copy.forks = forks;
         return copy;
     }
 
@@ -90,7 +93,7 @@ public class CommandContextBuilder<S> {
     }
 
     public CommandContext<S> build(final String input) {
-        return new CommandContext<>(source, input, arguments, command, nodes, range, child == null ? null : child.build(input), modifier);
+        return new CommandContext<>(source, input, arguments, command, nodes, range, child == null ? null : child.build(input), modifier, forks);
     }
 
     public CommandDispatcher<S> getDispatcher() {

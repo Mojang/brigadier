@@ -101,6 +101,7 @@ public class CommandDispatcher<S> {
                 final CommandContext<S> context = contexts.get(i);
                 final CommandContext<S> child = context.getChild();
                 if (child != null) {
+                    forked |= context.isForked();
                     if (!child.getNodes().isEmpty()) {
                         foundCommand = true;
                         final RedirectModifier<S> modifier = context.getRedirectModifier();
@@ -112,9 +113,6 @@ public class CommandDispatcher<S> {
                         } else {
                             final Collection<S> results = modifier.apply(context);
                             if (!results.isEmpty()) {
-                                if (results.size() > 1) {
-                                    forked = true;
-                                }
                                 if (next == null) {
                                     next = new ArrayList<>(results.size());
                                 }

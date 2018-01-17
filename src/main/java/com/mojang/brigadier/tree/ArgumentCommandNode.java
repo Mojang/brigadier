@@ -24,8 +24,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final ArgumentType<T> type;
     private final SuggestionProvider<S> customSuggestions;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final SuggestionProvider<S> customSuggestions) {
-        super(command, requirement, redirect, modifier);
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
+        super(command, requirement, redirect, modifier, forks);
         this.name = name;
         this.type = type;
         this.customSuggestions = customSuggestions;
@@ -72,7 +72,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public RequiredArgumentBuilder<S, T> createBuilder() {
         final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
-        builder.redirect(getRedirect(), getRedirectModifier());
+        builder.forward(getRedirect(), getRedirectModifier(), isFork());
         builder.suggests(customSuggestions);
         if (getCommand() != null) {
             builder.executes(getCommand());

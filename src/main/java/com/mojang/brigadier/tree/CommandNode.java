@@ -27,13 +27,15 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
+    private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
         this.modifier = modifier;
+        this.forks = forks;
     }
 
     public Command<S> getCommand() {
@@ -143,5 +145,9 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
             .compareTrueFirst(this instanceof LiteralCommandNode, o instanceof LiteralCommandNode)
             .compare(getSortedKey(), o.getSortedKey())
             .result();
+    }
+
+    public boolean isFork() {
+        return forks;
     }
 }
