@@ -2,13 +2,12 @@ package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
-import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.SingleRedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
@@ -63,7 +62,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return forward(target, null, false);
     }
 
-    public T redirect(final CommandNode<S> target, final Function<CommandContext<S>, S> modifier) {
+    public T redirect(final CommandNode<S> target, final SingleRedirectModifier<S> modifier) {
         return forward(target, modifier == null ? null : o -> Collections.singleton(modifier.apply(o)), false);
     }
 

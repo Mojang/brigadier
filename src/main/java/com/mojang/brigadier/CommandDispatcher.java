@@ -111,13 +111,20 @@ public class CommandDispatcher<S> {
                             }
                             next.add(child.copyFor(context.getSource()));
                         } else {
-                            final Collection<S> results = modifier.apply(context);
-                            if (!results.isEmpty()) {
-                                if (next == null) {
-                                    next = new ArrayList<>(results.size());
+                            try {
+                                final Collection<S> results = modifier.apply(context);
+                                if (!results.isEmpty()) {
+                                    if (next == null) {
+                                        next = new ArrayList<>(results.size());
+                                    }
+                                    for (final S source : results) {
+                                        next.add(child.copyFor(source));
+                                    }
                                 }
-                                for (final S source : results) {
-                                    next.add(child.copyFor(source));
+                            } catch (final CommandSyntaxException ex) {
+                                consumer.onCommandComplete(context, false, 0);
+                                if (!forked) {
+                                    throw ex;
                                 }
                             }
                         }
