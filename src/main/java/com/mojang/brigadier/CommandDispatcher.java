@@ -171,7 +171,7 @@ public class CommandDispatcher<S> {
     private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextSoFar) {
         final S source = contextSoFar.getSource();
         Map<CommandNode<S>, CommandSyntaxException> errors = null;
-        final List<PartialParse<S>> potentials = Lists.newArrayList();
+        List<PartialParse<S>> potentials = null;
         final int cursor = originalReader.getCursor();
 
         for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
@@ -211,18 +211,22 @@ public class CommandDispatcher<S> {
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
                     final ParseResults<S> parse = parseNodes(child, reader, context);
+                    if (potentials == null) {
+                        potentials = new ArrayList<>(1);
+                    }
                     potentials.add(new PartialParse<>(context, parse));
                 }
             } else {
+                if (potentials == null) {
+                    potentials = new ArrayList<>(1);
+                }
                 potentials.add(new PartialParse<>(context, new ParseResults<>(context, reader, Collections.emptyMap())));
             }
         }
 
-        if (!potentials.isEmpty()) {
-            final PartialParse<S> likely;
+        if (potentials != null) {
             if (potentials.size() > 1) {
-                final List<PartialParse<S>> sorted = Lists.newArrayList(potentials);
-                sorted.sort((a, b) -> {
+                potentials.sort((a, b) -> {
                     if (!a.parse.getReader().canRead() && b.parse.getReader().canRead()) {
                         return -1;
                     }
@@ -237,11 +241,8 @@ public class CommandDispatcher<S> {
                     }
                     return 0;
                 });
-                likely = sorted.get(0);
-            } else {
-                likely = potentials.get(0);
             }
-            return likely.parse;
+            return potentials.get(0).parse;
         }
 
         return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
