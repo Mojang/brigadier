@@ -163,12 +163,12 @@ public class CommandDispatcherTest {
         subject.register(literal("foo").then(
             literal("a")
         ).then(
-            literal("b").executes(subCommand)
+            literal("=").executes(subCommand)
         ).then(
             literal("c")
         ).executes(command));
 
-        assertThat(subject.execute("foo b", source), is(100));
+        assertThat(subject.execute("foo =", source), is(100));
         verify(subCommand).run(any(CommandContext.class));
     }
 
@@ -281,7 +281,7 @@ public class CommandDispatcherTest {
         when(modifier.apply(argThat(hasProperty("source", is(source))))).thenReturn(Lists.newArrayList(source1, source2));
 
         subject.register(literal("actual").executes(command));
-        subject.register(literal("redirected").redirect(subject.getRoot()));
+        subject.register(literal("redirected").fork(subject.getRoot(), modifier));
 
         final String input = "redirected actual";
         final ParseResults<Object> parse = subject.parse(input, source);
@@ -335,9 +335,9 @@ public class CommandDispatcherTest {
             subject.execute("foo$", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_EXPECTED_ARGUMENT_SEPARATOR));
+            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
             assertThat(ex.getData(), is(Collections.emptyMap()));
-            assertThat(ex.getCursor(), is(3));
+            assertThat(ex.getCursor(), is(0));
         }
     }
 

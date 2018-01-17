@@ -125,7 +125,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
         if (literals.size() > 0) {
             final int cursor = input.getCursor();
-            final String text = input.readUnquotedString();
+            while (input.canRead() && input.peek() != ' ') {
+                input.skip();
+            }
+            final String text = input.getString().substring(cursor, input.getCursor());
             input.setCursor(cursor);
             final LiteralCommandNode<S> literal = literals.get(text);
             if (literal != null) {
