@@ -6,9 +6,13 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public class IntegerArgumentType implements ArgumentType<Integer> {
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
+    private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
 
     private final int minimum;
     private final int maximum;
@@ -43,7 +47,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     }
 
     @Override
-    public <S> Integer parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public <S> Integer parse(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final int result = reader.readInt();
         if (result < minimum) {

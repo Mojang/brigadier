@@ -7,9 +7,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class BoolArgumentType implements ArgumentType<Boolean> {
+    private static final Collection<String> EXAMPLES = Arrays.asList("true", "false");
+
     private BoolArgumentType() {
     }
 
@@ -22,7 +26,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> Boolean parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public <S> Boolean parse(final StringReader reader) throws CommandSyntaxException {
         return reader.readBoolean();
     }
 
@@ -35,5 +39,10 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
             builder.suggest("false");
         }
         return builder.buildFuture();
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
     }
 }

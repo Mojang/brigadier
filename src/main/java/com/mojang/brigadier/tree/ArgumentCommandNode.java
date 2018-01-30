@@ -13,6 +13,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -52,7 +53,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
-        final T result = type.parse(reader, contextBuilder);
+        final T result = type.parse(reader);
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);
@@ -81,6 +82,17 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
+    public boolean isValidInput(final String input) {
+        try {
+            final StringReader reader = new StringReader(input);
+            type.parse(reader);
+            return !reader.canRead() || reader.peek() == ' ';
+        } catch (final CommandSyntaxException ignored) {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof ArgumentCommandNode)) return false;
@@ -102,5 +114,10 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     protected String getSortedKey() {
         return name;
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return type.getExamples();
     }
 }

@@ -1,10 +1,12 @@
 package com.mojang.brigadier.arguments;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
@@ -34,7 +36,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public <S> String parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public <S> String parse(final StringReader reader) throws CommandSyntaxException {
         if (type == StringType.GREEDY_PHRASE) {
             final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());
@@ -49,6 +51,11 @@ public class StringArgumentType implements ArgumentType<String> {
     @Override
     public String toString() {
         return "string()";
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return type.getExamples();
     }
 
     public static String escapeIfRequired(final String input) {
@@ -76,8 +83,18 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     public enum StringType {
-        SINGLE_WORD,
-        QUOTABLE_PHRASE,
-        GREEDY_PHRASE,
+        SINGLE_WORD("word", "words_with_underscores"),
+        QUOTABLE_PHRASE("\"quoted phrase\"", "word", "\"\""),
+        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),;
+
+        private final Collection<String> examples;
+
+        StringType(final String... examples) {
+            this.examples = Arrays.asList(examples);
+        }
+
+        public Collection<String> getExamples() {
+            return examples;
+        }
     }
 }

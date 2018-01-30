@@ -1,7 +1,6 @@
 package com.mojang.brigadier.arguments;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -10,13 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Set;
-
 import static com.mojang.brigadier.arguments.FloatArgumentType.floatArg;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -37,7 +32,7 @@ public class FloatArgumentTypeTest {
     @Test
     public void parse() throws Exception {
         final StringReader reader = new StringReader("15");
-        assertThat(floatArg().parse(reader, context), is(15f));
+        assertThat(floatArg().parse(reader), is(15f));
         assertThat(reader.canRead(), is(false));
     }
 
@@ -45,7 +40,7 @@ public class FloatArgumentTypeTest {
     public void parse_tooSmall() throws Exception {
         final StringReader reader = new StringReader("-5");
         try {
-            floatArg(0, 100).parse(reader, context);
+            floatArg(0, 100).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_TOO_SMALL));
@@ -58,7 +53,7 @@ public class FloatArgumentTypeTest {
     public void parse_tooBig() throws Exception {
         final StringReader reader = new StringReader("5");
         try {
-            floatArg(-100, 0).parse(reader, context);
+            floatArg(-100, 0).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(FloatArgumentType.ERROR_TOO_BIG));

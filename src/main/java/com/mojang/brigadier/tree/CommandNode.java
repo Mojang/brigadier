@@ -2,6 +2,8 @@ package com.mojang.brigadier.tree;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.mojang.brigadier.AmbiguityConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
@@ -16,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -77,6 +80,18 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
                 child.addChild(grandchild);
             }
         } else {
+            for (final CommandNode<S> sibling : children.values()) {
+                for (final String example : node.getExamples()) {
+                    if (sibling.isValidInput(example)) {
+                        System.out.println("Ambiguity detected in " + getName() + ", siblings " + sibling.getName() + " and " + node.getName() + " can both parse '" + example + "' successfully");
+                    }
+                }
+                for (final String example : sibling.getExamples()) {
+                    if (node.isValidInput(example)) {
+                        System.out.println("Ambiguity detected in " + getName() + ", siblings " + sibling.getName() + " and " + node.getName() + " can both parse '" + example + "' successfully");
+                    }
+                }
+            }
             children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
                 literals.put(node.getName(), (LiteralCommandNode<S>) node);
@@ -87,6 +102,33 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
         children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
+
+    public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
+        Set<String> matches = Sets.newHashSet();
+
+        for (final CommandNode<S> child : children.values()) {
+            for (final CommandNode<S> sibling : children.values()) {
+                if (child == sibling) {
+                    continue;
+                }
+
+                for (final String input : child.getExamples()) {
+                    if (sibling.isValidInput(input)) {
+                        matches.add(input);
+                    }
+                }
+
+                if (matches.size() > 0) {
+                    consumer.ambiguous(this, child, sibling, matches);
+                    matches = Sets.newHashSet();
+                }
+            }
+
+            child.findAmbiguities(consumer);
+        }
+    }
+
+    protected abstract boolean isValidInput(final String input);
 
     @Override
     public boolean equals(final Object o) {
@@ -153,4 +195,6 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     public boolean isFork() {
         return forks;
     }
+
+    public abstract Collection<String> getExamples();
 }

@@ -32,7 +32,7 @@ public class IntegerArgumentTypeTest {
     @Test
     public void parse() throws Exception {
         final StringReader reader = new StringReader("15");
-        assertThat(integer().parse(reader, context), is(15));
+        assertThat(integer().parse(reader), is(15));
         assertThat(reader.canRead(), is(false));
     }
 
@@ -40,7 +40,7 @@ public class IntegerArgumentTypeTest {
     public void parse_tooSmall() throws Exception {
         final StringReader reader = new StringReader("-5");
         try {
-            integer(0, 100).parse(reader, context);
+            integer(0, 100).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
@@ -53,7 +53,7 @@ public class IntegerArgumentTypeTest {
     public void parse_tooBig() throws Exception {
         final StringReader reader = new StringReader("5");
         try {
-            integer(-100, 0).parse(reader, context);
+            integer(-100, 0).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));

@@ -427,6 +427,10 @@ public class CommandDispatcher<S> {
         return node;
     }
 
+    public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
+        root.findAmbiguities(consumer);
+    }
+
     private void addPaths(final CommandNode<S> node, final List<List<CommandNode<S>>> result, final List<CommandNode<S>> parents) {
         final List<CommandNode<S>> current = new ArrayList<>(parents);
         current.add(node);

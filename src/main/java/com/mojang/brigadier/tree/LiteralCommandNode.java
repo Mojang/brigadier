@@ -12,6 +12,8 @@ import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -37,17 +39,29 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
+        final int end = parse(reader);
+        if (end > -1) {
+            contextBuilder.withNode(this, StringRange.between(start, end));
+            return;
+        }
+
+        throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
+    }
+
+    private int parse(final StringReader reader) {
+        final int start = reader.getCursor();
         if (reader.canRead(literal.length())) {
             final int end = start + literal.length();
             if (reader.getString().substring(start, end).equals(literal)) {
                 reader.setCursor(end);
-                contextBuilder.withNode(this, StringRange.between(start, end));
-                return;
+                if (!reader.canRead() || reader.peek() == ' ') {
+                    return end;
+                } else {
+                    reader.setCursor(start);
+                }
             }
         }
-
-        reader.setCursor(start);
-        throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
+        return -1;
     }
 
     @Override
@@ -57,6 +71,11 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         } else {
             return Suggestions.empty();
         }
+    }
+
+    @Override
+    public boolean isValidInput(final String input) {
+        return parse(new StringReader(input)) > -1;
     }
 
     @Override
@@ -96,5 +115,10 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     @Override
     protected String getSortedKey() {
         return literal;
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return Collections.singleton(literal);
     }
 }

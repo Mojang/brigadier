@@ -9,7 +9,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -31,7 +30,7 @@ public class BoolArgumentTypeTest {
     public void parse() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readBoolean()).thenReturn(true);
-        assertThat(type.parse(reader, context), is(true));
+        assertThat(type.parse(reader), is(true));
         verify(reader).readBoolean();
     }
 }

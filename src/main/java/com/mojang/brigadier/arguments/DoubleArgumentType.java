@@ -6,9 +6,13 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public class DoubleArgumentType implements ArgumentType<Double> {
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.double.low", "Double must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.double.big", "Double must not be more than ${maximum}, found ${found}", "found", "maximum");
+    private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
     private final double minimum;
     private final double maximum;
@@ -43,7 +47,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
     }
 
     @Override
-    public <S> Double parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public <S> Double parse(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final double result = reader.readDouble();
         if (result < minimum) {
@@ -80,5 +84,10 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         } else {
             return "double(" + minimum + ", " + maximum + ")";
         }
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
     }
 }

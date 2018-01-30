@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +37,11 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
+    public boolean isValidInput(final String input) {
+        return false;
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (!(o instanceof RootCommandNode)) return false;
@@ -50,5 +56,10 @@ public class RootCommandNode<S> extends CommandNode<S> {
     @Override
     protected String getSortedKey() {
         return "";
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return Collections.emptyList();
     }
 }

@@ -32,7 +32,7 @@ public class DoubleArgumentTypeTest {
     @Test
     public void parse() throws Exception {
         final StringReader reader = new StringReader("15");
-        assertThat(doubleArg().parse(reader, context), is(15.0));
+        assertThat(doubleArg().parse(reader), is(15.0));
         assertThat(reader.canRead(), is(false));
     }
 
@@ -40,7 +40,7 @@ public class DoubleArgumentTypeTest {
     public void parse_tooSmall() throws Exception {
         final StringReader reader = new StringReader("-5");
         try {
-            doubleArg(0, 100).parse(reader, context);
+            doubleArg(0, 100).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(DoubleArgumentType.ERROR_TOO_SMALL));
@@ -53,7 +53,7 @@ public class DoubleArgumentTypeTest {
     public void parse_tooBig() throws Exception {
         final StringReader reader = new StringReader("5");
         try {
-            doubleArg(-100, 0).parse(reader, context);
+            doubleArg(-100, 0).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(DoubleArgumentType.ERROR_TOO_BIG));

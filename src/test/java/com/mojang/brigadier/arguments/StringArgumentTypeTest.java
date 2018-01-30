@@ -1,6 +1,5 @@
 package com.mojang.brigadier.arguments;
 
-import com.google.common.collect.Sets;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Test;
@@ -8,13 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Set;
-
 import static com.mojang.brigadier.arguments.StringArgumentType.escapeIfRequired;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -32,7 +28,7 @@ public class StringArgumentTypeTest {
     public void testParseWord() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readUnquotedString()).thenReturn("hello");
-        assertThat(word().parse(reader, context), equalTo("hello"));
+        assertThat(word().parse(reader), equalTo("hello"));
         verify(reader).readUnquotedString();
     }
 
@@ -40,14 +36,14 @@ public class StringArgumentTypeTest {
     public void testParseString() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readString()).thenReturn("hello world");
-        assertThat(string().parse(reader, context), equalTo("hello world"));
+        assertThat(string().parse(reader), equalTo("hello world"));
         verify(reader).readString();
     }
 
     @Test
     public void testParseGreedyString() throws Exception {
         final StringReader reader = new StringReader("Hello world! This is a test.");
-        assertThat(greedyString().parse(reader, context), equalTo("Hello world! This is a test."));
+        assertThat(greedyString().parse(reader), equalTo("Hello world! This is a test."));
         assertThat(reader.canRead(), is(false));
     }
 

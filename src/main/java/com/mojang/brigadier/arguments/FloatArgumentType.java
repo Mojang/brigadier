@@ -6,9 +6,13 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public class FloatArgumentType implements ArgumentType<Float> {
     public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.float.low", "Float must not be less than ${minimum}, found ${found}", "found", "minimum");
     public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.float.big", "Float must not be more than ${maximum}, found ${found}", "found", "maximum");
+    private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
     private final float minimum;
     private final float maximum;
@@ -43,7 +47,7 @@ public class FloatArgumentType implements ArgumentType<Float> {
     }
 
     @Override
-    public <S> Float parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public <S> Float parse(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final float result = reader.readFloat();
         if (result < minimum) {
@@ -80,5 +84,10 @@ public class FloatArgumentType implements ArgumentType<Float> {
         } else {
             return "float(" + minimum + ", " + maximum + ")";
         }
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
     }
 }
