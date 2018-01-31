@@ -80,18 +80,6 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
                 child.addChild(grandchild);
             }
         } else {
-            for (final CommandNode<S> sibling : children.values()) {
-                for (final String example : node.getExamples()) {
-                    if (sibling.isValidInput(example)) {
-                        System.out.println("Ambiguity detected in " + getName() + ", siblings " + sibling.getName() + " and " + node.getName() + " can both parse '" + example + "' successfully");
-                    }
-                }
-                for (final String example : sibling.getExamples()) {
-                    if (node.isValidInput(example)) {
-                        System.out.println("Ambiguity detected in " + getName() + ", siblings " + sibling.getName() + " and " + node.getName() + " can both parse '" + example + "' successfully");
-                    }
-                }
-            }
             children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
                 literals.put(node.getName(), (LiteralCommandNode<S>) node);
