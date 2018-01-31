@@ -11,6 +11,7 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -374,11 +375,12 @@ public class CommandDispatcher<S> {
         @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
+            CompletableFuture<Suggestions> future = Suggestions.empty();
             try {
-                futures[i++] = node.listSuggestions(context.build(parse.getReader().getString()), new SuggestionsBuilder(parse.getReader().getString(), start));
-            } catch (final CommandSyntaxException e) {
-                futures[i++] = Suggestions.empty();
+                future = node.listSuggestions(context.build(parse.getReader().getString()), new SuggestionsBuilder(parse.getReader().getString(), start));
+            } catch (final CommandSyntaxException ignored) {
             }
+            futures[i++] = future;
         }
 
         final CompletableFuture<Suggestions> result = new CompletableFuture<>();
