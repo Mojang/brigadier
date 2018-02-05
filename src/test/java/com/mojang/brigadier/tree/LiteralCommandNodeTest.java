@@ -53,9 +53,14 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testParseSimilar() throws Exception {
         final StringReader reader = new StringReader("foobar");
-        node.parse(reader, contextBuilder);
-        assertThat(reader.getRemaining(), equalTo("bar"));
-        // This should succeed, because it's the responsibility of the dispatcher to realize there's trailing text
+        try {
+            node.parse(reader, contextBuilder);
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
+            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getCursor(), is(0));
+        }
     }
 
     @Test

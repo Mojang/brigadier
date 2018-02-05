@@ -21,8 +21,8 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_appends() {
         final Suggestions result = builder.suggest("world!").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList("orld!")));
-        assertThat(result.getRange(), equalTo(StringRange.at(7)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList("world!")));
+        assertThat(result.getRange(), equalTo(StringRange.between(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }
 

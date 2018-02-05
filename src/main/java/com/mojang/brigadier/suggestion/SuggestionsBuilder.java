@@ -43,8 +43,7 @@ public class SuggestionsBuilder {
         if (text.equals(remaining)) {
             return this;
         }
-        final String prefix = Strings.commonPrefix(text, remaining);
-        result.add(new Suggestion(StringRange.between(start + prefix.length(), input.length()), text.substring(prefix.length())));
+        result.add(new Suggestion(StringRange.between(start, input.length()), text));
         return this;
     }
 
