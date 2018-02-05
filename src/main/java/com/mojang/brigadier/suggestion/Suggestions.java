@@ -97,7 +97,7 @@ public class Suggestions {
             texts.add(suggestion.expand(command, range));
         }
         final List<String> sorted = Lists.newArrayList(texts);
-        Collections.sort(sorted);
+        sorted.sort(String::compareToIgnoreCase);
         return new Suggestions(range, sorted);
     }
 }

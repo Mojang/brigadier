@@ -26,9 +26,9 @@ public class SuggestionsTest {
 
     @Test
     public void merge_multiple() {
-        final Suggestions a = new Suggestions(StringRange.at(5), Lists.newArrayList("ar", "az"));
-        final Suggestions b = new Suggestions(StringRange.between(4, 5), Lists.newArrayList("foo", "qux", "apple"));
+        final Suggestions a = new Suggestions(StringRange.at(5), Lists.newArrayList("ar", "az", "Az"));
+        final Suggestions b = new Suggestions(StringRange.between(4, 5), Lists.newArrayList("foo", "qux", "apple", "Bar"));
         final Suggestions merged = Suggestions.merge("foo b", Lists.newArrayList(a, b));
-        assertThat(merged.getList(), equalTo(Lists.newArrayList("apple", "bar", "baz", "foo", "qux")));
+        assertThat(merged.getList(), equalTo(Lists.newArrayList("apple", "bar", "Bar", "baz", "bAz", "foo", "qux")));
     }
 }
