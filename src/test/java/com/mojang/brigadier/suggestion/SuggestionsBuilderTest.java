@@ -21,7 +21,7 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_appends() {
         final Suggestions result = builder.suggest("world!").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList("world!")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(6, 7), "world!"))));
         assertThat(result.getRange(), equalTo(StringRange.between(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }
@@ -29,7 +29,7 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_replaces() {
         final Suggestions result = builder.suggest("everybody").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList("everybody")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(6, 7), "everybody"))));
         assertThat(result.getRange(), equalTo(StringRange.between(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }
@@ -44,7 +44,7 @@ public class SuggestionsBuilderTest {
     @Test
     public void suggest_multiple() {
         final Suggestions result = builder.suggest("world!").suggest("everybody").suggest("weekend").build();
-        assertThat(result.getList(), equalTo(Lists.newArrayList("everybody", "weekend", "world!")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(6, 7), "everybody"), new Suggestion(StringRange.between(6, 7), "weekend"), new Suggestion(StringRange.between(6, 7), "world!"))));
         assertThat(result.getRange(), equalTo(StringRange.between(6, 7)));
         assertThat(result.isEmpty(), is(false));
     }

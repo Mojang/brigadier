@@ -52,30 +52,30 @@ public class SuggestionTest {
     @Test
     public void expand_unchanged() {
         final Suggestion suggestion = new Suggestion(StringRange.at(1), "oo");
-        assertThat(suggestion.expand("f", StringRange.at(1)), equalTo("oo"));
+        assertThat(suggestion.expand("f", StringRange.at(1)), equalTo(suggestion));
     }
 
     @Test
     public void expand_left() {
         final Suggestion suggestion = new Suggestion(StringRange.at(1), "oo");
-        assertThat(suggestion.expand("f", StringRange.between(0, 1)), equalTo("foo"));
+        assertThat(suggestion.expand("f", StringRange.between(0, 1)), equalTo(new Suggestion(StringRange.between(0, 1), "foo")));
     }
 
     @Test
     public void expand_right() {
         final Suggestion suggestion = new Suggestion(StringRange.at(0), "minecraft:");
-        assertThat(suggestion.expand("fish", StringRange.between(0, 4)), equalTo("minecraft:fish"));
+        assertThat(suggestion.expand("fish", StringRange.between(0, 4)), equalTo(new Suggestion(StringRange.between(0, 4), "minecraft:fish")));
     }
 
     @Test
     public void expand_both() {
         final Suggestion suggestion = new Suggestion(StringRange.at(11), "minecraft:");
-        assertThat(suggestion.expand("give Steve fish_block", StringRange.between(5, 21)), equalTo("Steve minecraft:fish_block"));
+        assertThat(suggestion.expand("give Steve fish_block", StringRange.between(5, 21)), equalTo(new Suggestion(StringRange.between(5, 21), "Steve minecraft:fish_block")));
     }
 
     @Test
     public void expand_replacement() {
         final Suggestion suggestion = new Suggestion(StringRange.between(6, 11), "strangers");
-        assertThat(suggestion.expand("Hello world!", StringRange.between(0, 12)), equalTo("Hello strangers!"));
+        assertThat(suggestion.expand("Hello world!", StringRange.between(0, 12)), equalTo(new Suggestion(StringRange.between(0, 12), "Hello strangers!")));
     }
 }

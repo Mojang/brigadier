@@ -66,9 +66,9 @@ public class Suggestion implements Comparable<Suggestion> {
         return text.compareTo(o.text);
     }
 
-    public String expand(final String command, final StringRange range) {
+    public Suggestion expand(final String command, final StringRange range) {
         if (range.equals(this.range)) {
-            return text;
+            return this;
         }
         final StringBuilder result = new StringBuilder();
         if (range.getStart() < this.range.getStart()) {
@@ -78,6 +78,6 @@ public class Suggestion implements Comparable<Suggestion> {
         if (range.getEnd() > this.range.getEnd()) {
             result.append(command.substring(this.range.getEnd(), range.getEnd()));
         }
-        return result.toString();
+        return new Suggestion(range, result.toString());
     }
 }

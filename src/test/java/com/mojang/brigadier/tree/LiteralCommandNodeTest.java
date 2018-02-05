@@ -8,7 +8,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.junit.Before;
@@ -84,7 +86,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     @Test
     public void testSuggestions() throws Exception {
         final Suggestions empty = node.listSuggestions(contextBuilder.build(""), new SuggestionsBuilder("", 0)).join();
-        assertThat(empty.getList(), equalTo(Lists.newArrayList("foo")));
+        assertThat(empty.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(0), "foo"))));
 
         final Suggestions foo = node.listSuggestions(contextBuilder.build("foo"), new SuggestionsBuilder("foo", 0)).join();
         assertThat(foo.isEmpty(), is(true));

@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.mojang.brigadier.context.StringRange;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -16,9 +15,9 @@ public class Suggestions {
     private static final Suggestions EMPTY = new Suggestions(StringRange.at(0), Lists.newArrayList());
 
     private final StringRange range;
-    private final List<String> suggestions;
+    private final List<Suggestion> suggestions;
 
-    public Suggestions(final StringRange range, final List<String> suggestions) {
+    public Suggestions(final StringRange range, final List<Suggestion> suggestions) {
         this.range = range;
         this.suggestions = suggestions;
     }
@@ -27,7 +26,7 @@ public class Suggestions {
         return range;
     }
 
-    public List<String> getList() {
+    public List<Suggestion> getList() {
         return suggestions;
     }
 
@@ -74,9 +73,7 @@ public class Suggestions {
 
         final Set<Suggestion> texts = new HashSet<>();
         for (final Suggestions suggestions : input) {
-            for (final String text : suggestions.getList()) {
-                texts.add(new Suggestion(suggestions.getRange(), text));
-            }
+            texts.addAll(suggestions.getList());
         }
         return create(command, texts);
     }
@@ -92,12 +89,12 @@ public class Suggestions {
             end = Math.max(suggestion.getRange().getEnd(), end);
         }
         final StringRange range = new StringRange(start, end);
-        final Set<String> texts = Sets.newHashSet();
+        final Set<Suggestion> texts = Sets.newHashSet();
         for (final Suggestion suggestion : suggestions) {
             texts.add(suggestion.expand(command, range));
         }
-        final List<String> sorted = Lists.newArrayList(texts);
-        sorted.sort(String::compareToIgnoreCase);
+        final List<Suggestion> sorted = Lists.newArrayList(texts);
+        sorted.sort((a, b) -> a.getText().compareToIgnoreCase(b.getText()));
         return new Suggestions(range, sorted);
     }
 }

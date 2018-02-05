@@ -2,6 +2,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("", source)).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(0)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(0), "bar"), new Suggestion(StringRange.at(0), "baz"), new Suggestion(StringRange.at(0), "foo"))));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("b", source)).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(0, 1)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(0, 1), "bar"), new Suggestion(StringRange.between(0, 1), "baz"))));
     }
 
     @Test
@@ -65,7 +66,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("parent ", source)).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(7)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz", "foo")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(7), "bar"), new Suggestion(StringRange.at(7), "baz"), new Suggestion(StringRange.at(7), "foo"))));
     }
 
     @Test
@@ -81,7 +82,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(7, 8)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(7, 8), "bar"), new Suggestion(StringRange.between(7, 8), "baz"))));
     }
 
     @Test
@@ -93,7 +94,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(9)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("sub")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(9), "sub"))));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(9, 10)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("sub")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(9, 10), "sub"))));
     }
 
     @Test
@@ -125,7 +126,7 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(subject.parse("redirect loop 1 loop 02 loop 003 ", source)).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(33)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("loop")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(33), "loop"))));
     }
 
     @Test
@@ -186,6 +187,6 @@ public class CommandSuggestionsTest {
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(18)));
-        assertThat(result.getList(), equalTo(Lists.newArrayList("bar", "baz")));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(18), "bar"), new Suggestion(StringRange.at(18), "baz"))));
     }
 }
