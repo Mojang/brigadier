@@ -1,6 +1,6 @@
 package com.mojang.brigadier.suggestion;
 
-import com.google.common.base.Strings;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.context.StringRange;
 
 import java.util.ArrayList;
@@ -44,6 +44,14 @@ public class SuggestionsBuilder {
             return this;
         }
         result.add(new Suggestion(StringRange.between(start, input.length()), text));
+        return this;
+    }
+
+    public SuggestionsBuilder suggest(final String text, final Message tooltip) {
+        if (text.equals(remaining)) {
+            return this;
+        }
+        result.add(new Suggestion(StringRange.between(start, input.length()), text, tooltip));
         return this;
     }
 

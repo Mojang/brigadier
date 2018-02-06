@@ -1,5 +1,6 @@
 package com.mojang.brigadier.suggestion;
 
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.context.StringRange;
 
 import java.util.Objects;
@@ -7,10 +8,16 @@ import java.util.Objects;
 public class Suggestion implements Comparable<Suggestion> {
     private final StringRange range;
     private final String text;
+    private final Message tooltip;
 
     public Suggestion(final StringRange range, final String text) {
+        this(range, text, null);
+    }
+
+    public Suggestion(final StringRange range, final String text, final Message tooltip) {
         this.range = range;
         this.text = text;
+        this.tooltip = tooltip;
     }
 
     public StringRange getRange() {
@@ -19,6 +26,10 @@ public class Suggestion implements Comparable<Suggestion> {
 
     public String getText() {
         return text;
+    }
+
+    public Message getTooltip() {
+        return tooltip;
     }
 
     public String apply(final String input) {
@@ -45,12 +56,12 @@ public class Suggestion implements Comparable<Suggestion> {
             return false;
         }
         final Suggestion that = (Suggestion) o;
-        return Objects.equals(range, that.range) && Objects.equals(text, that.text);
+        return Objects.equals(range, that.range) && Objects.equals(text, that.text) && Objects.equals(tooltip, that.tooltip);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(range, text);
+        return Objects.hash(range, text, tooltip);
     }
 
     @Override
@@ -58,6 +69,7 @@ public class Suggestion implements Comparable<Suggestion> {
         return "Suggestion{" +
             "range=" + range +
             ", text='" + text + '\'' +
+            ", tooltip='" + tooltip + '\'' +
             '}';
     }
 
@@ -78,6 +90,6 @@ public class Suggestion implements Comparable<Suggestion> {
         if (range.getEnd() > this.range.getEnd()) {
             result.append(command.substring(this.range.getEnd(), range.getEnd()));
         }
-        return new Suggestion(range, result.toString());
+        return new Suggestion(range, result.toString(), tooltip);
     }
 }
