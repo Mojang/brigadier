@@ -55,6 +55,15 @@ public class SuggestionsBuilder {
         return this;
     }
 
+    public SuggestionsBuilder add(final SuggestionsBuilder other) {
+        result.addAll(other.result);
+        return this;
+    }
+
+    public SuggestionsBuilder createOffset(final int start) {
+        return new SuggestionsBuilder(input, start);
+    }
+
     public SuggestionsBuilder restart() {
         return new SuggestionsBuilder(input, start);
     }
