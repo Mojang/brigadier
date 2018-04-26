@@ -55,6 +55,16 @@ public class SuggestionsBuilder {
         return this;
     }
 
+    public SuggestionsBuilder suggest(final int value) {
+        result.add(new IntegerSuggestion(StringRange.between(start, input.length()), value));
+        return this;
+    }
+
+    public SuggestionsBuilder suggest(final int value, final Message tooltip) {
+        result.add(new IntegerSuggestion(StringRange.between(start, input.length()), value, tooltip));
+        return this;
+    }
+
     public SuggestionsBuilder add(final SuggestionsBuilder other) {
         result.addAll(other.result);
         return this;
