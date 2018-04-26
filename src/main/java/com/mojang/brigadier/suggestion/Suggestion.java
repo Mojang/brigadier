@@ -78,6 +78,10 @@ public class Suggestion implements Comparable<Suggestion> {
         return text.compareTo(o.text);
     }
 
+    public int compareToIgnoreCase(final Suggestion b) {
+        return text.compareToIgnoreCase(b.text);
+    }
+
     public Suggestion expand(final String command, final StringRange range) {
         if (range.equals(this.range)) {
             return this;
