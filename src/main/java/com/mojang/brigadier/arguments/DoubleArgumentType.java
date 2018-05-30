@@ -2,16 +2,12 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 public class DoubleArgumentType implements ArgumentType<Double> {
-    public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.double.low", "Double must not be less than ${minimum}, found ${found}", "found", "minimum");
-    public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.double.big", "Double must not be more than ${maximum}, found ${found}", "found", "maximum");
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
     private final double minimum;
@@ -52,11 +48,11 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         final double result = reader.readDouble();
         if (result < minimum) {
             reader.setCursor(start);
-            throw ERROR_TOO_SMALL.createWithContext(reader, result, minimum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.doubleTooLow().createWithContext(reader, result, minimum);
         }
         if (result > maximum) {
             reader.setCursor(start);
-            throw ERROR_TOO_BIG.createWithContext(reader, result, maximum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.doubleTooHigh().createWithContext(reader, result, maximum);
         }
         return result;
     }

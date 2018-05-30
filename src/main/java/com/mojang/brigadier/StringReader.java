@@ -1,25 +1,10 @@
 package com.mojang.brigadier;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_QUOTE = '"';
-
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType("parsing.quote.expected.start", "Expected quote to start a string");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_END_OF_QUOTE = new SimpleCommandExceptionType("parsing.quote.expected.end", "Unclosed quoted string");
-    public static final ParameterizedCommandExceptionType ERROR_INVALID_ESCAPE = new ParameterizedCommandExceptionType("parsing.quote.escape", "Invalid escape sequence '\\${character}' in quoted string)", "character");
-    public static final ParameterizedCommandExceptionType ERROR_INVALID_BOOL = new ParameterizedCommandExceptionType("parsing.bool.invalid", "Invalid bool, expected true or false but found '${value}'", "value");
-    public static final ParameterizedCommandExceptionType ERROR_INVALID_INT = new ParameterizedCommandExceptionType("parsing.int.invalid", "Invalid integer '${value}'", "value");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_INT = new SimpleCommandExceptionType("parsing.int.expected", "Expected integer");
-    public static final ParameterizedCommandExceptionType ERROR_INVALID_DOUBLE = new ParameterizedCommandExceptionType("parsing.double.invalid", "Invalid double '${value}'", "value");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_DOUBLE = new SimpleCommandExceptionType("parsing.double.expected", "Expected double");
-    public static final ParameterizedCommandExceptionType ERROR_INVALID_FLOAT = new ParameterizedCommandExceptionType("parsing.float.invalid", "Invalid float '${value}'", "value");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_FLOAT = new SimpleCommandExceptionType("parsing.float.expected", "Expected float");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_BOOL = new SimpleCommandExceptionType("parsing.bool.expected", "Expected bool");
-    public static final ParameterizedCommandExceptionType ERROR_EXPECTED_SYMBOL = new ParameterizedCommandExceptionType("parsing.expected", "Expected '${symbol}'", "symbol");
 
     private final String string;
     private int cursor;
@@ -112,13 +97,13 @@ public class StringReader implements ImmutableStringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw ERROR_EXPECTED_INT.createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt().createWithContext(this);
         }
         try {
             return Integer.parseInt(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw ERROR_INVALID_INT.createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt().createWithContext(this, number);
         }
     }
 
@@ -129,13 +114,13 @@ public class StringReader implements ImmutableStringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw ERROR_EXPECTED_DOUBLE.createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble().createWithContext(this);
         }
         try {
             return Double.parseDouble(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw ERROR_INVALID_DOUBLE.createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble().createWithContext(this, number);
         }
     }
 
@@ -146,13 +131,13 @@ public class StringReader implements ImmutableStringReader {
         }
         final String number = string.substring(start, cursor);
         if (number.isEmpty()) {
-            throw ERROR_EXPECTED_FLOAT.createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat().createWithContext(this);
         }
         try {
             return Float.parseFloat(number);
         } catch (final NumberFormatException ex) {
             cursor = start;
-            throw ERROR_INVALID_FLOAT.createWithContext(this, number);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().createWithContext(this, number);
         }
     }
 
@@ -176,7 +161,7 @@ public class StringReader implements ImmutableStringReader {
         if (!canRead()) {
             return "";
         } else if (peek() != SYNTAX_QUOTE) {
-            throw ERROR_EXPECTED_START_OF_QUOTE.createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(this);
         }
         skip();
         final StringBuilder result = new StringBuilder();
@@ -189,7 +174,7 @@ public class StringReader implements ImmutableStringReader {
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
-                    throw ERROR_INVALID_ESCAPE.createWithContext(this, String.valueOf(c));
+                    throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape().createWithContext(this, String.valueOf(c));
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
@@ -200,7 +185,7 @@ public class StringReader implements ImmutableStringReader {
             }
         }
 
-        throw ERROR_EXPECTED_END_OF_QUOTE.createWithContext(this);
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().createWithContext(this);
     }
 
     public String readString() throws CommandSyntaxException {
@@ -215,7 +200,7 @@ public class StringReader implements ImmutableStringReader {
         final int start = cursor;
         final String value = readString();
         if (value.isEmpty()) {
-            throw ERROR_EXPECTED_BOOL.createWithContext(this);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().createWithContext(this);
         }
 
         if (value.equals("true")) {
@@ -224,13 +209,13 @@ public class StringReader implements ImmutableStringReader {
             return false;
         } else {
             cursor = start;
-            throw ERROR_INVALID_BOOL.createWithContext(this, value);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().createWithContext(this, value);
         }
     }
 
     public void expect(final char c) throws CommandSyntaxException {
         if (!canRead() || peek() != c) {
-            throw ERROR_EXPECTED_SYMBOL.createWithContext(this, String.valueOf(c));
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, String.valueOf(c));
         }
         skip();
     }
