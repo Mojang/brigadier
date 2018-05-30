@@ -9,9 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -30,11 +27,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class CommandDispatcher<S> {
-    public static final SimpleCommandExceptionType ERROR_UNKNOWN_COMMAND = new SimpleCommandExceptionType("command.unknown.command", "Unknown command");
-    public static final SimpleCommandExceptionType ERROR_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType("command.unknown.argument", "Incorrect argument for command");
-    public static final SimpleCommandExceptionType ERROR_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType("command.expected.separator", "Expected whitespace to end one argument, but found trailing data");
-    public static final ParameterizedCommandExceptionType ERROR_PARSE_EXCEPTION = new ParameterizedCommandExceptionType("command.exception", "Could not parse command: ${message}", "message");
-
     public static final String ARGUMENT_SEPARATOR = " ";
     public static final char ARGUMENT_SEPARATOR_CHAR = ' ';
     private static final String USAGE_OPTIONAL_OPEN = "[";
@@ -81,9 +73,9 @@ public class CommandDispatcher<S> {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
             } else if (parse.getContext().getRange().isEmpty()) {
-                throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
             } else {
-                throw ERROR_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
             }
         }
 
@@ -152,7 +144,7 @@ public class CommandDispatcher<S> {
 
         if (!foundCommand) {
             consumer.onCommandComplete(original, false, 0);
-            throw ERROR_UNKNOWN_COMMAND.createWithContext(parse.getReader());
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
 
         return forked ? successfulForks : result;
@@ -190,11 +182,11 @@ public class CommandDispatcher<S> {
                 try {
                     child.parse(reader, context);
                 } catch (final RuntimeException ex) {
-                    throw ERROR_PARSE_EXCEPTION.createWithContext(reader, ex.getMessage());
+                    throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().createWithContext(reader, ex.getMessage());
                 }
                 if (reader.canRead()) {
                     if (reader.peek() != ARGUMENT_SEPARATOR_CHAR) {
-                        throw ERROR_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
+                        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherExpectedArgumentSeparator().createWithContext(reader);
                     }
                 }
             } catch (final CommandSyntaxException ex) {

@@ -1,6 +1,5 @@
 package com.mojang.brigadier.arguments;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,8 +41,7 @@ public class IntegerArgumentTypeTest {
             integer(0, 100).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_SMALL));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "-5", "minimum", "0")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -56,8 +53,7 @@ public class IntegerArgumentTypeTest {
             integer(-100, 0).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(IntegerArgumentType.ERROR_TOO_BIG));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "5", "maximum", "0")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh()));
             assertThat(ex.getCursor(), is(0));
         }
     }

@@ -1,6 +1,5 @@
 package com.mojang.brigadier.arguments;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -12,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -43,8 +41,7 @@ public class DoubleArgumentTypeTest {
             doubleArg(0, 100).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(DoubleArgumentType.ERROR_TOO_SMALL));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "-5.0", "minimum", "0.0")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.doubleTooLow()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -56,8 +53,7 @@ public class DoubleArgumentTypeTest {
             doubleArg(-100, 0).parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(DoubleArgumentType.ERROR_TOO_BIG));
-            assertThat(ex.getData(), equalTo(ImmutableMap.<String, Object>of("found", "5.0", "maximum", "0.0")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.doubleTooHigh()));
             assertThat(ex.getCursor(), is(0));
         }
     }

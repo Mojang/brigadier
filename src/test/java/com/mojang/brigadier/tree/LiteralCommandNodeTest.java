@@ -1,6 +1,5 @@
 package com.mojang.brigadier.tree;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
@@ -59,8 +58,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
             node.parse(reader, contextBuilder);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -72,8 +70,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
             node.parse(reader, contextBuilder);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(LiteralCommandNode.ERROR_INCORRECT_LITERAL));
-            assertThat(ex.getData(), is(ImmutableMap.<String, Object>of("expected", "foo")));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()));
             assertThat(ex.getCursor(), is(0));
         }
     }

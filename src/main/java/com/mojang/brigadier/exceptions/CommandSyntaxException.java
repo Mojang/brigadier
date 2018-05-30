@@ -1,39 +1,44 @@
 package com.mojang.brigadier.exceptions;
 
-import java.util.Map;
+import com.mojang.brigadier.Message;
 
 public class CommandSyntaxException extends Exception {
     public static final int CONTEXT_AMOUNT = 10;
     public static boolean ENABLE_COMMAND_STACK_TRACES = true;
+    public static BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = new BuiltInExceptions();
 
     private final CommandExceptionType type;
-    private final Map<String, String> data;
+    private final Message message;
     private final String input;
     private final int cursor;
 
-    public CommandSyntaxException(final CommandExceptionType type, final Map<String, String> data) {
-        super(type.getTypeName(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
+    public CommandSyntaxException(final CommandExceptionType type, final Message message) {
+        super(message.getString(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
-        this.data = data;
+        this.message = message;
         this.input = null;
         this.cursor = -1;
     }
 
-    public CommandSyntaxException(final CommandExceptionType type, final Map<String, String> data, final String input, final int cursor) {
-        super(type.getTypeName(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
+    public CommandSyntaxException(final CommandExceptionType type, final Message message, final String input, final int cursor) {
+        super(message.getString(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
-        this.data = data;
+        this.message = message;
         this.input = input;
         this.cursor = cursor;
     }
 
     @Override
     public String getMessage() {
-        String message = type.getErrorMessage(data);
+        String message = this.message.getString();
         final String context = getContext();
         if (context != null) {
             message += " at position " + cursor + ": " + context;
         }
+        return message;
+    }
+
+    public Message getRawMessage() {
         return message;
     }
 
@@ -56,10 +61,6 @@ public class CommandSyntaxException extends Exception {
 
     public CommandExceptionType getType() {
         return type;
-    }
-
-    public Map<String, String> getData() {
-        return data;
     }
 
     public String getInput() {

@@ -11,8 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
-
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
@@ -74,8 +72,7 @@ public class CommandDispatcherTest {
             subject.execute("foo", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -88,8 +85,7 @@ public class CommandDispatcherTest {
             subject.execute("foo", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -102,8 +98,7 @@ public class CommandDispatcherTest {
             subject.execute("", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.<String, Object>emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -116,8 +111,7 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument()));
             assertThat(ex.getCursor(), is(4));
         }
     }
@@ -130,8 +124,7 @@ public class CommandDispatcherTest {
             subject.execute("foo baz", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument()));
             assertThat(ex.getCursor(), is(4));
         }
     }
@@ -148,8 +141,7 @@ public class CommandDispatcherTest {
             subject.execute("foo unknown", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_ARGUMENT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument()));
             assertThat(ex.getCursor(), is(4));
         }
     }
@@ -310,8 +302,7 @@ public class CommandDispatcherTest {
             subject.execute("foo 5", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(5));
         }
     }
@@ -335,8 +326,7 @@ public class CommandDispatcherTest {
             subject.execute("foo$", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandDispatcher.ERROR_UNKNOWN_COMMAND));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(0));
         }
     }
@@ -351,8 +341,7 @@ public class CommandDispatcherTest {
             subject.execute("foo bar", source);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(StringReader.ERROR_EXPECTED_INT));
-            assertThat(ex.getData(), is(Collections.emptyMap()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt()));
             assertThat(ex.getCursor(), is(4));
         }
     }

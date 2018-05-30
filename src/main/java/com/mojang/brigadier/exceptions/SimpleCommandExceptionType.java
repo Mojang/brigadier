@@ -1,54 +1,25 @@
 package com.mojang.brigadier.exceptions;
 
-import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.ImmutableStringReader;
-
-import java.util.Map;
+import com.mojang.brigadier.Message;
 
 public class SimpleCommandExceptionType implements CommandExceptionType {
-    private final String name;
-    private final String message;
+    private final Message message;
 
-    public SimpleCommandExceptionType(final String name, final String message) {
-        this.name = name;
+    public SimpleCommandExceptionType(final Message message) {
         this.message = message;
     }
 
-    @Override
-    public String getTypeName() {
-        return name;
-    }
-
-    @Override
-    public String getErrorMessage(final Map<String, String> data) {
-        return message;
-    }
-
     public CommandSyntaxException create() {
-        return new CommandSyntaxException(this, ImmutableMap.of());
+        return new CommandSyntaxException(this, message);
     }
 
     public CommandSyntaxException createWithContext(final ImmutableStringReader reader) {
-        return new CommandSyntaxException(this, ImmutableMap.of(), reader.getString(), reader.getCursor());
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CommandExceptionType)) return false;
-
-        final CommandExceptionType that = (CommandExceptionType) o;
-
-        return getTypeName().equals(that.getTypeName());
-    }
-
-    @Override
-    public int hashCode() {
-        return getTypeName().hashCode();
+        return new CommandSyntaxException(this, message, reader.getString(), reader.getCursor());
     }
 
     @Override
     public String toString() {
-        return message;
+        return message.getString();
     }
 }

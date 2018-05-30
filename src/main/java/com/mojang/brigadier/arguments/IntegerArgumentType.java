@@ -2,16 +2,12 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 public class IntegerArgumentType implements ArgumentType<Integer> {
-    public static final ParameterizedCommandExceptionType ERROR_TOO_SMALL = new ParameterizedCommandExceptionType("argument.integer.low", "Integer must not be less than ${minimum}, found ${found}", "found", "minimum");
-    public static final ParameterizedCommandExceptionType ERROR_TOO_BIG = new ParameterizedCommandExceptionType("argument.integer.big", "Integer must not be more than ${maximum}, found ${found}", "found", "maximum");
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
 
     private final int minimum;
@@ -52,11 +48,11 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         final int result = reader.readInt();
         if (result < minimum) {
             reader.setCursor(start);
-            throw ERROR_TOO_SMALL.createWithContext(reader, result, minimum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().createWithContext(reader, result, minimum);
         }
         if (result > maximum) {
             reader.setCursor(start);
-            throw ERROR_TOO_BIG.createWithContext(reader, result, maximum);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().createWithContext(reader, result, maximum);
         }
         return result;
     }

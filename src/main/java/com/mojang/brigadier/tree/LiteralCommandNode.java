@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.ParameterizedCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
@@ -18,8 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
-    public static final ParameterizedCommandExceptionType ERROR_INCORRECT_LITERAL = new ParameterizedCommandExceptionType("argument.literal.incorrect", "Expected literal ${expected}", "expected");
-
     private final String literal;
 
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
@@ -45,7 +42,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
             return;
         }
 
-        throw ERROR_INCORRECT_LITERAL.createWithContext(reader, literal);
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect().createWithContext(reader, literal);
     }
 
     private int parse(final StringReader reader) {
