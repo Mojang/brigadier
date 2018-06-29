@@ -1,10 +1,10 @@
 import groovy.io.FileType
 
 apply plugin: 'java-library'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
-version = '0.1.27'
 group = 'com.mojang'
+version = project.hasProperty('buildNumber') ? "${project.majorMinor}.${project.buildNumber}" : "${project.majorMinor}.0-SNAPSHOT"
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
@@ -64,29 +64,33 @@ test {
     }
 }
 
-def repoDir = new File(projectDir, "repo")
-repoDir.mkdirs()
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
 
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: "file://" + repoDir.absolutePath)
+task report {
+    doLast {
+        println "##teamcity[buildNumber '${project.version}']"
+    }
+}
 
-            pom.project {
-                description 'Command Registration & Dispatch System'
-                url 'http://github.com/Mojang/brigadier'
+if (version.endsWith("SNAPSHOT")) {
+    publishing.repositories {
+        mavenLocal()
+    }
+} else {
+    publishing.repositories {
+        maven {
+            url "s3://minecraft-libraries/"
+            authentication {
+               awsIm(AwsImAuthentication)
             }
         }
     }
-
-    doLast {
-        // Purge all annoying files that arent needed
-        repoDir.traverse(type: FileType.FILES, nameFilter: ~/.*\.(xml|xml\.sha1|md5)$/) {
-            it.delete()
-        }
-    }
 }
 
-clean.doLast {
-    repoDir.deleteDir()
-}
