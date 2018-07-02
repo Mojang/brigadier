@@ -123,7 +123,7 @@ if (version.endsWith("SNAPSHOT")) {
         def auth = new STSAssumeRoleSessionCredentialsProvider.Builder(AWSRoleARN, "JavaBrigadierPublish").build()
         def s3 = new AmazonS3Client(auth)
         publishDir.eachFileRecurse {
-            if (!it.name.contains(".xml") && it.isFile()) {
+            if (!it.name.contains(".xml") && !it.name.contains(".md5") && it.isFile()) {
                 def relPath = publishDir.toPath().relativize(it.toPath()).toFile().toString().replaceAll('\\\\', '/')
                 uploadFile(s3, "minecraft-libraries", relPath, it)
             }
