@@ -118,4 +118,9 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     public Collection<String> getExamples() {
         return Collections.singleton(literal);
     }
+
+    @Override
+    public String toString() {
+        return "<literal " + literal + ">";
+    }
 }

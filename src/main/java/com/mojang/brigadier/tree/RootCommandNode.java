@@ -62,4 +62,9 @@ public class RootCommandNode<S> extends CommandNode<S> {
     public Collection<String> getExamples() {
         return Collections.emptyList();
     }
+
+    @Override
+    public String toString() {
+        return "<root>";
+    }
 }

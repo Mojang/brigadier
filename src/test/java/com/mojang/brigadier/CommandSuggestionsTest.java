@@ -30,6 +30,12 @@ public class CommandSuggestionsTest {
         subject = new CommandDispatcher<>();
     }
 
+    private static StringReader inputWithOffset(final String input, final int offset) {
+        final StringReader result = new StringReader(input);
+        result.setCursor(offset);
+        return result;
+    }
+
     @Test
     public void getCompletionSuggestions_rootCommands() throws Exception {
         subject.register(literal("foo"));
@@ -43,6 +49,18 @@ public class CommandSuggestionsTest {
     }
 
     @Test
+    public void getCompletionSuggestions_rootCommands_withInputOffset() throws Exception {
+        subject.register(literal("foo"));
+        subject.register(literal("bar"));
+        subject.register(literal("baz"));
+
+        final Suggestions result = subject.getCompletionSuggestions(subject.parse(inputWithOffset("OOO", 3), source)).join();
+
+        assertThat(result.getRange(), equalTo(StringRange.at(3)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(3), "bar"), new Suggestion(StringRange.at(3), "baz"), new Suggestion(StringRange.at(3), "foo"))));
+    }
+
+    @Test
     public void getCompletionSuggestions_rootCommands_partial() throws Exception {
         subject.register(literal("foo"));
         subject.register(literal("bar"));
@@ -52,6 +70,18 @@ public class CommandSuggestionsTest {
 
         assertThat(result.getRange(), equalTo(StringRange.between(0, 1)));
         assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(0, 1), "bar"), new Suggestion(StringRange.between(0, 1), "baz"))));
+    }
+
+    @Test
+    public void getCompletionSuggestions_rootCommands_partial_withInputOffset() throws Exception {
+        subject.register(literal("foo"));
+        subject.register(literal("bar"));
+        subject.register(literal("baz"));
+
+        final Suggestions result = subject.getCompletionSuggestions(subject.parse(inputWithOffset("Zb", 1), source)).join();
+
+        assertThat(result.getRange(), equalTo(StringRange.between(1, 2)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(1, 2), "bar"), new Suggestion(StringRange.between(1, 2), "baz"))));
     }
 
     @Test
@@ -86,6 +116,22 @@ public class CommandSuggestionsTest {
     }
 
     @Test
+    public void getCompletionSuggestions_subCommands_partial_withInputOffset() throws Exception {
+        subject.register(
+                literal("parent")
+                        .then(literal("foo"))
+                        .then(literal("bar"))
+                        .then(literal("baz"))
+        );
+
+        final ParseResults<Object> parse = subject.parse(inputWithOffset("junk parent b", 5), source);
+        final Suggestions result = subject.getCompletionSuggestions(parse).join();
+
+        assertThat(result.getRange(), equalTo(StringRange.between(12, 13)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(12, 13), "bar"), new Suggestion(StringRange.between(12, 13), "baz"))));
+    }
+
+    @Test
     public void getCompletionSuggestions_redirect() throws Exception {
         final LiteralCommandNode<Object> actual = subject.register(literal("actual").then(literal("sub")));
         subject.register(literal("redirect").redirect(actual));
@@ -107,6 +153,19 @@ public class CommandSuggestionsTest {
 
         assertThat(result.getRange(), equalTo(StringRange.between(9, 10)));
         assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(9, 10), "sub"))));
+    }
+
+
+    @Test
+    public void getCompletionSuggestions_redirectPartial_withInputOffset() throws Exception {
+        final LiteralCommandNode<Object> actual = subject.register(literal("actual").then(literal("sub")));
+        subject.register(literal("redirect").redirect(actual));
+
+        final ParseResults<Object> parse = subject.parse(inputWithOffset("/redirect s", 1), source);
+        final Suggestions result = subject.getCompletionSuggestions(parse).join();
+
+        assertThat(result.getRange(), equalTo(StringRange.between(10, 11)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(10, 11), "sub"))));
     }
 
     @Test
