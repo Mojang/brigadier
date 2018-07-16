@@ -102,6 +102,10 @@ public class CommandDispatcherUsagesTest {
         return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
     }
 
+    private CommandNode<Object> get(final StringReader command) {
+        return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
+    }
+
     @Test
     public void testAllUsage_noCommands() throws Exception {
         subject = new CommandDispatcher<>();
@@ -172,6 +176,20 @@ public class CommandDispatcherUsagesTest {
             .put(get("h 2"), "[2] i ii")
             .put(get("h 3"), "[3]")
             .build()
+        ));
+    }
+
+    @Test
+    public void testSmartUsage_offsetH() throws Exception {
+        final StringReader offsetH = new StringReader("/|/|/h");
+        offsetH.setCursor(5);
+
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(get(offsetH), source);
+        assertThat(results, equalTo(ImmutableMap.builder()
+                .put(get("h 1"), "[1] i")
+                .put(get("h 2"), "[2] i ii")
+                .put(get("h 3"), "[3]")
+                .build()
         ));
     }
 }

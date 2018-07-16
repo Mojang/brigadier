@@ -64,6 +64,10 @@ public class CommandDispatcher<S> {
     }
 
     public int execute(final String input, final S source) throws CommandSyntaxException {
+        return execute(new StringReader(input), source);
+    }
+
+    public int execute(final StringReader input, final S source) throws CommandSyntaxException {
         final ParseResults<S> parse = parse(input, source);
         return execute(parse);
     }
@@ -151,9 +155,12 @@ public class CommandDispatcher<S> {
     }
 
     public ParseResults<S> parse(final String command, final S source) {
-        final StringReader reader = new StringReader(command);
+        return parse(new StringReader(command), source);
+    }
+
+    public ParseResults<S> parse(final StringReader command, final S source) {
         final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, 0);
-        return parseNodes(root, reader, context);
+        return parseNodes(root, command, context);
     }
 
     private static class PartialParse<S> {
@@ -206,7 +213,7 @@ public class CommandDispatcher<S> {
                     childContext.withNode(child.getRedirect(), StringRange.between(cursor, reader.getCursor() - 1));
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
-                    return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
+                    return new ParseResults<>(context, originalReader.getCursor(), parse.getReader(), parse.getExceptions());
                 } else {
                     final ParseResults<S> parse = parseNodes(child, reader, context);
                     if (potentials == null) {
@@ -218,7 +225,7 @@ public class CommandDispatcher<S> {
                 if (potentials == null) {
                     potentials = new ArrayList<>(1);
                 }
-                potentials.add(new PartialParse<>(context, new ParseResults<>(context, reader, Collections.emptyMap())));
+                potentials.add(new PartialParse<>(context, new ParseResults<>(context, originalReader.getCursor(), reader, Collections.emptyMap())));
             }
         }
 
@@ -243,7 +250,7 @@ public class CommandDispatcher<S> {
             return potentials.get(0).parse;
         }
 
-        return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
+        return new ParseResults<>(contextSoFar, originalReader.getCursor(), originalReader, errors == null ? Collections.emptyMap() : errors);
     }
 
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
@@ -346,7 +353,7 @@ public class CommandDispatcher<S> {
 
         if (context.getNodes().isEmpty()) {
             parent = root;
-            start = 0;
+            start = parse.getStartIndex();
         } else if (parse.getReader().canRead()) {
             final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.getLast(context.getNodes().entrySet());
             parent = entry.getKey();
@@ -361,7 +368,7 @@ public class CommandDispatcher<S> {
             start = entry.getValue().getEnd() + 1;
         } else {
             parent = root;
-            start = 0;
+            start = parse.getStartIndex();
         }
 
         @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];

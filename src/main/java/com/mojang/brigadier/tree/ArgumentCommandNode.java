@@ -120,4 +120,9 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public Collection<String> getExamples() {
         return type.getExamples();
     }
+
+    @Override
+    public String toString() {
+        return "<argument " + name + ":" + type +">";
+    }
 }

@@ -43,12 +43,27 @@ public class CommandDispatcherTest {
         when(command.run(any())).thenReturn(42);
     }
 
+    private static StringReader inputWithOffset(final String input, final int offset) {
+        final StringReader result = new StringReader(input);
+        result.setCursor(offset);
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndExecuteCommand() throws Exception {
         subject.register(literal("foo").executes(command));
 
         assertThat(subject.execute("foo", source), is(42));
+        verify(command).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateAndExecuteOffsetCommand() throws Exception {
+        subject.register(literal("foo").executes(command));
+
+        assertThat(subject.execute(inputWithOffset("/foo", 1), source), is(42));
         verify(command).run(any(CommandContext.class));
     }
 
