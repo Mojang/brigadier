@@ -32,7 +32,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
     @Before
     public void setUp() throws Exception {
         node = argument("foo", integer()).build();
-        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), 0);
+        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), new RootCommandNode<>(), 0);
     }
 
     @Test

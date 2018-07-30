@@ -3,14 +3,13 @@
 
 package com.mojang.brigadier;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.StringRange;
+import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -57,6 +56,7 @@ public class CommandDispatcher<S> {
     private static final String USAGE_OR = "|";
 
     private final RootCommandNode<S> root;
+
     private final Predicate<CommandNode<S>> hasCommand = new Predicate<CommandNode<S>>() {
         @Override
         public boolean test(final CommandNode<S> input) {
@@ -231,7 +231,7 @@ public class CommandDispatcher<S> {
                 final CommandContext<S> child = context.getChild();
                 if (child != null) {
                     forked |= context.isForked();
-                    if (!child.getNodes().isEmpty()) {
+                    if (child.hasNodes()) {
                         foundCommand = true;
                         final RedirectModifier<S> modifier = context.getRedirectModifier();
                         if (modifier == null) {
@@ -345,24 +345,14 @@ public class CommandDispatcher<S> {
      * @see #execute(String, Object)
      */
     public ParseResults<S> parse(final StringReader command, final S source) {
-        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, 0);
+        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, root, command.getCursor());
         return parseNodes(root, command, context);
-    }
-
-    private static class PartialParse<S> {
-        public final CommandContextBuilder<S> context;
-        public final ParseResults<S> parse;
-
-        private PartialParse(final CommandContextBuilder<S> context, final ParseResults<S> parse) {
-            this.context = context;
-            this.parse = parse;
-        }
     }
 
     private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextSoFar) {
         final S source = contextSoFar.getSource();
         Map<CommandNode<S>, CommandSyntaxException> errors = null;
-        List<PartialParse<S>> potentials = null;
+        List<ParseResults<S>> potentials = null;
         final int cursor = originalReader.getCursor();
 
         for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
@@ -395,48 +385,47 @@ public class CommandDispatcher<S> {
             if (reader.canRead(child.getRedirect() == null ? 2 : 1)) {
                 reader.skip();
                 if (child.getRedirect() != null) {
-                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, reader.getCursor());
-                    childContext.withNode(child.getRedirect(), StringRange.between(cursor, reader.getCursor() - 1));
+                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
-                    return new ParseResults<>(context, originalReader.getCursor(), parse.getReader(), parse.getExceptions());
+                    return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
                     final ParseResults<S> parse = parseNodes(child, reader, context);
                     if (potentials == null) {
                         potentials = new ArrayList<>(1);
                     }
-                    potentials.add(new PartialParse<>(context, parse));
+                    potentials.add(parse);
                 }
             } else {
                 if (potentials == null) {
                     potentials = new ArrayList<>(1);
                 }
-                potentials.add(new PartialParse<>(context, new ParseResults<>(context, originalReader.getCursor(), reader, Collections.emptyMap())));
+                potentials.add(new ParseResults<>(context, reader, Collections.emptyMap()));
             }
         }
 
         if (potentials != null) {
             if (potentials.size() > 1) {
                 potentials.sort((a, b) -> {
-                    if (!a.parse.getReader().canRead() && b.parse.getReader().canRead()) {
+                    if (!a.getReader().canRead() && b.getReader().canRead()) {
                         return -1;
                     }
-                    if (a.parse.getReader().canRead() && !b.parse.getReader().canRead()) {
+                    if (a.getReader().canRead() && !b.getReader().canRead()) {
                         return 1;
                     }
-                    if (a.parse.getExceptions().isEmpty() && !b.parse.getExceptions().isEmpty()) {
+                    if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) {
                         return -1;
                     }
-                    if (!a.parse.getExceptions().isEmpty() && b.parse.getExceptions().isEmpty()) {
+                    if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) {
                         return 1;
                     }
                     return 0;
                 });
             }
-            return potentials.get(0).parse;
+            return potentials.get(0);
         }
 
-        return new ParseResults<>(contextSoFar, originalReader.getCursor(), originalReader, errors == null ? Collections.emptyMap() : errors);
+        return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
     }
 
     /**
@@ -589,37 +578,24 @@ public class CommandDispatcher<S> {
      * @return a future that will eventually resolve into a {@link Suggestions} object
      */
     public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse) {
-        final CommandContextBuilder<S> rootContext = parse.getContext();
-        final CommandContextBuilder<S> context = rootContext.getLastChild();
-        final CommandNode<S> parent;
-        final int start;
+        return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
+    }
 
-        if (context.getNodes().isEmpty()) {
-            parent = root;
-            start = parse.getStartIndex();
-        } else if (parse.getReader().canRead()) {
-            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.getLast(context.getNodes().entrySet());
-            parent = entry.getKey();
-            start = entry.getValue().getEnd() + 1;
-        } else if (context.getNodes().size() > 1) {
-            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.get(context.getNodes().entrySet(), context.getNodes().size() - 2);
-            parent = entry.getKey();
-            start = entry.getValue().getEnd() + 1;
-        } else if (rootContext != context && context.getNodes().size() > 0) {
-            final Map.Entry<CommandNode<S>, StringRange> entry = Iterables.getLast(context.getNodes().entrySet());
-            parent = entry.getKey();
-            start = entry.getValue().getEnd() + 1;
-        } else {
-            parent = root;
-            start = parse.getStartIndex();
-        }
+    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
+        final CommandContextBuilder<S> context = parse.getContext();
 
+        final SuggestionContext<S> nodeBeforeCursor = context.findSuggestionContext(cursor);
+        final CommandNode<S> parent = nodeBeforeCursor.parent;
+        final int start = Math.min(nodeBeforeCursor.startPos, cursor);
+
+        final String fullInput = parse.getReader().getString();
+        final String truncatedInput = fullInput.substring(0, cursor);
         @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
             CompletableFuture<Suggestions> future = Suggestions.empty();
             try {
-                future = node.listSuggestions(context.build(parse.getReader().getString()), new SuggestionsBuilder(parse.getReader().getString(), start));
+                future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, start));
             } catch (final CommandSyntaxException ignored) {
             }
             futures[i++] = future;
@@ -631,7 +607,7 @@ public class CommandDispatcher<S> {
             for (final CompletableFuture<Suggestions> future : futures) {
                 suggestions.add(future.join());
             }
-            result.complete(Suggestions.merge(parse.getReader().getString(), suggestions));
+            result.complete(Suggestions.merge(fullInput, suggestions));
         });
 
         return result;

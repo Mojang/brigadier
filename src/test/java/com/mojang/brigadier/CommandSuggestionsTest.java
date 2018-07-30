@@ -14,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.List;
+
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
@@ -31,6 +33,18 @@ public class CommandSuggestionsTest {
     @Before
     public void setUp() throws Exception {
         subject = new CommandDispatcher<>();
+    }
+
+    private void testSuggestions(final String contents, final int cursor, final StringRange range, final String... suggestions) {
+        final Suggestions result = subject.getCompletionSuggestions(subject.parse(contents, source), cursor).join();
+        assertThat(result.getRange(), equalTo(range));
+
+        final List<Suggestion> expected = Lists.newArrayList();
+        for (final String suggestion : suggestions) {
+            expected.add(new Suggestion(range, suggestion));
+        }
+
+        assertThat(result.getList(), equalTo(expected));
     }
 
     private static StringReader inputWithOffset(final String input, final int offset) {
@@ -103,6 +117,31 @@ public class CommandSuggestionsTest {
     }
 
     @Test
+    public void getCompletionSuggestions_movingCursor_subCommands() throws Exception {
+        subject.register(
+            literal("parent_one")
+                .then(literal("faz"))
+                .then(literal("fbz"))
+                .then(literal("gaz"))
+        );
+
+        subject.register(
+            literal("parent_two")
+        );
+
+        testSuggestions("parent_one faz ", 0, StringRange.at(0), "parent_one", "parent_two");
+        testSuggestions("parent_one faz ", 1, StringRange.between(0, 1), "parent_one", "parent_two");
+        testSuggestions("parent_one faz ", 7, StringRange.between(0, 7), "parent_one", "parent_two");
+        testSuggestions("parent_one faz ", 8, StringRange.between(0, 8), "parent_one");
+        testSuggestions("parent_one faz ", 10, StringRange.at(0));
+        testSuggestions("parent_one faz ", 11, StringRange.at(11), "faz", "fbz", "gaz");
+        testSuggestions("parent_one faz ", 12, StringRange.between(11, 12), "faz", "fbz");
+        testSuggestions("parent_one faz ", 13, StringRange.between(11, 13), "faz");
+        testSuggestions("parent_one faz ", 14, StringRange.at(0));
+        testSuggestions("parent_one faz ", 15, StringRange.at(0));
+    }
+
+    @Test
     public void getCompletionSuggestions_subCommands_partial() throws Exception {
         subject.register(
             literal("parent")
@@ -121,10 +160,10 @@ public class CommandSuggestionsTest {
     @Test
     public void getCompletionSuggestions_subCommands_partial_withInputOffset() throws Exception {
         subject.register(
-                literal("parent")
-                        .then(literal("foo"))
-                        .then(literal("bar"))
-                        .then(literal("baz"))
+            literal("parent")
+                .then(literal("foo"))
+                .then(literal("bar"))
+                .then(literal("baz"))
         );
 
         final ParseResults<Object> parse = subject.parse(inputWithOffset("junk parent b", 5), source);
@@ -158,6 +197,29 @@ public class CommandSuggestionsTest {
         assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.between(9, 10), "sub"))));
     }
 
+    @Test
+    public void getCompletionSuggestions_movingCursor_redirect() throws Exception {
+        final LiteralCommandNode<Object> actualOne = subject.register(literal("actual_one")
+            .then(literal("faz"))
+            .then(literal("fbz"))
+            .then(literal("gaz"))
+        );
+
+        final LiteralCommandNode<Object> actualTwo = subject.register(literal("actual_two"));
+
+        subject.register(literal("redirect_one").redirect(actualOne));
+        subject.register(literal("redirect_two").redirect(actualOne));
+
+        testSuggestions("redirect_one faz ", 0, StringRange.at(0), "actual_one", "actual_two", "redirect_one", "redirect_two");
+        testSuggestions("redirect_one faz ", 9, StringRange.between(0, 9), "redirect_one", "redirect_two");
+        testSuggestions("redirect_one faz ", 10, StringRange.between(0, 10), "redirect_one");
+        testSuggestions("redirect_one faz ", 12, StringRange.at(0));
+        testSuggestions("redirect_one faz ", 13, StringRange.at(13), "faz", "fbz", "gaz");
+        testSuggestions("redirect_one faz ", 14, StringRange.between(13, 14), "faz", "fbz");
+        testSuggestions("redirect_one faz ", 15, StringRange.between(13, 15), "faz");
+        testSuggestions("redirect_one faz ", 16, StringRange.at(0));
+        testSuggestions("redirect_one faz ", 17, StringRange.at(0));
+    }
 
     @Test
     public void getCompletionSuggestions_redirectPartial_withInputOffset() throws Exception {
