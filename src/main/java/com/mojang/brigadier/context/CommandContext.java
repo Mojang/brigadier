@@ -9,6 +9,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 
+import java.util.List;
 import java.util.Map;
 
 public class CommandContext<S> {
@@ -16,17 +17,19 @@ public class CommandContext<S> {
     private final String input;
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
-    private final Map<CommandNode<S>, StringRange> nodes;
+    private final CommandNode<S> rootNode;
+    private final List<ParsedCommandNode<S>> nodes;
     private final StringRange range;
     private final CommandContext<S> child;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final Map<CommandNode<S>, StringRange> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
         this.command = command;
+        this.rootNode = rootNode;
         this.nodes = nodes;
         this.range = range;
         this.child = child;
@@ -38,7 +41,7 @@ public class CommandContext<S> {
         if (this.source == source) {
             return this;
         }
-        return new CommandContext<>(source, input, arguments, command, nodes, range, child, modifier, forks);
+        return new CommandContext<>(source, input, arguments, command, rootNode, nodes, range, child, modifier, forks);
     }
 
     public CommandContext<S> getChild() {
@@ -85,7 +88,8 @@ public class CommandContext<S> {
         final CommandContext that = (CommandContext) o;
 
         if (!arguments.equals(that.arguments)) return false;
-        if (!Iterables.elementsEqual(nodes.entrySet(), that.nodes.entrySet())) return false;
+        if (!rootNode.equals(that.rootNode)) return false;
+        if (!Iterables.elementsEqual(nodes, that.nodes)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (!source.equals(that.source)) return false;
         if (child != null ? !child.equals(that.child) : that.child != null) return false;
@@ -98,6 +102,7 @@ public class CommandContext<S> {
         int result = source.hashCode();
         result = 31 * result + arguments.hashCode();
         result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + rootNode.hashCode();
         result = 31 * result + nodes.hashCode();
         result = 31 * result + (child != null ? child.hashCode() : 0);
         return result;
@@ -115,8 +120,16 @@ public class CommandContext<S> {
         return input;
     }
 
-    public Map<CommandNode<S>, StringRange> getNodes() {
+    public CommandNode<S> getRootNode() {
+        return rootNode;
+    }
+
+    public List<ParsedCommandNode<S>> getNodes() {
         return nodes;
+    }
+
+    public boolean hasNodes() {
+        return !nodes.isEmpty();
     }
 
     public boolean isForked() {

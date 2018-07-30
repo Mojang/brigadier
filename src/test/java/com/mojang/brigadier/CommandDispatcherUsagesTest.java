@@ -4,6 +4,7 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
@@ -102,11 +103,11 @@ public class CommandDispatcherUsagesTest {
     }
 
     private CommandNode<Object> get(final String command) {
-        return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
+        return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
     }
 
     private CommandNode<Object> get(final StringReader command) {
-        return Iterators.getLast(subject.parse(command, source).getContext().getNodes().keySet().iterator());
+        return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
     }
 
     @Test
@@ -189,10 +190,10 @@ public class CommandDispatcherUsagesTest {
 
         final Map<CommandNode<Object>, String> results = subject.getSmartUsage(get(offsetH), source);
         assertThat(results, equalTo(ImmutableMap.builder()
-                .put(get("h 1"), "[1] i")
-                .put(get("h 2"), "[2] i ii")
-                .put(get("h 3"), "[3]")
-                .build()
+            .put(get("h 1"), "[1] i")
+            .put(get("h 2"), "[2] i ii")
+            .put(get("h 3"), "[3]")
+            .build()
         ));
     }
 }

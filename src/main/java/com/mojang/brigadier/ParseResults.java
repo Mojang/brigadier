@@ -13,22 +13,16 @@ import java.util.Map;
 public class ParseResults<S> {
     private final CommandContextBuilder<S> context;
     private final Map<CommandNode<S>, CommandSyntaxException> exceptions;
-    private final int startIndex;
     private final ImmutableStringReader reader;
 
-    public ParseResults(final CommandContextBuilder<S> context, final int startIndex, final ImmutableStringReader reader, final Map<CommandNode<S>, CommandSyntaxException> exceptions) {
+    public ParseResults(final CommandContextBuilder<S> context, final ImmutableStringReader reader, final Map<CommandNode<S>, CommandSyntaxException> exceptions) {
         this.context = context;
-        this.startIndex = startIndex;
         this.reader = reader;
         this.exceptions = exceptions;
     }
 
     public ParseResults(final CommandContextBuilder<S> context) {
-        this(context, 0, new StringReader(""), Collections.emptyMap());
-    }
-
-    public int getStartIndex() {
-        return startIndex;
+        this(context, new StringReader(""), Collections.emptyMap());
     }
 
     public CommandContextBuilder<S> getContext() {
