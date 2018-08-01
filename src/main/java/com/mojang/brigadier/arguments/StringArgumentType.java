@@ -5,7 +5,6 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
@@ -39,7 +38,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public <S> String parse(final StringReader reader) throws CommandSyntaxException {
+    public String parse(final StringReader reader) throws CommandSyntaxException {
         if (type == StringType.GREEDY_PHRASE) {
             final String text = reader.getRemaining();
             reader.setCursor(reader.getTotalLength());

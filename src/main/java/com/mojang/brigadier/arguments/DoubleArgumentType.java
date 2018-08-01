@@ -46,7 +46,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
     }
 
     @Override
-    public <S> Double parse(final StringReader reader) throws CommandSyntaxException {
+    public Double parse(final StringReader reader) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final double result = reader.readDouble();
         if (result < minimum) {
