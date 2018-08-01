@@ -5,7 +5,6 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -29,7 +28,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> Boolean parse(final StringReader reader) throws CommandSyntaxException {
+    public Boolean parse(final StringReader reader) throws CommandSyntaxException {
         return reader.readBoolean();
     }
 
