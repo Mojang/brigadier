@@ -1,4 +1,7 @@
 # Brigadier
+
+![GitHub](https://img.shields.io/github/license/mojang/brigadier.svg)
+
 Brigadier is a command parser & dispatcher, designed and developed for Minecraft: Java Edition and now freely available for use elsewhere under the MIT license.
 
 # Installation
@@ -131,3 +134,6 @@ There are two forms of "usage strings" provided by this library, both require a 
 
 `getSmartUsage(node, source)` will return a map of the child nodes to their "smart usage" human readable path. This tries to squash future-nodes together and show optional & typed information, and can look like `foo (<bar>)`
 
+
+![GitHub forks](https://img.shields.io/github/forks/badges/mojang.svg?style=social&label=Fork)
+![GitHub stars](https://img.shields.io/github/stars/badges/brigadier.svg?style=social&label=Stars)
