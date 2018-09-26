@@ -110,6 +110,23 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    public long readLong() throws CommandSyntaxException {
+        final int start = cursor;
+        while (canRead() && isAllowedNumber(peek())) {
+            skip();
+        }
+        final String number = string.substring(start, cursor);
+        if (number.isEmpty()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong().createWithContext(this);
+        }
+        try {
+            return Long.parseLong(number);
+        } catch (final NumberFormatException ex) {
+            cursor = start;
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong().createWithContext(this, number);
+        }
+    }
+
     public double readDouble() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
