@@ -94,7 +94,7 @@ Argument types will be asked to parse input as much as they can, and then store 
 
 For example, an integer argument would parse "123" and store it as `123` (`int`), but throw an error if the input were `onetwothree`.
 
-When a command is actually ran, it can access these arguments in the context provided to the registered function.
+When a command is actually run, it can access these arguments in the context provided to the registered function.
 
 ## Parsing user input
 So, we've registered some commands and now we're ready to take in user input. If you're in a rush, you can just call `dispatcher.execute("foo 123", source)` and call it a day.
