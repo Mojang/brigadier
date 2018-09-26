@@ -37,7 +37,7 @@ And then use this library (change `(the latest version)` to the latest version!)
 ```
 
 # Contributing
-Contributions are suspended until we have a process in place to handle them.
+Contributions are welcome ! :D
 
 Most contributions will require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to,
 and actually do, grant us the rights to use your contribution. For details, visit https://cla.microsoft.com.
@@ -62,7 +62,7 @@ Every node can have an `executes` function attached to it, which signifies that 
 
 Consider the following example:
 ```java
-CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher();
+CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
 
 dispatcher.register(
     literal("foo")
@@ -94,7 +94,7 @@ Argument types will be asked to parse input as much as they can, and then store 
 
 For example, an integer argument would parse "123" and store it as `123` (`int`), but throw an error if the input were `onetwothree`.
 
-When a command is actually ran, it can access these arguments in the context provided to the registered function.
+When a command is actually run, it can access these arguments in the context provided to the registered function.
 
 ## Parsing user input
 So, we've registered some commands and now we're ready to take in user input. If you're in a rush, you can just call `dispatcher.execute("foo 123", source)` and call it a day.
@@ -125,7 +125,7 @@ It also contains a map of parse exceptions for each command node it encountered.
 the reason why is inside this exception map.
 
 ## Displaying usage info
-There's two forms of "usage strings" provided by this library, both require a target node.
+There are two forms of "usage strings" provided by this library, both require a target node.
 
 `getAllUsage(node, source, restricted)`  will return a list of all possible commands (executable end-points) under the target node and their human readable path. If `restricted`, it will ignore commands that `source` does not have access to. This will look like [`foo`, `foo <bar>`]
 
