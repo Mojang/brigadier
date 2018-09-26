@@ -295,6 +295,58 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readLong() throws Exception {
+        final StringReader reader = new StringReader("1234567890");
+        assertThat(reader.readLong(), is(1234567890L));
+        assertThat(reader.getRead(), equalTo("1234567890"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readLong_negative() throws Exception {
+        final StringReader reader = new StringReader("-1234567890");
+        assertThat(reader.readLong(), is(-1234567890L));
+        assertThat(reader.getRead(), equalTo("-1234567890"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readLong_invalid() throws Exception {
+        try {
+            new StringReader("12.34").readLong();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readLong_none() throws Exception {
+        try {
+            new StringReader("").readLong();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
+    public void readLong_withRemaining() throws Exception {
+        final StringReader reader = new StringReader("1234567890 foo bar");
+        assertThat(reader.readLong(), is(1234567890L));
+        assertThat(reader.getRead(), equalTo("1234567890"));
+        assertThat(reader.getRemaining(), equalTo(" foo bar"));
+    }
+
+    @Test
+    public void readLong_withRemainingImmediate() throws Exception {
+        final StringReader reader = new StringReader("1234567890foo bar");
+        assertThat(reader.readLong(), is(1234567890L));
+        assertThat(reader.getRead(), equalTo("1234567890"));
+        assertThat(reader.getRemaining(), equalTo("foo bar"));
+    }
+
+    @Test
     public void readDouble() throws Exception {
         final StringReader reader = new StringReader("123");
         assertThat(reader.readDouble(), is(123.0));
