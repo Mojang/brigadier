@@ -125,7 +125,7 @@ It also contains a map of parse exceptions for each command node it encountered.
 the reason why is inside this exception map.
 
 ## Displaying usage info
-There's two forms of "usage strings" provided by this library, both require a target node.
+There are two forms of "usage strings" provided by this library, both require a target node.
 
 `getAllUsage(node, source, restricted)`  will return a list of all possible commands (executable end-points) under the target node and their human readable path. If `restricted`, it will ignore commands that `source` does not have access to. This will look like [`foo`, `foo <bar>`]
 
