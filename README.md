@@ -62,7 +62,7 @@ Every node can have an `executes` function attached to it, which signifies that 
 
 Consider the following example:
 ```java
-CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher();
+CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
 
 dispatcher.register(
     literal("foo")
