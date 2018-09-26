@@ -15,6 +15,9 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final Dynamic2CommandExceptionType INTEGER_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Integer must not be less than " + min + ", found " + found));
     private static final Dynamic2CommandExceptionType INTEGER_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Integer must not be more than " + max + ", found " + found));
 
+    private static final Dynamic2CommandExceptionType LONG_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Long must not be less than " + min + ", found " + found));
+    private static final Dynamic2CommandExceptionType LONG_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Long must not be more than " + max + ", found " + found));
+
     private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(expected -> new LiteralMessage("Expected literal " + expected));
 
     private static final SimpleCommandExceptionType READER_EXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType(new LiteralMessage("Expected quote to start a string"));
@@ -23,6 +26,8 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid bool, expected true or false but found '" + value + "'"));
     private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid integer '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(new LiteralMessage("Expected integer"));
+    private static final DynamicCommandExceptionType READER_INVALID_LONG = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid long '" + value + "'"));
+    private static final SimpleCommandExceptionType READER_EXPECTED_LONG = new SimpleCommandExceptionType((new LiteralMessage("Expected long")));
     private static final DynamicCommandExceptionType READER_INVALID_DOUBLE = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid double '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_DOUBLE = new SimpleCommandExceptionType(new LiteralMessage("Expected double"));
     private static final DynamicCommandExceptionType READER_INVALID_FLOAT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid float '" + value + "'"));
@@ -66,6 +71,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public Dynamic2CommandExceptionType longTooLow() {
+        return LONG_TOO_SMALL;
+    }
+
+    @Override
+    public Dynamic2CommandExceptionType longTooHigh() {
+        return LONG_TOO_BIG;
+    }
+
+    @Override
     public DynamicCommandExceptionType literalIncorrect() {
         return LITERAL_INCORRECT;
     }
@@ -98,6 +113,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public SimpleCommandExceptionType readerExpectedInt() {
         return READER_EXPECTED_INT;
+    }
+
+    @Override
+    public DynamicCommandExceptionType readerInvalidLong() {
+        return READER_INVALID_LONG;
+    }
+
+    @Override
+    public SimpleCommandExceptionType readerExpectedLong() {
+        return READER_EXPECTED_LONG;
     }
 
     @Override
