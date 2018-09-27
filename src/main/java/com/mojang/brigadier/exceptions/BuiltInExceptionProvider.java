@@ -30,6 +30,8 @@ public interface BuiltInExceptionProvider {
 
     DynamicCommandExceptionType readerInvalidBool();
 
+    DynamicCommandExceptionType readerInvalidString();
+
     DynamicCommandExceptionType readerInvalidInt();
 
     SimpleCommandExceptionType readerExpectedInt();

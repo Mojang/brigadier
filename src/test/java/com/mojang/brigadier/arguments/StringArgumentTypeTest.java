@@ -5,6 +5,7 @@ package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -14,10 +15,12 @@ import static com.mojang.brigadier.arguments.StringArgumentType.escapeIfRequired
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static com.mojang.brigadier.arguments.StringArgumentType.term;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +36,26 @@ public class StringArgumentTypeTest {
         when(reader.readUnquotedString()).thenReturn("hello");
         assertThat(word().parse(reader), equalTo("hello"));
         verify(reader).readUnquotedString();
+    }
+
+    @Test
+    public void testParseTerm() throws Exception {
+        final StringReader reader = mock(StringReader.class);
+        when(reader.readUnquotedString()).thenReturn("hello");
+        assertThat(term("hello","world").parse(reader), equalTo("hello"));
+        verify(reader).readUnquotedString();
+    }
+
+    @Test
+    public void testParseTermFails() {
+        final StringReader reader = mock(StringReader.class);
+        when(reader.readUnquotedString()).thenReturn("foo");
+        try {
+            term("hello","world").parse(reader);
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidString()));
+        }
     }
 
     @Test

@@ -9,16 +9,33 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
+    private final Set<String> options;
 
     private StringArgumentType(final StringType type) {
         this.type = type;
+        this.options = null;
+    }
+
+    private StringArgumentType(final StringType type, Collection<String> options) {
+        this.type = type;
+        this.options = new HashSet<>(options);
     }
 
     public static StringArgumentType word() {
         return new StringArgumentType(StringType.SINGLE_WORD);
+    }
+
+    public static StringArgumentType term(Collection<String> options) {
+        return new StringArgumentType(StringType.TERM, options);
+    }
+
+    public static StringArgumentType term(String ... options) {
+        return term(Arrays.asList(options));
     }
 
     public static StringArgumentType string() {
@@ -45,7 +62,14 @@ public class StringArgumentType implements ArgumentType<String> {
             return text;
         } else if (type == StringType.SINGLE_WORD) {
             return reader.readUnquotedString();
-        } else {
+        } else if (type == StringType.TERM) {
+            final String term = reader.readUnquotedString();
+            if (!options.contains(term)) {
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidString().createWithContext(reader, term);
+            }
+            return term;
+        }
+        else {
             return reader.readString();
         }
     }
@@ -87,7 +111,8 @@ public class StringArgumentType implements ArgumentType<String> {
     public enum StringType {
         SINGLE_WORD("word", "words_with_underscores"),
         QUOTABLE_PHRASE("\"quoted phrase\"", "word", "\"\""),
-        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),;
+        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),
+        TERM("foo bar baz", "fixed collection of terms"),;
 
         private final Collection<String> examples;
 
