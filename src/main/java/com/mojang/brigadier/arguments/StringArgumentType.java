@@ -6,11 +6,14 @@ package com.mojang.brigadier.arguments;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
@@ -82,6 +85,15 @@ public class StringArgumentType implements ArgumentType<String> {
     @Override
     public Collection<String> getExamples() {
         return type.getExamples();
+    }
+
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        if (type != StringType.TERM) {
+            return Suggestions.empty();
+        }
+        options.stream().filter((s) -> s.startsWith(builder.getRemaining().toLowerCase())).map(builder::suggest);
+        return builder.buildFuture();
     }
 
     public static String escapeIfRequired(final String input) {
