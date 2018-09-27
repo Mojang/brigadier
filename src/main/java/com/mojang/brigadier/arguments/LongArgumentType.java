@@ -84,4 +84,9 @@ public class LongArgumentType implements ArgumentType<Long> {
             return "longArg(" + minimum + ", " + maximum + ")";
         }
     }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
+    }
 }
