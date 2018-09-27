@@ -4,8 +4,6 @@
 package com.mojang.brigadier.tree;
 
 import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.brigadier.AmbiguityConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
@@ -19,6 +17,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +26,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
-    private Map<String, CommandNode<S>> children = Maps.newLinkedHashMap();
-    private Map<String, LiteralCommandNode<S>> literals = Maps.newLinkedHashMap();
-    private Map<String, ArgumentCommandNode<S, ?>> arguments = Maps.newLinkedHashMap();
+    private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
+    private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
+    private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
@@ -95,7 +94,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     }
 
     public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
-        Set<String> matches = Sets.newHashSet();
+        Set<String> matches = new HashSet<>();
 
         for (final CommandNode<S> child : children.values()) {
             for (final CommandNode<S> sibling : children.values()) {
@@ -111,7 +110,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
                 if (matches.size() > 0) {
                     consumer.ambiguous(this, child, sibling, matches);
-                    matches = Sets.newHashSet();
+                    matches = new HashSet<>();
                 }
             }
 
