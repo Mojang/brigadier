@@ -3,7 +3,6 @@
 
 package com.mojang.brigadier.context;
 
-import com.google.common.collect.Iterables;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.RedirectModifier;
@@ -122,7 +121,7 @@ public class CommandContextBuilder<S> {
                 if (child != null) {
                     return child.findSuggestionContext(cursor);
                 } else if (!nodes.isEmpty()) {
-                    final ParsedCommandNode<S> last = Iterables.getLast(nodes);
+                    final ParsedCommandNode<S> last = nodes.get(nodes.size() - 1);
                     return new SuggestionContext<>(last.getNode(), last.getRange().getEnd() + 1);
                 } else {
                     return new SuggestionContext<>(rootNode, range.getStart());
