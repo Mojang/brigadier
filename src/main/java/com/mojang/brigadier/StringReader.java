@@ -239,4 +239,21 @@ public class StringReader implements ImmutableStringReader {
         }
         skip();
     }
+
+    public void expect(final String s) throws CommandSyntaxException {
+        if(!canRead(s.length()) || !getRemaining().startsWith(s)) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, s);
+        }
+        this.cursor += s.length();
+    }
+
+    public String expectOption(final String ...opts) throws CommandSyntaxException {
+        for(String s: opts) {
+            try {
+                expect(s);
+                return s;
+            } catch (CommandSyntaxException e) {}
+        }
+        throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbols().createWithContext(this, opts);
+    }
 }

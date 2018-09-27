@@ -34,6 +34,7 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(new LiteralMessage("Expected float"));
     private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(new LiteralMessage("Expected bool"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> new LiteralMessage("Expected '" + symbol + "'"));
+    private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOLS = new DynamicCommandExceptionType(symbol -> new LiteralMessage("Expected one of '" + Arrays.toString(symbol) + "''"));
 
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(new LiteralMessage("Unknown command"));
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(new LiteralMessage("Incorrect argument for command"));
@@ -153,6 +154,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public DynamicCommandExceptionType readerExpectedSymbol() {
         return READER_EXPECTED_SYMBOL;
+    }
+
+    @Override
+    public DynamicCommandExceptionType readerExpectedSymbols() {
+        return READER_EXPECTED_SYMBOLS;
     }
 
     @Override

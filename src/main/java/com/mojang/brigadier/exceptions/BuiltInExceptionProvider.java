@@ -50,6 +50,8 @@ public interface BuiltInExceptionProvider {
 
     DynamicCommandExceptionType readerExpectedSymbol();
 
+    DynamicCommandExceptionType readerExpectedSymbols();
+
     SimpleCommandExceptionType dispatcherUnknownCommand();
 
     SimpleCommandExceptionType dispatcherUnknownArgument();
