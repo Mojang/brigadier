@@ -498,6 +498,36 @@ public class StringReaderTest {
     }
 
     @Test
+    public void expect_string_correct() throws Exception {
+        final StringReader reader = new StringReader("abcdefg");
+        reader.expect("abc");
+        assertThat(reader.getCursor(), is(3));
+    }
+
+    @Test
+    public void expect_string_incorrect() throws Exception {
+        final StringReader reader = new StringReader("bcdefg");
+        try {
+            reader.expect("abc");
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    public void expect_string_none() throws Exception {
+        final StringReader reader = new StringReader("");
+        try {
+            reader.expect("abc");
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    @Test
     public void readBoolean_correct() throws Exception {
         final StringReader reader = new StringReader("true");
         assertThat(reader.readBoolean(), is(true));
@@ -524,6 +554,67 @@ public class StringReaderTest {
             fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+
+    public void expectOption_correct() throws Exception {
+        final StringReader reader = new StringReader("abcdef");
+        final String out = reader.expectOption("abc");
+        assertThat(out, is("abc"));
+        assertThat(reader.getCursor(), is(3));
+    }
+
+    public void expectOption_one_match() throws Exception {
+        final StringReader reader = new StringReader("abcdef");
+        final String out = reader.expectOption("abc", "foo", "abx");
+        assertThat(out, is("abc"));
+        assertThat(reader.getCursor(), is(3));
+    }
+
+    public void expectOption_multi_match() throws Exception {
+        final StringReader reader = new StringReader("abcdef");
+        final String out = reader.expectOption("ab", "abc");
+        assertThat(out, is("ab"));
+        assertThat(reader.getCursor(), is(2));
+    }
+    
+    public void expectOption_symbol() throws Exception {
+        final StringReader reader = new StringReader("{}");
+        final String out = reader.expectOption("{", "[");
+        assertThat(out, is("{"));
+        assertThat(reader.getCursor(), is(1));
+    }
+
+    public void expectOption_wrong_length() throws Exception {
+        final StringReader reader = new StringReader("ab");
+        try {
+            reader.expectOption("abc", "foobar");
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbols()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+    
+    public void expectOption_no_match() throws Exception {
+        final StringReader reader = new StringReader("abcdef");
+        try {
+            reader.expectOption("xyz", "abd", "bcd");
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbols()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
+    
+    public void expectOption_none() throws Exception {
+        final StringReader reader = new StringReader("");
+        try {
+            reader.expectOption("abc", "xyz", "qed");
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbols()));
             assertThat(ex.getCursor(), is(0));
         }
     }
