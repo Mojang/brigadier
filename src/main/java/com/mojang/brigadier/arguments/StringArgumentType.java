@@ -84,7 +84,7 @@ public class StringArgumentType implements ArgumentType<String> {
 
     @Override
     public Collection<String> getExamples() {
-        return type.getExamples();
+        return type == StringType.TERM ? options : type.getExamples();
     }
 
     @Override
