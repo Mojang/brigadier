@@ -92,7 +92,7 @@ public class StringArgumentType implements ArgumentType<String> {
         if (type != StringType.TERM) {
             return Suggestions.empty();
         }
-        options.stream().filter((s) -> s.startsWith(builder.getRemaining().toLowerCase())).map(builder::suggest);
+        options.stream().filter((s) -> s.startsWith(builder.getRemaining().toLowerCase())).sorted().forEachOrdered(builder::suggest);
         return builder.buildFuture();
     }
 
