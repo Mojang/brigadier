@@ -37,6 +37,10 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         return context.getArgument(name, Double.class);
     }
 
+    public static double getDoubleOrDefault(final CommandContext<?> context, final String name, final double defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, Double.class);
+    }
+
     public double getMinimum() {
         return minimum;
     }

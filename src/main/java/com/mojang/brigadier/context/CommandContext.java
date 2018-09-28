@@ -80,6 +80,14 @@ public class CommandContext<S> {
         }
     }
 
+    public boolean hasArgument(final String name) {
+        return arguments.containsKey(name);
+    }
+
+    public <V> V getArgumentOrDefault(final String name, final V defaultValue, final Class<V> clazz) {
+        return hasArgument(name) ? getArgument(name, clazz) : defaultValue;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

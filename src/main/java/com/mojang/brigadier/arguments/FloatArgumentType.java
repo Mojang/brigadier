@@ -37,6 +37,10 @@ public class FloatArgumentType implements ArgumentType<Float> {
         return context.getArgument(name, Float.class);
     }
 
+    public static float getFloatOrDefault(final CommandContext<?> context, final String name, final float defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, Float.class);
+    }
+
     public float getMinimum() {
         return minimum;
     }

@@ -3,6 +3,7 @@
 
 package com.mojang.brigadier.arguments;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -35,6 +36,10 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
 
     public static int getInteger(final CommandContext<?> context, final String name) {
         return context.getArgument(name, int.class);
+    }
+
+    public static int getIntegerOrDefault(final CommandContext<?> context, final String name, final int defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, int.class);
     }
 
     public int getMinimum() {

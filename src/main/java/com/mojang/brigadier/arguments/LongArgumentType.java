@@ -37,6 +37,10 @@ public class LongArgumentType implements ArgumentType<Long> {
         return context.getArgument(name, long.class);
     }
 
+    public static long getLongOrDefault(final CommandContext<?> context, final String name, final long defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, long.class);
+    }
+
     public long getMinimum() {
         return minimum;
     }
