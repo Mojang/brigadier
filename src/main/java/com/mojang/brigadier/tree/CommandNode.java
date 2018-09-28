@@ -3,7 +3,6 @@
 
 package com.mojang.brigadier.tree;
 
-import com.google.common.collect.ComparisonChain;
 import com.mojang.brigadier.AmbiguityConsumer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
@@ -175,11 +174,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     @Override
     public int compareTo(final CommandNode<S> o) {
-        return ComparisonChain
-            .start()
-            .compareTrueFirst(this instanceof LiteralCommandNode, o instanceof LiteralCommandNode)
-            .compare(getSortedKey(), o.getSortedKey())
-            .result();
+        if (this instanceof LiteralCommandNode && o instanceof LiteralCommandNode) {
+            return getSortedKey().compareTo(o.getSortedKey());
+        }
+
+        return (o instanceof LiteralCommandNode) ? 1 : -1;
     }
 
     public boolean isFork() {

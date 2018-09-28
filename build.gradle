@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    api 'com.google.guava:guava:21.0'
+    testCompile 'com.google.guava:guava:21.0'
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.hamcrest:hamcrest-library:1.2.1'
     testCompile 'org.mockito:mockito-core:1.8.5'
