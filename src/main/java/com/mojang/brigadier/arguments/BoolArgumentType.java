@@ -27,6 +27,10 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
         return context.getArgument(name, Boolean.class);
     }
 
+    public static boolean getBoolOrDefault(final CommandContext<?> context, final String name, final boolean defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, Boolean.class);
+    }
+
     @Override
     public Boolean parse(final StringReader reader) throws CommandSyntaxException {
         return reader.readBoolean();

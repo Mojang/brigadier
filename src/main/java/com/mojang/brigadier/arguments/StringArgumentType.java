@@ -33,6 +33,10 @@ public class StringArgumentType implements ArgumentType<String> {
         return context.getArgument(name, String.class);
     }
 
+    public static String getStringOrDefault(final CommandContext<?> context, final String name, final String defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, String.class);
+    }
+
     public StringType getType() {
         return type;
     }

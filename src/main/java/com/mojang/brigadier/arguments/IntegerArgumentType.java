@@ -37,6 +37,10 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         return context.getArgument(name, int.class);
     }
 
+    public static int getIntegerOrDefault(final CommandContext<?> context, final String name, final int defaultValue) {
+        return context.getArgumentOrDefault(name, defaultValue, int.class);
+    }
+
     public int getMinimum() {
         return minimum;
     }
