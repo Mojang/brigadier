@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class CommandContext<S> {
 
-    public static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
 
     static {
         PRIMITIVE_TO_WRAPPER.put(boolean.class, Boolean.class);
