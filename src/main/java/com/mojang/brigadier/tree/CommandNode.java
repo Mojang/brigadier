@@ -174,7 +174,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     @Override
     public int compareTo(final CommandNode<S> o) {
-        if (this instanceof LiteralCommandNode && o instanceof LiteralCommandNode) {
+        if (this instanceof LiteralCommandNode == o instanceof LiteralCommandNode) {
             return getSortedKey().compareTo(o.getSortedKey());
         }
 
