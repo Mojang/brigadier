@@ -558,6 +558,7 @@ public class StringReaderTest {
         }
     }
 
+    @Test
     public void expectOption_correct() throws Exception {
         final StringReader reader = new StringReader("abcdef");
         final String out = reader.expectOption("abc");
@@ -565,6 +566,7 @@ public class StringReaderTest {
         assertThat(reader.getCursor(), is(3));
     }
 
+    @Test
     public void expectOption_one_match() throws Exception {
         final StringReader reader = new StringReader("abcdef");
         final String out = reader.expectOption("abc", "foo", "abx");
@@ -572,13 +574,15 @@ public class StringReaderTest {
         assertThat(reader.getCursor(), is(3));
     }
 
+    @Test
     public void expectOption_multi_match() throws Exception {
         final StringReader reader = new StringReader("abcdef");
         final String out = reader.expectOption("ab", "abc");
-        assertThat(out, is("ab"));
-        assertThat(reader.getCursor(), is(2));
+        assertThat(out, is("abc"));
+        assertThat(reader.getCursor(), is(3));
     }
-    
+
+    @Test
     public void expectOption_symbol() throws Exception {
         final StringReader reader = new StringReader("{}");
         final String out = reader.expectOption("{", "[");
@@ -586,6 +590,7 @@ public class StringReaderTest {
         assertThat(reader.getCursor(), is(1));
     }
 
+    @Test
     public void expectOption_wrong_length() throws Exception {
         final StringReader reader = new StringReader("ab");
         try {
@@ -596,7 +601,8 @@ public class StringReaderTest {
             assertThat(ex.getCursor(), is(0));
         }
     }
-    
+
+    @Test
     public void expectOption_no_match() throws Exception {
         final StringReader reader = new StringReader("abcdef");
         try {
@@ -607,7 +613,8 @@ public class StringReaderTest {
             assertThat(ex.getCursor(), is(0));
         }
     }
-    
+
+    @Test
     public void expectOption_none() throws Exception {
         final StringReader reader = new StringReader("");
         try {
