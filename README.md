@@ -1,4 +1,4 @@
-# Brigadier ![GitHub release](https://img.shields.io/github/release/Mojang/brigadier.svg) ![GitHub](https://img.shields.io/github/license/Mojang/brigadier.svg)
+# Brigadier [![Latest release](https://img.shields.io/github/release/Mojang/brigadier.svg)](https://github.com/Mojang/brigadier/releases/latest) [![License](https://img.shields.io/github/license/Mojang/brigadier.svg)](https://github.com/Mojang/brigadier/blob/master/LICENSE)
 
 Brigadier is a command parser & dispatcher, designed and developed for Minecraft: Java Edition and now freely available for use elsewhere under the MIT license.
 
