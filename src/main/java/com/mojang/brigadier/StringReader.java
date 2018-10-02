@@ -248,18 +248,18 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String expectOption(final String... opts) throws CommandSyntaxException {
-        String out = "";
+        String out = null;
         final int start = this.getCursor();
         for (String s: opts) {
             try {
                 this.setCursor(start);
                 expect(s);
-                if (out.length() < s.length()) {
+                if (out == null || out.length() < s.length()) {
                     out = s;
                 }
             } catch (final CommandSyntaxException ignored) {}
         }
-        if (out.length() == 0) {
+        if (out == null) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbols().createWithContext(this, opts);
         }
         this.setCursor(start + out.length());
