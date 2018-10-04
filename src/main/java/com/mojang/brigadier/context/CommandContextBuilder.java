@@ -3,21 +3,20 @@
 
 package com.mojang.brigadier.context;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CommandContextBuilder<S> {
-    private final Map<String, ParsedArgument<S, ?>> arguments = Maps.newLinkedHashMap();
+    private final Map<String, ParsedArgument<S, ?>> arguments = new LinkedHashMap<>();
     private final CommandNode<S> rootNode;
-    private final List<ParsedCommandNode<S>> nodes = Lists.newArrayList();
+    private final List<ParsedCommandNode<S>> nodes = new ArrayList<>();
     private final CommandDispatcher<S> dispatcher;
     private S source;
     private Command<S> command;
@@ -122,7 +121,7 @@ public class CommandContextBuilder<S> {
                 if (child != null) {
                     return child.findSuggestionContext(cursor);
                 } else if (!nodes.isEmpty()) {
-                    final ParsedCommandNode<S> last = Iterables.getLast(nodes);
+                    final ParsedCommandNode<S> last = nodes.get(nodes.size() - 1);
                     return new SuggestionContext<>(last.getNode(), last.getRange().getEnd() + 1);
                 } else {
                     return new SuggestionContext<>(rootNode, range.getStart());
