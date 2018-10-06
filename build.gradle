@@ -8,10 +8,6 @@ apply plugin: 'maven-publish'
 group = 'com.mojang'
 version = project.hasProperty('buildNumber') ? "${project.majorMinor}.${project.buildNumber}" : "${project.majorMinor}.0-SNAPSHOT"
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.0'
-}
-
 buildscript {
     repositories {
         mavenCentral()
@@ -33,13 +29,13 @@ repositories {
 }
 
 dependencies {
-    testCompile 'com.google.guava:guava:21.0'
-    testCompile 'junit:junit-dep:4.10'
-    testCompile 'org.hamcrest:hamcrest-library:1.2.1'
-    testCompile 'org.mockito:mockito-core:1.8.5'
-    testCompile 'com.google.guava:guava-testlib:21.0'
-    testCompile 'org.openjdk.jmh:jmh-core:1.19'
-    testCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.19'
+    testCompile 'com.google.guava:guava:26.0-jre'
+    testCompile 'junit:junit-dep:4.11'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'com.google.guava:guava-testlib:26.0-jre'
+    testCompile 'org.openjdk.jmh:jmh-core:1.21'
+    annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
 }
 
 task sourcesJar(type: Jar) {
