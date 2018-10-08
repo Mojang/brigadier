@@ -50,13 +50,13 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 # Usage
 At the heart of Brigadier, you need a `CommandDispatcher<S>`, where `<S>` is any custom object you choose to identify a "command source".
 
-A command dispatcher holds a "command tree", which are a series of `CommandNode` which represent the various possible syntax that form a valid command.
+A command dispatcher holds a "command tree", which is a series of `CommandNode`s that represent the various possible syntax options that form a valid command.
 
 ## Registering a new command
 Before we can start parsing and dispatching commands, we need to build up our command tree. Every registration is an append operation,
 so you can freely extend existing commands in a project without needing access to the source code that created them.
 
-Command registration also encourages use of a builder pattern to keep code cruft to a minimum.
+Command registration also encourages the use of a builder pattern to keep code cruft to a minimum.
 
 A "command" is a fairly loose term, but typically it means an exit point of the command tree.
 Every node can have an `executes` function attached to it, which signifies that if the input stops here then this function will be called with the context so far.
@@ -100,7 +100,7 @@ When a command is actually run, it can access these arguments in the context pro
 ## Parsing user input
 So, we've registered some commands and now we're ready to take in user input. If you're in a rush, you can just call `dispatcher.execute("foo 123", source)` and call it a day.
 
-The result of `execute` is an integer returned by the command it evaluated. Its meaning varies depending on command, and typically will not be useful to programmers.
+The result of `execute` is an integer that was returned from an evaluated command. The meaning of this integer depends on the command, and will typically not be useful to programmers.
 
 The `source` is an object of `<S>`, your own custom class to track users/players/etc. It will be provided to the command so that it has some context on what's happening.
 
