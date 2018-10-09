@@ -3,16 +3,29 @@
 
 package com.mojang.brigadier.context;
 
-import com.google.common.collect.Iterables;
-import com.google.common.primitives.Primitives;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CommandContext<S> {
+
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
+
+    static {
+        PRIMITIVE_TO_WRAPPER.put(boolean.class, Boolean.class);
+        PRIMITIVE_TO_WRAPPER.put(byte.class, Byte.class);
+        PRIMITIVE_TO_WRAPPER.put(short.class, Short.class);
+        PRIMITIVE_TO_WRAPPER.put(char.class, Character.class);
+        PRIMITIVE_TO_WRAPPER.put(int.class, Integer.class);
+        PRIMITIVE_TO_WRAPPER.put(long.class, Long.class);
+        PRIMITIVE_TO_WRAPPER.put(float.class, Float.class);
+        PRIMITIVE_TO_WRAPPER.put(double.class, Double.class);
+    }
+
     private final S source;
     private final String input;
     private final Command<S> command;
@@ -73,7 +86,7 @@ public class CommandContext<S> {
         }
 
         final Object result = argument.getResult();
-        if (Primitives.wrap(clazz).isAssignableFrom(result.getClass())) {
+        if (PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
             return (V) result;
         } else {
             throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
@@ -89,7 +102,7 @@ public class CommandContext<S> {
 
         if (!arguments.equals(that.arguments)) return false;
         if (!rootNode.equals(that.rootNode)) return false;
-        if (!Iterables.elementsEqual(nodes, that.nodes)) return false;
+        if (nodes.size() != that.nodes.size() || !nodes.equals(that.nodes)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (!source.equals(that.source)) return false;
         if (child != null ? !child.equals(that.child) : that.child != null) return false;

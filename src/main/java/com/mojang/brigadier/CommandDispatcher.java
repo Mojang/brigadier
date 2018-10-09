@@ -3,9 +3,6 @@
 
 package com.mojang.brigadier;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -21,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -450,7 +448,7 @@ public class CommandDispatcher<S> {
      * @return array of full usage strings under the target node
      */
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
-        final ArrayList<String> result = Lists.newArrayList();
+        final ArrayList<String> result = new ArrayList<>();
         getAllUsage(node, source, result, "", restricted);
         return result.toArray(new String[result.size()]);
     }
@@ -496,7 +494,7 @@ public class CommandDispatcher<S> {
      * @return array of full usage strings under the target node
      */
     public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
-        final Map<CommandNode<S>, String> result = Maps.newLinkedHashMap();
+        final Map<CommandNode<S>, String> result = new LinkedHashMap<>();
 
         final boolean optional = node.getCommand() != null;
         for (final CommandNode<S> child : node.getChildren()) {
@@ -530,7 +528,7 @@ public class CommandDispatcher<S> {
                         return self + ARGUMENT_SEPARATOR + usage;
                     }
                 } else if (children.size() > 1) {
-                    final Set<String> childUsage = Sets.newLinkedHashSet();
+                    final Set<String> childUsage = new LinkedHashSet<>();
                     for (final CommandNode<S> child : children) {
                         final String usage = getSmartUsage(child, source, childOptional, true);
                         if (usage != null) {
@@ -603,7 +601,7 @@ public class CommandDispatcher<S> {
 
         final CompletableFuture<Suggestions> result = new CompletableFuture<>();
         CompletableFuture.allOf(futures).thenRun(() -> {
-            final List<Suggestions> suggestions = Lists.newArrayList();
+            final List<Suggestions> suggestions = new ArrayList<>();
             for (final CompletableFuture<Suggestions> future : futures) {
                 suggestions.add(future.join());
             }

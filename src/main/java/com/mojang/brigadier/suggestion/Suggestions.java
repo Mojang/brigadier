@@ -3,10 +3,9 @@
 
 package com.mojang.brigadier.suggestion;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.mojang.brigadier.context.StringRange;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class Suggestions {
-    private static final Suggestions EMPTY = new Suggestions(StringRange.at(0), Lists.newArrayList());
+    private static final Suggestions EMPTY = new Suggestions(StringRange.at(0), new ArrayList<>());
 
     private final StringRange range;
     private final List<Suggestion> suggestions;
@@ -92,11 +91,11 @@ public class Suggestions {
             end = Math.max(suggestion.getRange().getEnd(), end);
         }
         final StringRange range = new StringRange(start, end);
-        final Set<Suggestion> texts = Sets.newHashSet();
+        final Set<Suggestion> texts = new HashSet<>();
         for (final Suggestion suggestion : suggestions) {
             texts.add(suggestion.expand(command, range));
         }
-        final List<Suggestion> sorted = Lists.newArrayList(texts);
+        final List<Suggestion> sorted = new ArrayList<>(texts);
         sorted.sort((a, b) -> a.compareToIgnoreCase(b));
         return new Suggestions(range, sorted);
     }
