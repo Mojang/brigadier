@@ -84,7 +84,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public static boolean isAllowedNumber(final char c) {
-        return c >= '0' && c <= '9' || c == '.' || c == '-';
+        return c >= '0' && c <= '9' || c == '.' || c == '-' || c == 'e' || c == 'E' ;
     }
 
     public void skipWhitespace() {
