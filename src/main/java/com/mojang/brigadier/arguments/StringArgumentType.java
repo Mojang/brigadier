@@ -13,7 +13,7 @@ import java.util.Collection;
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
 
-    private StringArgumentType(final StringType type) {
+    StringArgumentType(final StringType type) {
         this.type = type;
     }
 
@@ -87,7 +87,8 @@ public class StringArgumentType implements ArgumentType<String> {
     public enum StringType {
         SINGLE_WORD("word", "words_with_underscores"),
         QUOTABLE_PHRASE("\"quoted phrase\"", "word", "\"\""),
-        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),;
+        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),
+        TERM("predefined_tokens","red","green","blue"),;
 
         private final Collection<String> examples;
 
