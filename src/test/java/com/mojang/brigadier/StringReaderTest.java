@@ -369,6 +369,22 @@ public class StringReaderTest {
         assertThat(reader.getRead(), equalTo("-123"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
+    
+    @Test
+    public void readDouble_exponent() throws Exception {
+        final StringReader reader = new StringReader("1.23E4");
+        assertThat(reader.readDouble(), is(12300.0));
+        assertThat(reader.getRead(), equalTo("1.23E4"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+    
+    @Test
+    public void readDouble_negativeExponent() throws Exception {
+        final StringReader reader = new StringReader("1.23E-4");
+        assertThat(reader.readDouble(), is(0.000123));
+        assertThat(reader.getRead(), equalTo("1.23E-4"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
 
     @Test
     public void readDouble_invalid() throws Exception {
@@ -421,12 +437,28 @@ public class StringReaderTest {
         assertThat(reader.getRead(), equalTo("12.34"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
-
+    
     @Test
     public void readFloat_negative() throws Exception {
         final StringReader reader = new StringReader("-123");
         assertThat(reader.readFloat(), is(-123.0f));
         assertThat(reader.getRead(), equalTo("-123"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+    
+    @Test
+    public void readFloat_exponent() throws Exception {
+        final StringReader reader = new StringReader("1.23E4");
+        assertThat(reader.readFloat(), is(12300.0f));
+        assertThat(reader.getRead(), equalTo("1.23E4"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+    
+    @Test
+    public void readFloat_negativeExponent() throws Exception {
+        final StringReader reader = new StringReader("1.23E-4");
+        assertThat(reader.readFloat(), is(0.000123f));
+        assertThat(reader.getRead(), equalTo("1.23E-4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
