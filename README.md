@@ -1,23 +1,22 @@
-# Brigadier [![Latest release](https://img.shields.io/github/release/Mojang/brigadier.svg)](https://github.com/Mojang/brigadier/releases/latest) [![License](https://img.shields.io/github/license/Mojang/brigadier.svg)](https://github.com/Mojang/brigadier/blob/master/LICENSE)
+# ब्रिगेडियर [! [नवीनतम रिलीज] (https://img.shields.io/github/release/Mojang/brigadier.svg)] (https://github.com/Mojang/brigadier/releases/latest) [! [ लाइसेंस] (https://img.shields.io/github/license/Mojang/brigadier.svg)] (https://github.com/Mojang/brigadier/blob/master/LICENSE)
 
-Brigadier is a command parser & dispatcher, designed and developed for Minecraft: Java Edition and now freely available for use elsewhere under the MIT license.
+ब्रिगेडियर एक कमांड पार्सर और डिस्पैचर है, जिसे माइनक्राफ्ट के लिए डिज़ाइन और विकसित किया गया है: जावा संस्करण और अब एमआईटी लाइसेंस के तहत कहीं और उपयोग के लिए स्वतंत्र रूप से उपलब्ध है।
 
-# Installation
-Brigadier is available to Maven & Gradle via `libraries.minecraft.net`. Its group is `com.mojang`, and artifact name is `brigadier`.
+# स्थापना
+ब्रिगेडियर 'libraries.minecraft.net` के माध्यम से मेवेन और ग्रैडल के लिए उपलब्ध है। इसका समूह 'com.mojang` है, और आर्टिफैक्ट नाम' ब्रिगेडियर 'है।
 
-## Gradle
-First include our repository:
-```groovy
-maven {
-    url "https://libraries.minecraft.net"
+## ग्रैडल
+सबसे पहले हमारे भंडार शामिल करें:
+`` `ग्रूवी
+मेवेन {
+    यूआरएल "https://libraries.minecraft.net"
 }
-```
+`` `
 
-And then use this library (change `(the latest version)` to the latest version!):
-```groovy
-compile 'com.mojang:brigadier:(the latest version)'
-```
-
+और फिर इस लाइब्रेरी का उपयोग करें (नवीनतम संस्करण में `(नवीनतम संस्करण) 'बदलें!):
+`` `ग्रूवी
+संकलन 'com.mojang: ब्रिगेडियर: (नवीनतम संस्करण)'
+`` `
 ## Maven
 First include our repository:
 ```xml
