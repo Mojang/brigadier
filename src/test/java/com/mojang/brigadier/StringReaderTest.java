@@ -388,33 +388,33 @@ public class StringReaderTest {
     
     @Test
     public void readDouble_explicitPositive() throws Exception {
-        final StringReader reader = new StringReader("+1234567890");
-        assertThat(reader.readDouble(), is(+1234567890.0));
-        assertThat(reader.getRead(), equalTo("+1234567890"));
+        final StringReader reader = new StringReader("+123");
+        assertThat(reader.readDouble(), is(+123.0));
+        assertThat(reader.getRead(), equalTo("+123"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readDouble_exponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E4");
-        assertThat(reader.readDouble(), is(12300.0));
-        assertThat(reader.getRead(), equalTo("1.23E4"));
+        final StringReader reader = new StringReader("123e4");
+        assertThat(reader.readDouble(), is(123e4));
+        assertThat(reader.getRead(), equalTo("123e4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readDouble_negativeExponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E-4");
-        assertThat(reader.readDouble(), is(0.000123));
-        assertThat(reader.getRead(), equalTo("1.23E-4"));
+        final StringReader reader = new StringReader("123e-4");
+        assertThat(reader.readDouble(), is(123e-4));
+        assertThat(reader.getRead(), equalTo("123e-4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readDouble_explicitPositiveExponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E+4");
-        assertThat(reader.readDouble(), is(12300.0));
-        assertThat(reader.getRead(), equalTo("1.23E+4"));
+        final StringReader reader = new StringReader("123e+4");
+        assertThat(reader.readDouble(), is(123e+4));
+        assertThat(reader.getRead(), equalTo("123e+4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
@@ -480,33 +480,33 @@ public class StringReaderTest {
     
     @Test
     public void readFloat_explicitPositive() throws Exception {
-        final StringReader reader = new StringReader("+1234567890");
-        assertThat(reader.readFloat(), is(+1234567890.0f));
-        assertThat(reader.getRead(), equalTo("+1234567890"));
+        final StringReader reader = new StringReader("+123");
+        assertThat(reader.readFloat(), is(+123.0f));
+        assertThat(reader.getRead(), equalTo("+123"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readFloat_exponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E4");
-        assertThat(reader.readFloat(), is(12300.0f));
-        assertThat(reader.getRead(), equalTo("1.23E4"));
+        final StringReader reader = new StringReader("123e4");
+        assertThat(reader.readFloat(), is(123e4f));
+        assertThat(reader.getRead(), equalTo("123e4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readFloat_negativeExponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E-4");
-        assertThat(reader.readFloat(), is(0.000123f));
-        assertThat(reader.getRead(), equalTo("1.23E-4"));
+        final StringReader reader = new StringReader("123e-4");
+        assertThat(reader.readFloat(), is(123e-4f));
+        assertThat(reader.getRead(), equalTo("123e-4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
     
     @Test
     public void readFloat_explicitPositiveExponent() throws Exception {
-        final StringReader reader = new StringReader("1.23E+4");
-        assertThat(reader.readFloat(), is(12300.0f));
-        assertThat(reader.getRead(), equalTo("1.23E+4"));
+        final StringReader reader = new StringReader("123e+4");
+        assertThat(reader.readFloat(), is(123e+4f));
+        assertThat(reader.getRead(), equalTo("123e+4"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
