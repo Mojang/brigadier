@@ -43,7 +43,7 @@ public class TermArgumentType extends StringArgumentType {
 
     @Override
     public String toString() {
-        return "term("+options+")";
+        return "term(" + options + ")";
     }
 
     @Override
