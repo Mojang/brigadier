@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class LongArgumentType implements ArgumentType<Long> {
-    private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
+    private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123", "+123");
 
     private final long minimum;
     private final long maximum;
