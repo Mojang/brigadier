@@ -18,12 +18,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final Dynamic2CommandExceptionType LONG_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Long must not be less than " + min + ", found " + found));
     private static final Dynamic2CommandExceptionType LONG_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Long must not be more than " + max + ", found " + found));
 
+    private static final DynamicCommandExceptionType TERM_INVALID = new DynamicCommandExceptionType(term -> new LiteralMessage("Invalid term '" + term + "'"));
+
     private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(expected -> new LiteralMessage("Expected literal " + expected));
 
     private static final SimpleCommandExceptionType READER_EXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType(new LiteralMessage("Expected quote to start a string"));
     private static final SimpleCommandExceptionType READER_EXPECTED_END_OF_QUOTE = new SimpleCommandExceptionType(new LiteralMessage("Unclosed quoted string"));
     private static final DynamicCommandExceptionType READER_INVALID_ESCAPE = new DynamicCommandExceptionType(character -> new LiteralMessage("Invalid escape sequence '" + character + "' in quoted string"));
-    private static final DynamicCommandExceptionType READER_INVALID_TERM = new DynamicCommandExceptionType(term -> new LiteralMessage("Invalid term '" + term + "'"));
     private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid bool, expected true or false but found '" + value + "'"));
     private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid integer '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(new LiteralMessage("Expected integer"));
@@ -82,6 +83,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public DynamicCommandExceptionType termInvalid() {
+        return TERM_INVALID;
+    }
+
+    @Override
     public DynamicCommandExceptionType literalIncorrect() {
         return LITERAL_INCORRECT;
     }
@@ -99,11 +105,6 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public DynamicCommandExceptionType readerInvalidEscape() {
         return READER_INVALID_ESCAPE;
-    }
-
-    @Override
-    public DynamicCommandExceptionType readerInvalidTerm() {
-        return READER_INVALID_TERM;
     }
 
     @Override

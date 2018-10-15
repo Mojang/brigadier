@@ -41,7 +41,7 @@ public class TermArgumentTypeTest {
             term("hello","world").parse(reader);
             fail();
         } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidTerm()));
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.termInvalid()));
         }
     }
 }

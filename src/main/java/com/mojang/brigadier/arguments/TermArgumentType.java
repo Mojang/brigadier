@@ -35,7 +35,7 @@ public class TermArgumentType extends StringArgumentType {
     public String parse(final StringReader reader) throws CommandSyntaxException {
         final String term = reader.readUnquotedString();
         if (!options.contains(term)) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidTerm().createWithContext(reader, term);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.termInvalid().createWithContext(reader, term);
         }
         return term;
     }

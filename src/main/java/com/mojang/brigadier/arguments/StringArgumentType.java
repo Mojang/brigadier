@@ -13,7 +13,7 @@ import java.util.Collection;
 public class StringArgumentType implements ArgumentType<String> {
     private final StringType type;
 
-    StringArgumentType(final StringType type) {
+    protected StringArgumentType(final StringType type) {
         this.type = type;
     }
 
