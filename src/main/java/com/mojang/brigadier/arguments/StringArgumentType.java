@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -93,7 +94,7 @@ public class StringArgumentType implements ArgumentType<String> {
             return Suggestions.empty();
         }
         options.stream().filter((s) -> {
-            return s.toLowerCase().startsWith(builder.getRemaining().toLowerCase());
+            return s.toLowerCase(Locale.ROOT).startsWith(builder.getRemaining().toLowerCase(Locale.ROOT));
         }).sorted().forEachOrdered(builder::suggest);
         return builder.buildFuture();
     }
