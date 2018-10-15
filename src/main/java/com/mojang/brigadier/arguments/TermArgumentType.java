@@ -12,6 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -52,7 +53,7 @@ public class TermArgumentType extends StringArgumentType {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        options.stream().filter((s) -> s.toLowerCase().startsWith(builder.getRemaining().toLowerCase())).sorted().forEachOrdered(builder::suggest);
+        options.stream().filter((s) -> s.toLowerCase(Locale.ROOT).startsWith(builder.getRemaining().toLowerCase(Locale.ROOT))).sorted().forEachOrdered(builder::suggest);
         return builder.buildFuture();
     }
 }
