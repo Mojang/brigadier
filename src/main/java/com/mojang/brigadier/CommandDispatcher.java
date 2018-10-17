@@ -3,6 +3,7 @@
 
 package com.mojang.brigadier;
 
+import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -449,16 +450,16 @@ public class CommandDispatcher<S> {
      */
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
         final ArrayList<String> result = new ArrayList<>();
-        getAllUsage(node, source, result, "", restricted);
+        getAllUsage(node, source, result, "", null, restricted);
         return result.toArray(new String[result.size()]);
     }
 
-    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
+    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final ArgumentBuilder.DefaultArgument defaultNextArgument, final boolean restricted) {
         if (restricted && !node.canUse(source)) {
             return;
         }
 
-        if (node.getCommand() != null) {
+        if (node.getCommand() != null || defaultNextArgument != null) {
             result.add(prefix);
         }
 
@@ -467,7 +468,7 @@ public class CommandDispatcher<S> {
             result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
         } else if (!node.getChildren().isEmpty()) {
             for (final CommandNode<S> child : node.getChildren()) {
-                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), restricted);
+                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), node.getDefaultNextArgument(), restricted);
             }
         }
     }
@@ -498,7 +499,7 @@ public class CommandDispatcher<S> {
 
         final boolean optional = node.getCommand() != null;
         for (final CommandNode<S> child : node.getChildren()) {
-            final String usage = getSmartUsage(child, source, optional, false);
+            final String usage = getSmartUsage(child, source, optional, null, false);
             if (usage != null) {
                 result.put(child, usage);
             }
@@ -506,13 +507,14 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final boolean deep) {
+    private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final ArgumentBuilder.DefaultArgument defaultNextArgument, final boolean deep) {
         if (!node.canUse(source)) {
             return null;
         }
 
         final String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
-        final boolean childOptional = node.getCommand() != null;
+        final ArgumentBuilder.DefaultArgument childDefaultNextArgument = node.getDefaultNextArgument();
+        final boolean childOptional = node.getCommand() != null || childDefaultNextArgument != null;
         final String open = childOptional ? USAGE_OPTIONAL_OPEN : USAGE_REQUIRED_OPEN;
         final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
@@ -523,14 +525,14 @@ public class CommandDispatcher<S> {
             } else {
                 final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
                 if (children.size() == 1) {
-                    final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
+                    final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childDefaultNextArgument, childOptional);
                     if (usage != null) {
                         return self + ARGUMENT_SEPARATOR + usage;
                     }
                 } else if (children.size() > 1) {
                     final Set<String> childUsage = new LinkedHashSet<>();
                     for (final CommandNode<S> child : children) {
-                        final String usage = getSmartUsage(child, source, childOptional, true);
+                        final String usage = getSmartUsage(child, source, childOptional, childDefaultNextArgument, true);
                         if (usage != null) {
                             childUsage.add(usage);
                         }

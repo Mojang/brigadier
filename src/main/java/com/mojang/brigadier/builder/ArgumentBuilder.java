@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
+    private DefaultArgument defaultNextArgument;
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
     private CommandNode<S> target;
@@ -41,6 +42,23 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
+    }
+
+    public T thenDefault(final ArgumentBuilder<S, ?> argument, final String defaultValue) {
+        final CommandNode<S> build = argument.build();
+        then(build);
+        defaultNextArgument = new DefaultArgument(build, defaultValue);
+        return getThis();
+    }
+
+    public T thenDefault(final CommandNode<S> argument, final String defaultValue) {
+        then(argument);
+        defaultNextArgument = new DefaultArgument(argument, defaultValue);
+        return getThis();
+    }
+
+    public DefaultArgument getDefaultNextArgument() {
+        return defaultNextArgument;
     }
 
     public T executes(final Command<S> command) {
@@ -96,4 +114,22 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public abstract CommandNode<S> build();
+
+    public class DefaultArgument {
+        private final CommandNode<S> node;
+        private final String defaultValue;
+
+        private DefaultArgument(final CommandNode<S> node, final String defaultValue) {
+            this.node = node;
+            this.defaultValue = defaultValue;
+        }
+
+        public CommandNode<S> getNode() {
+            return node;
+        }
+
+        public String getDefaultValue() {
+            return defaultValue;
+        }
+    }
 }

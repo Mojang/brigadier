@@ -29,14 +29,16 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
+    private final ArgumentBuilder.DefaultArgument defaultNextArgument;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final ArgumentBuilder.DefaultArgument defaultNextArgument, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
         this.requirement = requirement;
+        this.defaultNextArgument = defaultNextArgument;
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
@@ -60,6 +62,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public RedirectModifier<S> getRedirectModifier() {
         return modifier;
+    }
+
+    public ArgumentBuilder.DefaultArgument getDefaultNextArgument() {
+        return defaultNextArgument;
     }
 
     public boolean canUse(final S source) {
