@@ -95,7 +95,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
         assertThat(food.isEmpty(), is(true));
 
         final Suggestions b = node.listSuggestions(contextBuilder.build("b"), new SuggestionsBuilder("b", 0)).join();
-        assertThat(food.isEmpty(), is(true));
+        assertThat(b.isEmpty(), is(true));
     }
 
     @Test

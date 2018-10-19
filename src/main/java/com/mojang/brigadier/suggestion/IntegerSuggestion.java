@@ -9,7 +9,7 @@ import com.mojang.brigadier.context.StringRange;
 import java.util.Objects;
 
 public class IntegerSuggestion extends Suggestion {
-    private int value;
+    private final int value;
 
     public IntegerSuggestion(final StringRange range, final int value) {
         this(range, value, null);

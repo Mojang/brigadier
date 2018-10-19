@@ -223,13 +223,14 @@ public class StringReader implements ImmutableStringReader {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().createWithContext(this);
         }
 
-        if (value.equals("true")) {
-            return true;
-        } else if (value.equals("false")) {
-            return false;
-        } else {
-            cursor = start;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().createWithContext(this, value);
+        switch (value) {
+            case "true":
+                return true;
+            case "false":
+                return false;
+            default:
+                cursor = start;
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidBool().createWithContext(this, value);
         }
     }
 

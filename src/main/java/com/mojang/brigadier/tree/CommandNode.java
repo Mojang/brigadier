@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
-    private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
+    private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
+    private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
@@ -124,12 +124,11 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
+        @SuppressWarnings("unchecked")
         final CommandNode<S> that = (CommandNode<S>) o;
 
         if (!children.equals(that.children)) return false;
-        if (command != null ? !command.equals(that.command) : that.command != null) return false;
-
-        return true;
+        return command != null ? command.equals(that.command) : that.command == null;
     }
 
     @Override

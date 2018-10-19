@@ -11,19 +11,19 @@ import static org.junit.Assert.assertThat;
 
 public class SuggestionTest {
     @Test
-    public void apply_insertation_start() {
+    public void apply_insertion_start() {
         final Suggestion suggestion = new Suggestion(StringRange.at(0), "And so I said: ");
         assertThat(suggestion.apply("Hello world!"), equalTo("And so I said: Hello world!"));
     }
 
     @Test
-    public void apply_insertation_middle() {
+    public void apply_insertion_middle() {
         final Suggestion suggestion = new Suggestion(StringRange.at(6), "small ");
         assertThat(suggestion.apply("Hello world!"), equalTo("Hello small world!"));
     }
 
     @Test
-    public void apply_insertation_end() {
+    public void apply_insertion_end() {
         final Suggestion suggestion = new Suggestion(StringRange.at(5), " world!");
         assertThat(suggestion.apply("Hello"), equalTo("Hello world!"));
     }

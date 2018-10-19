@@ -96,7 +96,7 @@ public class Suggestions {
             texts.add(suggestion.expand(command, range));
         }
         final List<Suggestion> sorted = new ArrayList<>(texts);
-        sorted.sort((a, b) -> a.compareToIgnoreCase(b));
+        sorted.sort(Suggestion::compareToIgnoreCase);
         return new Suggestions(range, sorted);
     }
 }

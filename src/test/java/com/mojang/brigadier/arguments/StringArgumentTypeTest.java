@@ -4,10 +4,8 @@
 package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.escapeIfRequired;
@@ -24,9 +22,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StringArgumentTypeTest {
-    @Mock
-    private CommandContextBuilder<Object> context;
-
     @Test
     public void testParseWord() throws Exception {
         final StringReader reader = mock(StringReader.class);
