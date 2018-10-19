@@ -3,11 +3,11 @@
 
 package com.mojang.brigadier;
 
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.CommandNodeInterface;
 
 import java.util.Collection;
 
 @FunctionalInterface
 public interface AmbiguityConsumer<S> {
-    void ambiguous(final CommandNode<S> parent, final CommandNode<S> child, final CommandNode<S> sibling, final Collection<String> inputs);
+    void ambiguous(final CommandNodeInterface<S> parent, final CommandNodeInterface<S> child, final CommandNodeInterface<S> sibling, final Collection<String> inputs);
 }

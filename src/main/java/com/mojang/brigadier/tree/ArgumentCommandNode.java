@@ -7,7 +7,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -29,7 +28,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final ArgumentType<T> type;
     private final SuggestionProvider<S> customSuggestions;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final ArgumentBuilder.DefaultArgument defaultArgument, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final DefaultCommandNodeDecorator<S, ?> defaultArgument, final Predicate<S> requirement, final CommandNodeInterface<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
         super(command, requirement, defaultArgument, redirect, modifier, forks);
         this.name = name;
         this.type = type;

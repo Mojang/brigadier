@@ -5,7 +5,7 @@ package com.mojang.brigadier.context;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.CommandNodeInterface;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,14 +30,14 @@ public class CommandContext<S> {
     private final String input;
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
-    private final CommandNode<S> rootNode;
+    private final CommandNodeInterface<S> rootNode;
     private final List<ParsedCommandNode<S>> nodes;
     private final StringRange range;
     private final CommandContext<S> child;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNodeInterface<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -133,7 +133,7 @@ public class CommandContext<S> {
         return input;
     }
 
-    public CommandNode<S> getRootNode() {
+    public CommandNodeInterface<S> getRootNode() {
         return rootNode;
     }
 

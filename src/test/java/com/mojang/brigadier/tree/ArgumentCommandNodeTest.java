@@ -20,12 +20,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
+public class ArgumentCommandNodeTest extends CommandNodeTest {
     private ArgumentCommandNode<Object, Integer> node;
     private CommandContextBuilder<Object> contextBuilder;
 
     @Override
-    protected CommandNode<Object> getCommandNode() {
+    protected CommandNodeInterface<Object> getCommandNode() {
         return node;
     }
 

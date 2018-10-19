@@ -3,22 +3,22 @@
 
 package com.mojang.brigadier.context;
 
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.CommandNodeInterface;
 
 import java.util.Objects;
 
 public class ParsedCommandNode<S> {
 
-    private final CommandNode<S> node;
+    private final CommandNodeInterface<S> node;
 
     private final StringRange range;
 
-    public ParsedCommandNode(CommandNode<S> node, StringRange range) {
+    public ParsedCommandNode(CommandNodeInterface<S> node, StringRange range) {
         this.node = node;
         this.range = range;
     }
 
-    public CommandNode<S> getNode() {
+    public CommandNodeInterface<S> getNode() {
         return node;
     }
 

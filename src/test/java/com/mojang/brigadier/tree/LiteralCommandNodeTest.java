@@ -25,12 +25,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
+public class LiteralCommandNodeTest extends CommandNodeTest {
     private LiteralCommandNode<Object> node;
     private CommandContextBuilder<Object> contextBuilder;
 
     @Override
-    protected CommandNode<Object> getCommandNode() {
+    protected CommandNodeInterface<Object> getCommandNode() {
         return node;
     }
 

@@ -18,11 +18,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class RootCommandNodeTest extends AbstractCommandNodeTest {
+public class RootCommandNodeTest extends CommandNodeTest {
     private RootCommandNode<Object> node;
 
     @Override
-    protected CommandNode<Object> getCommandNode() {
+    protected CommandNodeInterface<Object> getCommandNode() {
         return node;
     }
 

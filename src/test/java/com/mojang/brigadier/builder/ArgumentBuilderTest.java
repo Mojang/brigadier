@@ -4,6 +4,7 @@
 package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.CommandNodeInterface;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,26 +32,26 @@ public class ArgumentBuilderTest {
         builder.then(argument);
 
         assertThat(builder.getArguments(), hasSize(1));
-        assertThat(builder.getArguments(), hasItem((CommandNode<Object>) argument.build()));
+        assertThat(builder.getArguments(), hasItem((CommandNodeInterface<Object>) argument.build()));
     }
 
     @Test
     public void testRedirect() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNodeInterface<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         assertThat(builder.getRedirect(), is(target));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testRedirect_withChild() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNodeInterface<Object> target = mock(CommandNode.class);
         builder.then(literal("foo"));
         builder.redirect(target);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testThen_withRedirect() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNodeInterface<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         builder.then(literal("foo"));
     }
@@ -62,7 +63,7 @@ public class ArgumentBuilderTest {
         }
 
         @Override
-        public CommandNode<S> build() {
+        public CommandNodeInterface<S> build() {
             return null;
         }
     }
