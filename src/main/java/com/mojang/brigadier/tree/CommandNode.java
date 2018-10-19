@@ -124,8 +124,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
-        @SuppressWarnings("unchecked")
-        final CommandNode<S> that = (CommandNode<S>) o;
+        final CommandNode<?> that = (CommandNode<?>) o;
 
         if (!children.equals(that.children)) return false;
         return command != null ? command.equals(that.command) : that.command == null;
