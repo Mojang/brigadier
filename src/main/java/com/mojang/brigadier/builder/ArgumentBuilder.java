@@ -45,7 +45,6 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
                 defaultNode = argument;
 
         arguments.addChild(argument);
-
         return getThis();
     }
 
@@ -114,5 +113,4 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public abstract CommandNode<S> build();
-
 }

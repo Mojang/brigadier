@@ -3,7 +3,6 @@
 
 package com.mojang.brigadier;
 
-import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -11,7 +10,9 @@ import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.*;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -381,7 +382,7 @@ public class CommandDispatcher<S> {
             context.withCommand(child.getCommand());
             if (reader.canRead(child.getRedirect() == null ? 2 : 1) || child.getDefaultNode() != null) {
                 reader.skip();
-                if (child.getRedirect() != null || node.getDefaultNode() != null) {
+                if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
@@ -393,8 +394,7 @@ public class CommandDispatcher<S> {
                     }
                     potentials.add(parse);
                 }
-            }
-            else {
+            } else {
                 if (potentials == null) {
                     potentials = new ArrayList<>(1);
                 }
@@ -467,7 +467,7 @@ public class CommandDispatcher<S> {
             result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
         } else if (!node.getChildren().isEmpty()) {
             for (final CommandNode<S> child : node.getChildren()) {
-                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(),restricted);
+                getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), restricted);
             }
         }
     }
@@ -621,7 +621,7 @@ public class CommandDispatcher<S> {
     /**
      * Gets the root of this command tree.
      *
-     * <p>This is often useful as a target of a {@link ArgumentBuilder#redirect(CommandNode)},
+     * <p>This is often useful as a target of a {@link com.mojang.brigadier.builder.ArgumentBuilder#redirect(CommandNode)},
      * {@link #getAllUsage(CommandNode, Object, boolean)} or {@link #getSmartUsage(CommandNode, Object)}.
      * You may also use it to clone the command tree via {@link #CommandDispatcher(RootCommandNode)}.</p>
      *
