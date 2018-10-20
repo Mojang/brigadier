@@ -23,7 +23,7 @@ public class LiteralArgumentBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        builder = new LiteralArgumentBuilder<>("foo");
+        builder = new LiteralArgumentBuilder<>("foo", false);
     }
 
     @Test

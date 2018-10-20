@@ -4,7 +4,6 @@
 package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.CommandNodeInterface;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -32,38 +31,42 @@ public class ArgumentBuilderTest {
         builder.then(argument);
 
         assertThat(builder.getArguments(), hasSize(1));
-        assertThat(builder.getArguments(), hasItem((CommandNodeInterface<Object>) argument.build()));
+        assertThat(builder.getArguments(), hasItem((CommandNode<Object>) argument.build()));
     }
 
     @Test
     public void testRedirect() throws Exception {
-        final CommandNodeInterface<Object> target = mock(CommandNode.class);
+        final CommandNode<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         assertThat(builder.getRedirect(), is(target));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testRedirect_withChild() throws Exception {
-        final CommandNodeInterface<Object> target = mock(CommandNode.class);
+        final CommandNode<Object> target = mock(CommandNode.class);
         builder.then(literal("foo"));
         builder.redirect(target);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testThen_withRedirect() throws Exception {
-        final CommandNodeInterface<Object> target = mock(CommandNode.class);
+        final CommandNode<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         builder.then(literal("foo"));
     }
 
     private static class TestableArgumentBuilder<S> extends ArgumentBuilder<S, TestableArgumentBuilder<S>> {
+        public TestableArgumentBuilder() {
+            super(false);
+        }
+
         @Override
         protected TestableArgumentBuilder<S> getThis() {
             return this;
         }
 
         @Override
-        public CommandNodeInterface<S> build() {
+        public CommandNode<S> build() {
             return null;
         }
     }

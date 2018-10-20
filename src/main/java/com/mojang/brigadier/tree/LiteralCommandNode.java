@@ -22,8 +22,8 @@ import java.util.function.Predicate;
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final DefaultCommandNodeDecorator<S, ?> defaultArgument, final Predicate<S> requirement, final CommandNodeInterface<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
-        super(command, requirement, defaultArgument, redirect, modifier, forks);
+    public LiteralCommandNode(final String literal, final Command<S> command, final CommandNode<S> defaultArgument, final boolean isDefaultNode, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+        super(command, requirement, defaultArgument, isDefaultNode, redirect, modifier, forks);
         this.literal = literal;
     }
 
@@ -60,6 +60,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
                     reader.setCursor(start);
                 }
             }
+        } else if (!reader.canRead() && isDefaultNode()) {
+            return start;
         }
         return -1;
     }

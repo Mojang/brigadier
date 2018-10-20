@@ -7,7 +7,6 @@ import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.CommandNodeInterface;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +26,7 @@ public class CommandContextTest {
     private CommandDispatcher<Object> dispatcher;
 
     @Mock
-    private CommandNodeInterface<Object> rootNode;
+    private CommandNode<Object> rootNode;
 
     @Before
     public void setUp() throws Exception {
@@ -67,10 +66,10 @@ public class CommandContextTest {
         final Object otherSource = new Object();
         final Command<Object> command = mock(Command.class);
         final Command<Object> otherCommand = mock(Command.class);
-        final CommandNodeInterface<Object> rootNode = mock(CommandNode.class);
-        final CommandNodeInterface<Object> otherRootNode = mock(CommandNode.class);
-        final CommandNodeInterface<Object> node = mock(CommandNode.class);
-        final CommandNodeInterface<Object> otherNode = mock(CommandNode.class);
+        final CommandNode<Object> rootNode = mock(CommandNode.class);
+        final CommandNode<Object> otherRootNode = mock(CommandNode.class);
+        final CommandNode<Object> node = mock(CommandNode.class);
+        final CommandNode<Object> otherNode = mock(CommandNode.class);
         new EqualsTester()
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, rootNode, 0).build(""), new CommandContextBuilder<>(dispatcher, source, rootNode, 0).build(""))
             .addEqualityGroup(new CommandContextBuilder<>(dispatcher, source, otherRootNode, 0).build(""), new CommandContextBuilder<>(dispatcher, source, otherRootNode, 0).build(""))

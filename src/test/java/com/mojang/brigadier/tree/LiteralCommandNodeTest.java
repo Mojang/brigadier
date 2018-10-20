@@ -30,7 +30,7 @@ public class LiteralCommandNodeTest extends CommandNodeTest {
     private CommandContextBuilder<Object> contextBuilder;
 
     @Override
-    protected CommandNodeInterface<Object> getCommandNode() {
+    protected CommandNode<Object> getCommandNode() {
         return node;
     }
 

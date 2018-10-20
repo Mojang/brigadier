@@ -5,7 +5,7 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.mojang.brigadier.tree.CommandNodeInterface;
+import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,11 +99,11 @@ public class CommandDispatcherUsagesTest {
         );
     }
 
-    private CommandNodeInterface<Object> get(final String command) {
+    private CommandNode<Object> get(final String command) {
         return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
     }
 
-    private CommandNodeInterface<Object> get(final StringReader command) {
+    private CommandNode<Object> get(final StringReader command) {
         return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
     }
 
@@ -117,7 +117,7 @@ public class CommandDispatcherUsagesTest {
     @Test
     public void testSmartUsage_noCommands() throws Exception {
         subject = new CommandDispatcher<>();
-        final Map<CommandNodeInterface<Object>, String> results = subject.getSmartUsage(subject.getRoot(), source);
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(subject.getRoot(), source);
         assertThat(results.entrySet(), is(empty()));
     }
 
@@ -153,7 +153,7 @@ public class CommandDispatcherUsagesTest {
 
     @Test
     public void testSmartUsage_root() throws Exception {
-        final Map<CommandNodeInterface<Object>, String> results = subject.getSmartUsage(subject.getRoot(), source);
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(subject.getRoot(), source);
         assertThat(results, equalTo(ImmutableMap.builder()
             .put(get("a"), "a (1|2)")
             .put(get("b"), "b 1")
@@ -171,7 +171,7 @@ public class CommandDispatcherUsagesTest {
 
     @Test
     public void testSmartUsage_h() throws Exception {
-        final Map<CommandNodeInterface<Object>, String> results = subject.getSmartUsage(get("h"), source);
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(get("h"), source);
         assertThat(results, equalTo(ImmutableMap.builder()
             .put(get("h 1"), "[1] i")
             .put(get("h 2"), "[2] i ii")
@@ -185,7 +185,7 @@ public class CommandDispatcherUsagesTest {
         final StringReader offsetH = new StringReader("/|/|/h");
         offsetH.setCursor(5);
 
-        final Map<CommandNodeInterface<Object>, String> results = subject.getSmartUsage(get(offsetH), source);
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(get(offsetH), source);
         assertThat(results, equalTo(ImmutableMap.builder()
             .put(get("h 1"), "[1] i")
             .put(get("h 2"), "[2] i ii")

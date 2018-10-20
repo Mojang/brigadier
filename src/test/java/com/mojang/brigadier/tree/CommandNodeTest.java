@@ -19,11 +19,11 @@ public abstract class CommandNodeTest {
     @Mock
     private Command command;
 
-    protected abstract CommandNodeInterface<Object> getCommandNode();
+    protected abstract CommandNode<Object> getCommandNode();
 
     @Test
     public void testAddChild() throws Exception {
-        final CommandNodeInterface<Object> node = getCommandNode();
+        final CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child1").build());
         node.addChild(literal("child2").build());
@@ -34,7 +34,7 @@ public abstract class CommandNodeTest {
 
     @Test
     public void testAddChildMergesGrandchildren() throws Exception {
-        final CommandNodeInterface<Object> node = getCommandNode();
+        final CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").then(
             literal("grandchild1")
@@ -50,7 +50,7 @@ public abstract class CommandNodeTest {
 
     @Test
     public void testAddChildPreservesCommand() throws Exception {
-        final CommandNodeInterface<Object> node = getCommandNode();
+        final CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").executes(command).build());
         node.addChild(literal("child").build());
@@ -60,7 +60,7 @@ public abstract class CommandNodeTest {
 
     @Test
     public void testAddChildOverwritesCommand() throws Exception {
-        final CommandNodeInterface<Object> node = getCommandNode();
+        final CommandNode<Object> node = getCommandNode();
 
         node.addChild(literal("child").build());
         node.addChild(literal("child").executes(command).build());

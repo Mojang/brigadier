@@ -27,12 +27,14 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
     private final SuggestionProvider<S> customSuggestions;
+    private final T defaultValue;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final DefaultCommandNodeDecorator<S, ?> defaultArgument, final Predicate<S> requirement, final CommandNodeInterface<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
-        super(command, requirement, defaultArgument, redirect, modifier, forks);
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final CommandNode<S> defaultArgument, final T defaultValue, final boolean isDefaultNode, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
+        super(command, requirement, defaultArgument, isDefaultNode, redirect, modifier, forks);
         this.name = name;
         this.type = type;
         this.customSuggestions = customSuggestions;
+        this.defaultValue = defaultValue;
     }
 
     public ArgumentType<T> getType() {
@@ -56,7 +58,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
-        final T result = type.parse(reader);
+        final T result = reader.canRead() || !isDefaultNode() ? type.parse(reader) : defaultValue;
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);

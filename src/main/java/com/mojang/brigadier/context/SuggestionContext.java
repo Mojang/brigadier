@@ -3,13 +3,13 @@
 
 package com.mojang.brigadier.context;
 
-import com.mojang.brigadier.tree.CommandNodeInterface;
+import com.mojang.brigadier.tree.CommandNode;
 
 public class SuggestionContext<S> {
-    public final CommandNodeInterface<S> parent;
+    public final CommandNode<S> parent;
     public final int startPos;
 
-    public SuggestionContext(CommandNodeInterface<S> parent, int startPos) {
+    public SuggestionContext(CommandNode<S> parent, int startPos) {
         this.parent = parent;
         this.startPos = startPos;
     }

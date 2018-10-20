@@ -6,96 +6,92 @@ package com.mojang.brigadier.builder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.SingleRedirectModifier;
-import com.mojang.brigadier.tree.CommandNodeInterface;
-import com.mojang.brigadier.tree.DefaultCommandNodeDecorator;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> implements ArgumentBuilderInterface<S, T> {
+public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
-    private DefaultCommandNodeDecorator<S, ?> defaultNode;
+    private CommandNode<S> defaultNode;
+    private final boolean isDefaultNode;
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
-    private CommandNodeInterface<S> target;
+    private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
 
+    protected ArgumentBuilder(final boolean isDefaultNode) {
+        this.isDefaultNode = isDefaultNode;
+    }
+
     protected abstract T getThis();
 
-    @Override
-    public T then(final ArgumentBuilderInterface<S, ?> argument) {
+    public T then(final ArgumentBuilder<S, ?> argument) {
         return then(argument.build());
     }
 
-    @Override
-    public T then(final CommandNodeInterface<S> argument) {
+    public T then(final CommandNode<S> argument) {
         if (target != null) {
             throw new IllegalStateException("Cannot add children to a redirected node");
         }
 
-        if(argument instanceof DefaultCommandNodeDecorator)
+        if(argument.isDefaultNode())
             if (defaultNode != null)
                 throw new IllegalStateException("Cannot add multiple default nodes as child of one node");
             else
-                defaultNode = (DefaultCommandNodeDecorator<S, ?>) argument;
+                defaultNode = argument;
 
         arguments.addChild(argument);
 
         return getThis();
     }
 
-    @Override
-    public Collection<CommandNodeInterface<S>> getArguments() {
+    public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
     }
 
-    @Override
-    public DefaultCommandNodeDecorator<S, ?> getDefaultNode() {
+    public CommandNode<S> getDefaultNode() {
         return defaultNode;
     }
 
-    @Override
+    public boolean isDefaultNode() {
+        return isDefaultNode;
+    }
+
     public T executes(final Command<S> command) {
         this.command = command;
         return getThis();
     }
 
-    @Override
     public Command<S> getCommand() {
         return command;
     }
 
-    @Override
     public T requires(final Predicate<S> requirement) {
         this.requirement = requirement;
         return getThis();
     }
 
-    @Override
     public Predicate<S> getRequirement() {
         return requirement;
     }
 
-    @Override
-    public T redirect(final CommandNodeInterface<S> target) {
+    public T redirect(final CommandNode<S> target) {
         return forward(target, null, false);
     }
 
-    @Override
-    public T redirect(final CommandNodeInterface<S> target, final SingleRedirectModifier<S> modifier) {
+    public T redirect(final CommandNode<S> target, final SingleRedirectModifier<S> modifier) {
         return forward(target, modifier == null ? null : o -> Collections.singleton(modifier.apply(o)), false);
     }
 
-    @Override
-    public T fork(final CommandNodeInterface<S> target, final RedirectModifier<S> modifier) {
+    public T fork(final CommandNode<S> target, final RedirectModifier<S> modifier) {
         return forward(target, modifier, true);
     }
 
-    @Override
-    public T forward(final CommandNodeInterface<S> target, final RedirectModifier<S> modifier, final boolean fork) {
+    public T forward(final CommandNode<S> target, final RedirectModifier<S> modifier, final boolean fork) {
         if (!arguments.getChildren().isEmpty()) {
             throw new IllegalStateException("Cannot forward a node with children");
         }
@@ -105,19 +101,18 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> implem
         return getThis();
     }
 
-    @Override
-    public CommandNodeInterface<S> getRedirect() {
+    public CommandNode<S> getRedirect() {
         return target;
     }
 
-    @Override
     public RedirectModifier<S> getRedirectModifier() {
         return modifier;
     }
 
-    @Override
     public boolean isFork() {
         return forks;
     }
+
+    public abstract CommandNode<S> build();
 
 }

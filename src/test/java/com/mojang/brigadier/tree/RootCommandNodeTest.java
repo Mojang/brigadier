@@ -22,7 +22,7 @@ public class RootCommandNodeTest extends CommandNodeTest {
     private RootCommandNode<Object> node;
 
     @Override
-    protected CommandNodeInterface<Object> getCommandNode() {
+    protected CommandNode<Object> getCommandNode() {
         return node;
     }
 

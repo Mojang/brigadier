@@ -6,7 +6,7 @@ package com.mojang.brigadier.context;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.RedirectModifier;
-import com.mojang.brigadier.tree.CommandNodeInterface;
+import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class CommandContextBuilder<S> {
     private final Map<String, ParsedArgument<S, ?>> arguments = new LinkedHashMap<>();
-    private final CommandNodeInterface<S> rootNode;
+    private final CommandNode<S> rootNode;
     private final List<ParsedCommandNode<S>> nodes = new ArrayList<>();
     private final CommandDispatcher<S> dispatcher;
     private S source;
@@ -25,7 +25,7 @@ public class CommandContextBuilder<S> {
     private RedirectModifier<S> modifier = null;
     private boolean forks;
 
-    public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final CommandNodeInterface<S> rootNode, final int start) {
+    public CommandContextBuilder(final CommandDispatcher<S> dispatcher, final S source, final CommandNode<S> rootNode, final int start) {
         this.rootNode = rootNode;
         this.dispatcher = dispatcher;
         this.source = source;
@@ -41,7 +41,7 @@ public class CommandContextBuilder<S> {
         return source;
     }
 
-    public CommandNodeInterface<S> getRootNode() {
+    public CommandNode<S> getRootNode() {
         return rootNode;
     }
 
@@ -59,7 +59,7 @@ public class CommandContextBuilder<S> {
         return this;
     }
 
-    public CommandContextBuilder<S> withNode(final CommandNodeInterface<S> node, final StringRange range) {
+    public CommandContextBuilder<S> withNode(final CommandNode<S> node, final StringRange range) {
         nodes.add(new ParsedCommandNode<>(node, range));
         this.range = StringRange.encompassing(this.range, range);
         this.modifier = node.getRedirectModifier();
@@ -127,7 +127,7 @@ public class CommandContextBuilder<S> {
                     return new SuggestionContext<>(rootNode, range.getStart());
                 }
             } else {
-                CommandNodeInterface<S> prev = rootNode;
+                CommandNode<S> prev = rootNode;
                 for (final ParsedCommandNode<S> node : nodes) {
                     final StringRange nodeRange = node.getRange();
                     if (nodeRange.getStart() <= cursor && cursor <= nodeRange.getEnd()) {
