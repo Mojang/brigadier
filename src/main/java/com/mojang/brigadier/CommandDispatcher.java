@@ -560,11 +560,11 @@ public class CommandDispatcher<S> {
         return self;
     }
 
-    private boolean isNodeExecutable(CommandNode<S> defaultNode) {
-        while (defaultNode.getCommand() == null && defaultNode.getDefaultNode() != null)
-            defaultNode = defaultNode.getDefaultNode();
+    private boolean isNodeExecutable(CommandNode<S> node) {
+        while (node.getCommand() == null && node.getDefaultNode() != null)
+            node = node.getDefaultNode();
 
-        return defaultNode.getCommand() != null;
+        return node.getCommand() != null;
     }
 
     /**

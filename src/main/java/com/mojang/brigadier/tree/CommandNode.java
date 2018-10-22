@@ -36,7 +36,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> defaultNode, final boolean isDefaultNode, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final CommandNode<S> defaultNode, final boolean isDefaultNode) {
         this.command = command;
         this.requirement = requirement;
         this.defaultNode = defaultNode;
