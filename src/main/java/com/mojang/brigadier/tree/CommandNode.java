@@ -141,7 +141,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
 
-        return true;
+        return isDefaultNode == that.isDefaultNode;
     }
 
     @Override

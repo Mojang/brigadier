@@ -14,6 +14,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.defaultArgument;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,6 +39,17 @@ public class RequiredArgumentBuilderTest {
 
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
+        assertThat(node.isDefaultNode(), is(false));
+    }
+
+    @Test
+    public void testBuildDefaultNode() throws Exception {
+        final ArgumentCommandNode<Object, Integer> node = defaultArgument("foo", type, 42).build();
+
+        assertThat(node.getName(), is("foo"));
+        assertThat(node.getType(), is(type));
+        assertThat(node.isDefaultNode(), is(true));
+        assertThat(node.getDefaultValue(), is(42));
     }
 
     @Test

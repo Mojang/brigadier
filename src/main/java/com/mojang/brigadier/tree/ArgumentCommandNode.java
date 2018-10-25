@@ -45,6 +45,10 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return type;
     }
 
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -110,6 +114,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
         if (!name.equals(that.name)) return false;
         if (!type.equals(that.type)) return false;
+        if (defaultValue != null ? !defaultValue.equals(that.defaultValue) : that.defaultValue != null) return false;
         return super.equals(o);
     }
 

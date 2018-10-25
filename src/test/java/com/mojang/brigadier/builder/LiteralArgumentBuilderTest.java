@@ -31,6 +31,7 @@ public class LiteralArgumentBuilderTest {
         final LiteralCommandNode<Object> node = builder.build();
 
         assertThat(node.getLiteral(), is("foo"));
+        assertThat(node.isDefaultNode(), is(false));
     }
 
     @Test
