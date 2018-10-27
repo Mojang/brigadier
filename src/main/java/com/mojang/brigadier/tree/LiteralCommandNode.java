@@ -21,8 +21,7 @@ import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
-    
-    
+
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this(literal, command, requirement, redirect, modifier, forks, null, false);
     }

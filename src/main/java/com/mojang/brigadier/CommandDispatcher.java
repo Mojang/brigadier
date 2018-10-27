@@ -93,6 +93,8 @@ public class CommandDispatcher<S> {
      * @return the node added to this tree
      */
     public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
+        if(command.isDefaultNode()) throw new IllegalArgumentException("Cannot add a default node to root");
+
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
         return build;

@@ -17,6 +17,7 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.defaultArgument;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -40,6 +41,7 @@ public class RequiredArgumentBuilderTest {
         assertThat(node.getName(), is("foo"));
         assertThat(node.getType(), is(type));
         assertThat(node.isDefaultNode(), is(false));
+        assertThat(node.getDefaultValue(), is(nullValue()));
     }
 
     @Test

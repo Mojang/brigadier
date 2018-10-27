@@ -53,6 +53,11 @@ public class CommandDispatcherTest {
         return result;
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterDefaultNode() throws Exception {
+        subject.register(defaultLiteral("foo"));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndExecuteCommand() throws Exception {

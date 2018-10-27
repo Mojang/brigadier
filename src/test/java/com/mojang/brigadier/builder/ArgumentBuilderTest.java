@@ -4,10 +4,12 @@
 package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.defaultLiteral;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.hasSize;
@@ -53,6 +55,20 @@ public class ArgumentBuilderTest {
         final CommandNode<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         builder.then(literal("foo"));
+    }
+
+    @Test
+    public void testThen_withDefaultNode() throws Exception {
+        final LiteralCommandNode<Object> child = defaultLiteral("foo").build();
+        builder.then(child);
+
+        assertThat(builder.getDefaultNode(), is(child));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testThen_withTwoDefaultNodes() throws Exception {
+        builder.then(defaultLiteral("foo"));
+        builder.then(defaultLiteral("bar"));
     }
 
     private static class TestableArgumentBuilder<S> extends ArgumentBuilder<S, TestableArgumentBuilder<S>> {
