@@ -15,7 +15,7 @@ maven {
 
 And then use this library (change `(the latest version)` to the latest version!):
 ```groovy
-compile 'com.mojang:brigadier:(the latest version)'
+implementation 'com.mojang:brigadier:(the latest version)'
 ```
 
 ## Maven
