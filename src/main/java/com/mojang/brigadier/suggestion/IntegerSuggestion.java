@@ -8,18 +8,39 @@ import com.mojang.brigadier.context.StringRange;
 
 import java.util.Objects;
 
+/**
+ * A {@link Suggestion} that suggests integers and orders them correctly.
+ */
 public class IntegerSuggestion extends Suggestion {
     private int value;
 
+    /**
+     * Creates a new {@link IntegerSuggestion} that covers a given range and has a given int value.
+     *
+     * @param range the range it covers in the input
+     * @param value the integer value
+     */
     public IntegerSuggestion(final StringRange range, final int value) {
         this(range, value, null);
     }
 
+    /**
+     * Creates a new {@link IntegerSuggestion} that covers a given range and has a given int value and tooltip.
+     *
+     * @param range the range it covers in the input
+     * @param value the integer value
+     * @param tooltip a tooltip message to show the user
+     */
     public IntegerSuggestion(final StringRange range, final int value, final Message tooltip) {
         super(range, Integer.toString(value), tooltip);
         this.value = value;
     }
 
+    /**
+     * Returns the underlying integer value.
+     *
+     * @return the underlying integer value.
+     */
     public int getValue() {
         return value;
     }

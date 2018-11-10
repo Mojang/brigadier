@@ -6,6 +6,7 @@ package com.mojang.brigadier;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -435,8 +436,8 @@ public class CommandDispatcher<S> {
      * listed as multiple entries: the parent node, and the child nodes.
      * For example, a required literal "foo" followed by an optional param "int" will be two nodes:</p>
      * <ul>
-     *     <li>{@code foo}</li>
-     *     <li>{@code foo <int>}</li>
+     * <li>{@code foo}</li>
+     * <li>{@code foo <int>}</li>
      * </ul>
      *
      * <p>The path to the specified node will <b>not</b> be prepended to the output, as there can theoretically be many
@@ -481,7 +482,7 @@ public class CommandDispatcher<S> {
      * These forms may be mixed and matched to provide as much information about the child nodes as it can, without being too verbose.
      * For example, a required literal "foo" followed by an optional param "int" can be compressed into one string:</p>
      * <ul>
-     *     <li>{@code foo [<int>]}</li>
+     * <li>{@code foo [<int>]}</li>
      * </ul>
      *
      * <p>The path to the specified node will <b>not</b> be prepended to the output, as there can theoretically be many
@@ -579,6 +580,22 @@ public class CommandDispatcher<S> {
         return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
     }
 
+    /**
+     * Gets suggestions for a parsed input string on what comes next, checking from the given cursor position.
+     *
+     * <p>As it is ultimately up to custom argument types to provide suggestions, it may be an asynchronous operation,
+     * for example getting in-game data or player names etc. As such, this method returns a future and no guarantees
+     * are made to when or how the future completes.</p>
+     *
+     * <p>The suggestions provided will be in the context of the end of the parsed input string, but may suggest
+     * new or replacement strings for earlier in the input string. For example, if the end of the string was
+     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for that
+     * whole segment of the input.</p>
+     *
+     * @param parse the result of a {@link #parse(StringReader, Object)}
+     * @param cursor the index to fetch suggestions for
+     * @return a future that will eventually resolve into a {@link Suggestions} object
+     */
     public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
         final CommandContextBuilder<S> context = parse.getContext();
 

@@ -10,6 +10,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * An {@link ArgumentType} that parses integers.
+ * <p>
+ * Allows for numbers in the following format:<br>
+ * {@literal (-)?\d+}
+ */
 public class IntegerArgumentType implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
 
@@ -21,26 +27,62 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         this.maximum = maximum;
     }
 
+    /**
+     * A factory method intended for use via a static import.
+     *
+     * @return an instance of this argument type
+     */
     public static IntegerArgumentType integer() {
         return integer(Integer.MIN_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces a minimum value.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static IntegerArgumentType integer(final int min) {
         return integer(min, Integer.MAX_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces that the number lies within a given range.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static IntegerArgumentType integer(final int min, final int max) {
         return new IntegerArgumentType(min, max);
     }
 
+    /**
+     * Retrieves the argument with the given name from the context and casts it to an integer.
+     *
+     * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
+     * @param name the name of the argument to retrieve
+     * @return the argument as an integer
+     * @see CommandContext#getArgument
+     */
     public static int getInteger(final CommandContext<?> context, final String name) {
         return context.getArgument(name, int.class);
     }
 
+    /**
+     * The minimum value an argument is allowed to be (inclusive).
+     *
+     * @return the minimum value an argument is allowed to be (inclusive).
+     */
     public int getMinimum() {
         return minimum;
     }
 
+    /**
+     * The maximal value an argument is allowed to be (inclusive).
+     *
+     * @return the maximal value an argument is allowed to be (inclusive).
+     */
     public int getMaximum() {
         return maximum;
     }

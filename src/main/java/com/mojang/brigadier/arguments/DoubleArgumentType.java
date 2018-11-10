@@ -10,6 +10,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * An {@link ArgumentType} that parses doubles.
+ * <p>
+ * Allows for numbers in the following format:<br>
+ * {@literal (-)?\d+('.'\d+)*}
+ */
 public class DoubleArgumentType implements ArgumentType<Double> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
@@ -21,26 +27,62 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         this.maximum = maximum;
     }
 
+    /**
+     * A factory method intended for use via a static import.
+     *
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg() {
         return doubleArg(-Double.MAX_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces a minimum value.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg(final double min) {
         return doubleArg(min, Double.MAX_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces that the number lies within a given range.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg(final double min, final double max) {
         return new DoubleArgumentType(min, max);
     }
 
+    /**
+     * Retrieves the argument with the given name from the context and casts it to a double.
+     *
+     * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
+     * @param name the name of the argument to retrieve
+     * @return the argument as a double
+     * @see CommandContext#getArgument
+     */
     public static double getDouble(final CommandContext<?> context, final String name) {
         return context.getArgument(name, Double.class);
     }
 
+    /**
+     * The minimum value an argument is allowed to be (inclusive).
+     *
+     * @return the minimum value an argument is allowed to be (inclusive).
+     */
     public double getMinimum() {
         return minimum;
     }
 
+    /**
+     * The maximal value an argument is allowed to be (inclusive).
+     *
+     * @return the maximal value an argument is allowed to be (inclusive).
+     */
     public double getMaximum() {
         return maximum;
     }

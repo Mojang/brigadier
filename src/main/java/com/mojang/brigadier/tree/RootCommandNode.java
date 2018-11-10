@@ -15,30 +15,64 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * The root of the command node tree, which has basically no functionality except to hold the tree together.
+ *
+ * @param <S> the type of the command source
+ */
 public class RootCommandNode<S> extends CommandNode<S> {
     public RootCommandNode() {
         super(null, c -> true, null, s -> Collections.singleton(s.getSource()), false);
     }
 
+    /**
+     * Returns an empty string
+     *
+     * @return an empty string
+     */
     @Override
     public String getName() {
         return "";
     }
 
+    /**
+     * Returns an empty string
+     *
+     * @return an empty string
+     */
     @Override
     public String getUsageText() {
         return "";
     }
 
+    /**
+     * Is a NOP.
+     *
+     * @param reader {@inheritDoc}
+     * @param contextBuilder {@inheritDoc}
+     */
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
     }
 
+    /**
+     * Returns an empty {@link Suggestions} object.
+     *
+     * @param context {@inheritDoc}
+     * @param builder {@inheritDoc}
+     * @return an empty {@link Suggestions} object.
+     */
     @Override
     public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return Suggestions.empty();
     }
 
+    /**
+     * Always returns false.
+     *
+     * @param input {@inheritDoc}
+     * @return {@inheritDoc}
+     */
     @Override
     public boolean isValidInput(final String input) {
         return false;
@@ -51,16 +85,32 @@ public class RootCommandNode<S> extends CommandNode<S> {
         return super.equals(o);
     }
 
+    /**
+     * Always throws an {@link IllegalStateException}.
+     *
+     * @return nothing
+     * @throws IllegalStateException if you invoke it
+     */
     @Override
     public ArgumentBuilder<S, ?> createBuilder() {
         throw new IllegalStateException("Cannot convert root into a builder");
     }
 
+    /**
+     * Returns an empty string
+     *
+     * @return an empty string
+     */
     @Override
     protected String getSortedKey() {
         return "";
     }
 
+    /**
+     * Returns an empty list
+     *
+     * @return an empty list
+     */
     @Override
     public Collection<String> getExamples() {
         return Collections.emptyList();

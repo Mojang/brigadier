@@ -5,6 +5,9 @@ package com.mojang.brigadier;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+/**
+ * A convenient wrapper around a string that allows you to read and iterate through it.
+ */
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_QUOTE = '"';
@@ -26,6 +29,11 @@ public class StringReader implements ImmutableStringReader {
         return string;
     }
 
+    /**
+     * Sets the cursor index position.
+     *
+     * @param cursor the new curso position
+     */
     public void setCursor(final int cursor) {
         this.cursor = cursor;
     }
@@ -75,24 +83,51 @@ public class StringReader implements ImmutableStringReader {
         return string.charAt(cursor + offset);
     }
 
+    /**
+     * Reads the next character.
+     * <p>
+     * Same as {@link #peek()}, but also consumes the character.
+     *
+     * @return the read character
+     */
     public char read() {
         return string.charAt(cursor++);
     }
 
+    /**
+     * Skips a single character.
+     */
     public void skip() {
         cursor++;
     }
 
+    /**
+     * Checks if the character is allowed in a number.
+     *
+     * @param c the character to check
+     * @return true if the character is allowed to appear in a number
+     */
     public static boolean isAllowedNumber(final char c) {
         return c >= '0' && c <= '9' || c == '.' || c == '-';
     }
 
+    /**
+     * Skips all following whitespace characters as determined by {@link Character#isWhitespace(char)}.
+     */
     public void skipWhitespace() {
         while (canRead() && Character.isWhitespace(peek())) {
             skip();
         }
     }
 
+    /**
+     * Reads an integer.
+     * <p>
+     * The integer may only contain characters that match {@link #isAllowedNumber(char)}.
+     *
+     * @return the read integer
+     * @throws CommandSyntaxException if the command is no proper int
+     */
     public int readInt() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
@@ -110,6 +145,14 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Reads a long.
+     * <p>
+     * The long may only contain characters that match {@link #isAllowedNumber(char)}.
+     *
+     * @return the read long
+     * @throws CommandSyntaxException if the command is no proper long
+     */
     public long readLong() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
@@ -127,6 +170,14 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Reads a double.
+     * <p>
+     * The double may only contain characters that match {@link #isAllowedNumber(char)}.
+     *
+     * @return the read double
+     * @throws CommandSyntaxException if the command is no proper int
+     */
     public double readDouble() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
@@ -144,6 +195,14 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Reads a float.
+     * <p>
+     * The float may only contain characters that match {@link #isAllowedNumber(char)}.
+     *
+     * @return the read float
+     * @throws CommandSyntaxException if the command is no proper int
+     */
     public float readFloat() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
@@ -161,14 +220,25 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Checks if a character is allowed in an unquoted string or needs to be escaped.
+     *
+     * @param c the character to check
+     * @return true if the character is allowed to appear in an unquoted string
+     */
     public static boolean isAllowedInUnquotedString(final char c) {
         return c >= '0' && c <= '9'
-            || c >= 'A' && c <= 'Z'
-            || c >= 'a' && c <= 'z'
-            || c == '_' || c == '-'
-            || c == '.' || c == '+';
+                || c >= 'A' && c <= 'Z'
+                || c >= 'a' && c <= 'z'
+                || c == '_' || c == '-'
+                || c == '.' || c == '+';
     }
 
+    /**
+     * Reads an unquoted string, {@literal i.e.} for as long as {@link #isAllowedInUnquotedString(char)} returns true.
+     *
+     * @return the read string
+     */
     public String readUnquotedString() {
         final int start = cursor;
         while (canRead() && isAllowedInUnquotedString(peek())) {
@@ -177,6 +247,13 @@ public class StringReader implements ImmutableStringReader {
         return string.substring(start, cursor);
     }
 
+    /**
+     * Returns a quoted string.
+     *
+     * @return a quoted string or an empty String, if {@link #canRead} is false
+     * @throws CommandSyntaxException if the next character is not a quote. an invalid escape character is encountered
+     * or the closing quote was not found
+     */
     public String readQuotedString() throws CommandSyntaxException {
         if (!canRead()) {
             return "";
@@ -208,6 +285,13 @@ public class StringReader implements ImmutableStringReader {
         throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote().createWithContext(this);
     }
 
+    /**
+     * Reads a string, deciding between {@link #readQuotedString}  and {@link #readUnquotedString} based on whether the
+     * next character is a quote.
+     *
+     * @return the read string
+     * @throws CommandSyntaxException if an error occurs parsing the string
+     */
     public String readString() throws CommandSyntaxException {
         if (canRead() && peek() == SYNTAX_QUOTE) {
             return readQuotedString();
@@ -216,6 +300,12 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Reads a single boolean.
+     *
+     * @return the read boolean
+     * @throws CommandSyntaxException if the input was empty or the read word is not a valid boolean
+     */
     public boolean readBoolean() throws CommandSyntaxException {
         final int start = cursor;
         final String value = readString();
@@ -233,6 +323,13 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    /**
+     * Peel at the next char and consume it, if it is the expected character{@literal .} If not, throw an exception.
+     *
+     * @param c the character that is expected to occur next
+     * @throws CommandSyntaxException if the character was not the expected character or the end of the input was
+     * reached
+     */
     public void expect(final char c) throws CommandSyntaxException {
         if (!canRead() || peek() != c) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, String.valueOf(c));

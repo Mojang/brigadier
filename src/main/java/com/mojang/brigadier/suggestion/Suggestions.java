@@ -13,6 +13,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * A collection of {@link Suggestion}s.
+ */
 public class Suggestions {
     private static final Suggestions EMPTY = new Suggestions(StringRange.at(0), new ArrayList<>());
 
@@ -24,14 +27,29 @@ public class Suggestions {
         this.suggestions = suggestions;
     }
 
+    /**
+     * Returns the range the suggestions span.
+     *
+     * @return the range the suggestions span.
+     */
     public StringRange getRange() {
         return range;
     }
 
+    /**
+     * Returns all suggestions as a list.
+     *
+     * @return all suggestions as a list
+     */
     public List<Suggestion> getList() {
         return suggestions;
     }
 
+    /**
+     * Checks if no suggestions are stored in this object..
+     *
+     * @return true if no suggestions are stored in this object
+     */
     public boolean isEmpty() {
         return suggestions.isEmpty();
     }
@@ -46,7 +64,7 @@ public class Suggestions {
         }
         final Suggestions that = (Suggestions) o;
         return Objects.equals(range, that.range) &&
-            Objects.equals(suggestions, that.suggestions);
+                Objects.equals(suggestions, that.suggestions);
     }
 
     @Override
@@ -57,15 +75,29 @@ public class Suggestions {
     @Override
     public String toString() {
         return "Suggestions{" +
-            "range=" + range +
-            ", suggestions=" + suggestions +
-            '}';
+                "range=" + range +
+                ", suggestions=" + suggestions +
+                '}';
     }
 
+    /**
+     * Returns a future that instantly completes with an empty {@link Suggestions} instance.
+     *
+     * @return a future that instantly completes with an empty {@link Suggestions} instance
+     */
     public static CompletableFuture<Suggestions> empty() {
         return CompletableFuture.completedFuture(EMPTY);
     }
 
+    /**
+     * Merges multiple {@link Suggestions} instances for a single command.
+     * <p>
+     * Just combines the input into one collection and then calls {@link #create} with the result.
+     *
+     * @param command the command
+     * @param input the suggestions instances
+     * @return returns a merged {@link Suggestions} instance
+     */
     public static Suggestions merge(final String command, final Collection<Suggestions> input) {
         if (input.isEmpty()) {
             return EMPTY;
@@ -80,6 +112,38 @@ public class Suggestions {
         return create(command, texts);
     }
 
+    /**
+     * Creates a {@link Suggestions} instance from a command a list of possible {@link Suggestion}s.
+     * <p>
+     * The {@link Suggestions} instance will span the entire range, from the minimal index to maximum index found
+     * in the suggestions.
+     * <p>
+     * It will also automatically call {@link Suggestion#expand} for every possible suggestion, using the command and
+     * the computed general range.
+     * <p>
+     * After all of that it sorts the results and returns them.
+     * <p>
+     * <br>Some examples:
+     * <pre>
+     *     Suggestion foo = new Suggestion(StringRange.between(0, 2), "foo");
+     *     Suggestion bar = new Suggestion(StringRange.at(2), "bar");
+     *
+     *     Suggestions suggestions = Suggestions.create("1234567", List.of(foo, bar));
+     *     for (Suggestion suggestion : suggestions.getList()) {
+     *         System.out.println(suggestion.apply("abcdefgh"));
+     *     }
+     * </pre>
+     * Prints:
+     * <pre>
+     *     (ordered alphabetically)
+     *     12barcdefgh (range expanded from 0 to 2, so it replaced "ab"
+     *     foocdefgh (range was already 0 to 2, so nothing really changed
+     * </pre>
+     *
+     * @param command the command to get them for
+     * @param suggestions a list with possible suggestions
+     * @return a {@link Suggestions} instance for the given command with the passed suggestions
+     */
     public static Suggestions create(final String command, final Collection<Suggestion> suggestions) {
         if (suggestions.isEmpty()) {
             return EMPTY;

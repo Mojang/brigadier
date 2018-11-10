@@ -10,6 +10,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * An {@link ArgumentType} that parses floats.
+ * <p>
+ * Allows for numbers in the following format:<br>
+ * {@literal (-)?\d+('.'\d+)*}
+ */
 public class FloatArgumentType implements ArgumentType<Float> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
@@ -21,26 +27,62 @@ public class FloatArgumentType implements ArgumentType<Float> {
         this.maximum = maximum;
     }
 
+    /**
+     * A factory method intended for use via a static import.
+     *
+     * @return an instance of this argument type
+     */
     public static FloatArgumentType floatArg() {
         return floatArg(-Float.MAX_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces a minimum value.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static FloatArgumentType floatArg(final float min) {
         return floatArg(min, Float.MAX_VALUE);
     }
 
+    /**
+     * A factory method intended for use via a static import which enforces that the number lies within a given range.
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @return an instance of this argument type
+     */
     public static FloatArgumentType floatArg(final float min, final float max) {
         return new FloatArgumentType(min, max);
     }
 
+    /**
+     * Retrieves the argument with the given name from the context and casts it to a float.
+     *
+     * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
+     * @param name the name of the argument to retrieve
+     * @return the argument as a float
+     * @see CommandContext#getArgument
+     */
     public static float getFloat(final CommandContext<?> context, final String name) {
         return context.getArgument(name, Float.class);
     }
 
+    /**
+     * The minimum value an argument is allowed to be (inclusive).
+     *
+     * @return the minimum value an argument is allowed to be (inclusive).
+     */
     public float getMinimum() {
         return minimum;
     }
 
+    /**
+     * The maximal value an argument is allowed to be (inclusive).
+     *
+     * @return the maximal value an argument is allowed to be (inclusive).
+     */
     public float getMaximum() {
         return maximum;
     }
