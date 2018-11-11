@@ -21,7 +21,11 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     /**
-     * An instance of this argument type that only parses a single word, i.e. up until a space.
+     * A factory method that provides an instance of a word type string argument.
+     * <p>
+     * Allowed are only characters where the reader's {@link StringReader#isAllowedInUnquotedString(char)} method would
+     * return true.<br>
+     * The parser stops parsing at the first character that is not allowed. Typically this needs to be a space.
      *
      * @return an instance of this argument type parsing a single word.
      */
@@ -30,7 +34,10 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     /**
-     * An instance of this argument type that only parses a single word or a quoted string.
+     * A factory method that provides an instance of a string argument.
+     * <p>
+     * If the string does not start with a quote, it will be interpreted like a word type string, else it will parse
+     * everything up until the next non-escaped quote.
      *
      * @return an instance of this argument type parsing a word or quoted string.
      */
@@ -39,7 +46,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     /**
-     * An instance of this argument type that only parses everything up until the end of the input.
+     * A factory method that provides an instance of a greedy string argument. This will parse the entire remaining input.
      *
      * @return an instance of this argument type parsing everything until the end of the input
      */

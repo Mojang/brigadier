@@ -34,8 +34,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     /**
-     * Returns a {@link RequiredArgumentBuilder} whose argument has the given name and is of the given
-     * {@link ArgumentType}.
+     * A factory method to create a new builder for a argument command node
      * <p>
      * This method is intended for static importing, so you can just use {@code argument(<name>, <type>)"} in your code.
      *
@@ -64,7 +63,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     /**
      * Returns the {@link SuggestionProvider} the command uses to advice the user on possible completions.
      *
-     * @return the registered {@link SuggestionProvider} or null if none
+     * @return the registered {@link SuggestionProvider} or null if not set
      */
     public SuggestionProvider<S> getSuggestionsProvider() {
         return suggestionsProvider;

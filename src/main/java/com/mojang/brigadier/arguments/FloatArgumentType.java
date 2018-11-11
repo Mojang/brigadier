@@ -28,7 +28,12 @@ public class FloatArgumentType implements ArgumentType<Float> {
     }
 
     /**
-     * A factory method intended for use via a static import.
+     * A factory method as a simple way to get an instance.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", floatArg())
+     * </code>
      *
      * @return an instance of this argument type
      */
@@ -37,7 +42,12 @@ public class FloatArgumentType implements ArgumentType<Float> {
     }
 
     /**
-     * A factory method intended for use via a static import which enforces a minimum value.
+     * A factory method as a simple way to get an instance of this class with an enforced minimum value.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", floatArg(0))
+     * </code>
      *
      * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
      * @return an instance of this argument type
@@ -47,7 +57,13 @@ public class FloatArgumentType implements ArgumentType<Float> {
     }
 
     /**
-     * A factory method intended for use via a static import which enforces that the number lies within a given range.
+     * A factory method as a simple way to get an instance of this class with an enforced minimum and maximum value.
+     * If you want to only define a maximum value, use {@code -Float.MAX_VALUE} as minimum.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", floatArg(0, 100))
+     * </code>
      *
      * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
      * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.

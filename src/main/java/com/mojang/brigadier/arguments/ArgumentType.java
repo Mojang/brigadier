@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * An argument an {@link ArgumentCommandNode} can take as its argument.
+ * A parsable argument designed to be used by an {@link ArgumentCommandNode} as its type argument.
  * <p>
  * As different commands need different arguments (string, integer, long, double,…), this interface provides a
  * way to define parsers for each of them.
