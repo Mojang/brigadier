@@ -34,7 +34,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     /**
-     * A factory method to create a new builder for a argument command node
+     * A factory method to create a new builder for an argument command node.
      * <p>
      * This method is intended for static importing, so you can just use {@code argument(<name>, <type>)"} in your code.
      *
@@ -75,7 +75,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     /**
-     * Returns the {@link ArgumentType} the built command will use
+     * Returns the {@link ArgumentType} the built command will use.
      *
      * @return the {@link ArgumentType} the built command will use
      */

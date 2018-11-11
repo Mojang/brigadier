@@ -6,7 +6,6 @@ package com.mojang.brigadier;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -427,6 +426,7 @@ public class CommandDispatcher<S> {
         return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
     }
 
+    // @formatter:off
     /**
      * Gets all possible executable commands following the given node.
      *
@@ -436,8 +436,8 @@ public class CommandDispatcher<S> {
      * listed as multiple entries: the parent node, and the child nodes.
      * For example, a required literal "foo" followed by an optional param "int" will be two nodes:</p>
      * <ul>
-     * <li>{@code foo}</li>
-     * <li>{@code foo <int>}</li>
+     *     <li>{@code foo}</li>
+     *     <li>{@code foo <int>}</li>
      * </ul>
      *
      * <p>The path to the specified node will <b>not</b> be prepended to the output, as there can theoretically be many
@@ -448,6 +448,7 @@ public class CommandDispatcher<S> {
      * @param restricted if true, commands that the {@code source} cannot access will not be mentioned
      * @return array of full usage strings under the target node
      */
+    // @formatter:on
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
         final ArrayList<String> result = new ArrayList<>();
         getAllUsage(node, source, result, "", restricted);
@@ -473,6 +474,7 @@ public class CommandDispatcher<S> {
         }
     }
 
+    // @formatter:off
     /**
      * Gets the possible executable commands from a specified node.
      *
@@ -482,7 +484,7 @@ public class CommandDispatcher<S> {
      * These forms may be mixed and matched to provide as much information about the child nodes as it can, without being too verbose.
      * For example, a required literal "foo" followed by an optional param "int" can be compressed into one string:</p>
      * <ul>
-     * <li>{@code foo [<int>]}</li>
+     *     <li>{@code foo [<int>]}</li>
      * </ul>
      *
      * <p>The path to the specified node will <b>not</b> be prepended to the output, as there can theoretically be many
@@ -494,6 +496,7 @@ public class CommandDispatcher<S> {
      * @param source a custom "source" object, usually representing the originator of this command
      * @return array of full usage strings under the target node
      */
+    // @formatter:on
     public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
         final Map<CommandNode<S>, String> result = new LinkedHashMap<>();
 

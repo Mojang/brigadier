@@ -98,6 +98,7 @@ public class StringArgumentType implements ArgumentType<String> {
         return type.getExamples();
     }
 
+    // @formatter:off
     /**
      * Converts a String to phrase {@link StringType#QUOTABLE_PHRASE} would match.
      * <p>
@@ -107,15 +108,16 @@ public class StringArgumentType implements ArgumentType<String> {
      * <p>
      * Some sample in and outputs:
      * <ul>
-     * <li>{@code hey} to {@code hey}</li>
-     * <li>{@code hey you} to {@code "hey you"}</li>
-     * <li>{@code "hello"} to {@code "\"hello\""}</li>
-     * <li>{@code \} to {@code "\\"}</li>
+     *     <li>{@code hey} to {@code hey}</li>
+     *     <li>{@code hey you} to {@code "hey you"}</li>
+     *     <li>{@code "hello"} to {@code "\"hello\""}</li>
+     *     <li>{@code \} to {@code "\\"}</li>
      * </ul>
      *
      * @param input the input to escape
      * @return the escaped output ready to be parsed by {@link StringType#QUOTABLE_PHRASE}
      */
+    // @formatter:on
     public static String escapeIfRequired(final String input) {
         for (final char c : input.toCharArray()) {
             if (!StringReader.isAllowedInUnquotedString(c)) {

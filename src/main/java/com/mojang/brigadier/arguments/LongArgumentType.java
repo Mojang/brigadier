@@ -32,7 +32,7 @@ public class LongArgumentType implements ArgumentType<Long> {
      * <p>
      * It is recommended to statically import this method to provide an interface similar to:<br>
      * <code>
-     * argument("name", long())
+     * argument("name", longArg())
      * </code>
      *
      *
@@ -47,7 +47,7 @@ public class LongArgumentType implements ArgumentType<Long> {
      * <p>
      * It is recommended to statically import this method to provide an interface similar to:<br>
      * <code>
-     * argument("name", long(0))
+     * argument("name", longArg(0))
      * </code>
      *
      * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
@@ -63,7 +63,7 @@ public class LongArgumentType implements ArgumentType<Long> {
      * <p>
      * It is recommended to statically import this method to provide an interface similar to:<br>
      * <code>
-     * argument("name", long(0, 100))
+     * argument("name", longArg(0, 100))
      * </code>
      *
      * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
