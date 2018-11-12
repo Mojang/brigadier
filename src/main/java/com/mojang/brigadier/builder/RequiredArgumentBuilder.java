@@ -88,7 +88,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
      * <p>
      * Can be used with {@link CommandContext#getArgument} to retrieve the parsed argument
      *
-     * @return the name of the argument the built command will have.
+     * @return the name of the argument the built command will have
      */
     public String getName() {
         return name;

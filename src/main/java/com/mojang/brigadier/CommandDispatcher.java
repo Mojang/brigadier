@@ -194,7 +194,7 @@ public class CommandDispatcher<S> {
      * results than this method will return, especially when a command forks.</p>
      *
      * @param parse the result of a successful {@link #parse(StringReader, Object)}
-     * @return a numeric result from a "command" that was performed.
+     * @return a numeric result from a "command" that was performed
      * @throws CommandSyntaxException if the command failed to parse or execute
      * @throws RuntimeException if the command failed to execute and was not handled gracefully
      * @see #parse(String, Object)

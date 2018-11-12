@@ -49,7 +49,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
      * argument("name", doubleArg(0))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static DoubleArgumentType doubleArg(final double min) {
@@ -65,8 +65,8 @@ public class DoubleArgumentType implements ArgumentType<Double> {
      * argument("name", doubleArg(0, 100))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
-     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static DoubleArgumentType doubleArg(final double min, final double max) {
@@ -88,7 +88,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
     /**
      * The minimum value an argument is allowed to be (inclusive).
      *
-     * @return the minimum value an argument is allowed to be (inclusive).
+     * @return the minimum value an argument is allowed to be (inclusive)
      */
     public double getMinimum() {
         return minimum;
@@ -97,7 +97,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
     /**
      * The maximal value an argument is allowed to be (inclusive).
      *
-     * @return the maximal value an argument is allowed to be (inclusive).
+     * @return the maximal value an argument is allowed to be (inclusive)
      */
     public double getMaximum() {
         return maximum;

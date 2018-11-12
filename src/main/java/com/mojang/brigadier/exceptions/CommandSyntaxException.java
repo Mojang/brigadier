@@ -54,7 +54,7 @@ public class CommandSyntaxException extends Exception {
     /**
      * Returns the message together with the position it occurred on and some context.
      *
-     * @return the message together with the position it occurred on and some context.
+     * @return the message together with the position it occurred on and some context
      */
     @Override
     public String getMessage() {

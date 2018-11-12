@@ -60,7 +60,7 @@ public class RootCommandNode<S> extends CommandNode<S> {
      *
      * @param context {@inheritDoc}
      * @param builder {@inheritDoc}
-     * @return an empty {@link Suggestions} object.
+     * @return an empty {@link Suggestions} object
      */
     @Override
     public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {

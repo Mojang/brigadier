@@ -29,7 +29,7 @@ public interface ArgumentType<T> {
      * Parses the given {@link StringReader} to an instance of this argument's generic type.
      *
      * @param reader the read to read from
-     * @return the parsed argument. If this is an {@code ArgumentType<Integer>} this would return an Integer.
+     * @return the parsed argument. If this is an {@code ArgumentType<Integer>} this would return an Integer
      * @throws CommandSyntaxException if the argument is malformed
      */
     T parse(StringReader reader) throws CommandSyntaxException;

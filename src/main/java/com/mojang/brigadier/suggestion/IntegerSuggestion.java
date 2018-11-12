@@ -39,7 +39,7 @@ public class IntegerSuggestion extends Suggestion {
     /**
      * Returns the underlying integer value.
      *
-     * @return the underlying integer value.
+     * @return the underlying integer value
      */
     public int getValue() {
         return value;

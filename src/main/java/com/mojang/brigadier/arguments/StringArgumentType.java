@@ -27,7 +27,7 @@ public class StringArgumentType implements ArgumentType<String> {
      * return true.<br>
      * The parser stops parsing at the first character that is not allowed. Typically this needs to be a space.
      *
-     * @return an instance of this argument type parsing a single word.
+     * @return an instance of this argument type parsing a single word
      */
     public static StringArgumentType word() {
         return new StringArgumentType(StringType.SINGLE_WORD);
@@ -39,7 +39,7 @@ public class StringArgumentType implements ArgumentType<String> {
      * If the string does not start with a quote, it will be interpreted like a word type string, else it will parse
      * everything up until the next non-escaped quote.
      *
-     * @return an instance of this argument type parsing a word or quoted string.
+     * @return an instance of this argument type parsing a word or quoted string
      */
     public static StringArgumentType string() {
         return new StringArgumentType(StringType.QUOTABLE_PHRASE);
@@ -172,7 +172,7 @@ public class StringArgumentType implements ArgumentType<String> {
         /**
          * Returns some examples that define this type, which are used to detect ambiguities.
          *
-         * @return some examples that define this type, which are used to detect ambiguities.
+         * @return some examples that define this type, which are used to detect ambiguities
          * @see ArgumentType#getExamples()
          */
         public Collection<String> getExamples() {

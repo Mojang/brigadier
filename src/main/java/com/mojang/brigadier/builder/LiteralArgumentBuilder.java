@@ -44,7 +44,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     /**
      * Returns the literal that the built command will be identified by.
      *
-     * @return the literal that the built command will be identified by.
+     * @return the literal that the built command will be identified by
      */
     public String getLiteral() {
         return literal;

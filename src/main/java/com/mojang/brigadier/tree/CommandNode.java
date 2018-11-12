@@ -101,7 +101,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
      * This just checks the {@link #getRequirement()} predicate, which could e.g. check for permissions.
      *
      * @param source the command source to check for
-     * @return true if the given command source can use this command.
+     * @return true if the given command source can use this command
      */
     public boolean canUse(final S source) {
         return requirement.test(source);
@@ -112,6 +112,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
      * <p>
      * This will replace commands with the same name.
      *
+     * <strong>You are not allowed to add children to commands with a {@link #getRedirect()} target!</strong>
      * @param node the child command node to add
      * @throws UnsupportedOperationException if you try to add a {@link RootCommandNode} to any other command
      */
@@ -180,7 +181,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
      * This is used to find ambiguities.
      *
      * @param input the input to check
-     * @return true if the given input is valid.
+     * @return true if the given input is valid
      * @see #findAmbiguities}
      */
     protected abstract boolean isValidInput(final String input);
@@ -206,7 +207,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     /**
      * Returns the requirement for this command, that is used by {@link #canUse(Object)}.
      *
-     * @return the requirement for this command, that is used by {@link #canUse(Object)}.
+     * @return the requirement for this command, that is used by {@link #canUse(Object)}
      */
     public Predicate<S> getRequirement() {
         return requirement;
@@ -300,7 +301,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
      * <p>
      * See {@link CommandDispatcher#execute(ParseResults)} for an explanation of what it does
      *
-     * @return true if this command forks.
+     * @return true if this command forks
      */
     public boolean isFork() {
         return forks;
@@ -309,7 +310,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     /**
      * Returns example usages for this command, which are used to find ambiguities.
      *
-     * @return some example usages for this command, which are used to find ambiguities.
+     * @return some example usages for this command, which are used to find ambiguities
      * @see #findAmbiguities
      */
     public abstract Collection<String> getExamples();

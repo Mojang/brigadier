@@ -56,7 +56,7 @@ public class Suggestion implements Comparable<Suggestion> {
     /**
      * Returns the text this suggestion suggests.
      *
-     * @return the text this suggestion suggests.
+     * @return the text this suggestion suggests
      */
     public String getText() {
         return text;

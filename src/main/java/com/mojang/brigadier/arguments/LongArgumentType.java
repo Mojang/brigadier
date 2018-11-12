@@ -50,7 +50,7 @@ public class LongArgumentType implements ArgumentType<Long> {
      * argument("name", longArg(0))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static LongArgumentType longArg(final long min) {
@@ -66,8 +66,8 @@ public class LongArgumentType implements ArgumentType<Long> {
      * argument("name", longArg(0, 100))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
-     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static LongArgumentType longArg(final long min, final long max) {
@@ -89,7 +89,7 @@ public class LongArgumentType implements ArgumentType<Long> {
     /**
      * The minimum value an argument is allowed to be (inclusive).
      *
-     * @return the minimum value an argument is allowed to be (inclusive).
+     * @return the minimum value an argument is allowed to be (inclusive)
      */
     public long getMinimum() {
         return minimum;
@@ -98,7 +98,7 @@ public class LongArgumentType implements ArgumentType<Long> {
     /**
      * The maximal value an argument is allowed to be (inclusive).
      *
-     * @return the maximal value an argument is allowed to be (inclusive).
+     * @return the maximal value an argument is allowed to be (inclusive)
      */
     public long getMaximum() {
         return maximum;

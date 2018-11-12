@@ -31,7 +31,7 @@ public interface ImmutableStringReader {
     /**
      * Returns the current cursor position.
      *
-     * @return the current cursor position.
+     * @return the current cursor position
      */
     int getCursor();
 
@@ -53,7 +53,7 @@ public interface ImmutableStringReader {
      * Checks if the reader has enough input to read {@code length} more characters.
      *
      * @param length the amount of characters to read
-     * @return true of the reader has enough input to read {@code length} more characters.
+     * @return true of the reader has enough input to read {@code length} more characters
      */
     boolean canRead(int length);
 

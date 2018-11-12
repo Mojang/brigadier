@@ -30,7 +30,7 @@ public class Suggestions {
     /**
      * Returns the range the suggestions span.
      *
-     * @return the range the suggestions span.
+     * @return the range the suggestions span
      */
     public StringRange getRange() {
         return range;

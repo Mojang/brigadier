@@ -59,7 +59,7 @@ public class CommandContextBuilder<S> {
     /**
      * The command source for the built command context.
      *
-     * @return the command source for the built command context.
+     * @return the command source for the built command context
      */
     public S getSource() {
         return source;
@@ -108,8 +108,14 @@ public class CommandContextBuilder<S> {
     }
 
     /**
-     * TODO: What does this do? Overwrites range, modifer and forks but keeps the nodes around? Then is never called
-     * in any lib code.
+     * Adds the given command node alongside its parsed range to this context.
+     * <p>
+     * <strong>You should probably not call this method in your code, as duplicate invocations could put the
+     * builder into an invalid state.</strong>
+     *
+     * @param node the command node to add
+     * @param range the range the node spans in the input
+     * @return this builder
      */
     public CommandContextBuilder<S> withNode(final CommandNode<S> node, final StringRange range) {
         nodes.add(new ParsedCommandNode<>(node, range));
@@ -151,7 +157,7 @@ public class CommandContextBuilder<S> {
     /**
      * Returns the child context, i.e. the context for a subcommand.
      *
-     * @return the child context, i.e. the context for a subcommand.
+     * @return the child context, i.e. the context for a subcommand
      */
     public CommandContextBuilder<S> getChild() {
         return child;
@@ -178,7 +184,7 @@ public class CommandContextBuilder<S> {
     /**
      * Returns the command to execute.
      *
-     * @return the command to execute.
+     * @return the command to execute
      */
     public Command<S> getCommand() {
         return command;
@@ -208,7 +214,7 @@ public class CommandContextBuilder<S> {
      * Returns the {@link CommandDispatcher} set in the constructor.
      * TODO: WHY?
      *
-     * @return the {@link CommandDispatcher} set in the constructor.
+     * @return the {@link CommandDispatcher} set in the constructor
      */
     public CommandDispatcher<S> getDispatcher() {
         return dispatcher;
@@ -217,7 +223,7 @@ public class CommandContextBuilder<S> {
     /**
      * Returns the range this context spans in the input.
      *
-     * @return the range this context spans in the input.
+     * @return the range this context spans in the input
      */
     public StringRange getRange() {
         return range;

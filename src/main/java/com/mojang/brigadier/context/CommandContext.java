@@ -198,7 +198,7 @@ public class CommandContext<S> {
     /**
      * Returns the range this context takes up in the input string.
      *
-     * @return the range this context takes up in the input string.
+     * @return the range this context takes up in the input string
      */
     public StringRange getRange() {
         return range;
@@ -207,7 +207,7 @@ public class CommandContext<S> {
     /**
      * Returns the full input, of which this command context is a part.
      *
-     * @return the full input, of which this command context is a part.
+     * @return the full input, of which this command context is a part
      */
     public String getInput() {
         return input;

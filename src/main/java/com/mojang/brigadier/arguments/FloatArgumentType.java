@@ -49,7 +49,7 @@ public class FloatArgumentType implements ArgumentType<Float> {
      * argument("name", floatArg(0))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static FloatArgumentType floatArg(final float min) {
@@ -65,8 +65,8 @@ public class FloatArgumentType implements ArgumentType<Float> {
      * argument("name", floatArg(0, 100))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
-     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static FloatArgumentType floatArg(final float min, final float max) {
@@ -88,7 +88,7 @@ public class FloatArgumentType implements ArgumentType<Float> {
     /**
      * The minimum value an argument is allowed to be (inclusive).
      *
-     * @return the minimum value an argument is allowed to be (inclusive).
+     * @return the minimum value an argument is allowed to be (inclusive)
      */
     public float getMinimum() {
         return minimum;
@@ -97,7 +97,7 @@ public class FloatArgumentType implements ArgumentType<Float> {
     /**
      * The maximal value an argument is allowed to be (inclusive).
      *
-     * @return the maximal value an argument is allowed to be (inclusive).
+     * @return the maximal value an argument is allowed to be (inclusive)
      */
     public float getMaximum() {
         return maximum;

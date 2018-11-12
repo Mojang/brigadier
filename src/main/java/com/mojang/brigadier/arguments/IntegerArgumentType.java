@@ -49,7 +49,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
      * argument("name", integer(0))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static IntegerArgumentType integer(final int min) {
@@ -65,8 +65,8 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
      * argument("name", integer(0, 100))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive.
-     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive.
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */
     public static IntegerArgumentType integer(final int min, final int max) {
@@ -88,7 +88,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     /**
      * The minimum value an argument is allowed to be (inclusive).
      *
-     * @return the minimum value an argument is allowed to be (inclusive).
+     * @return the minimum value an argument is allowed to be (inclusive)
      */
     public int getMinimum() {
         return minimum;
@@ -97,7 +97,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
     /**
      * The maximal value an argument is allowed to be (inclusive).
      *
-     * @return the maximal value an argument is allowed to be (inclusive).
+     * @return the maximal value an argument is allowed to be (inclusive)
      */
     public int getMaximum() {
         return maximum;

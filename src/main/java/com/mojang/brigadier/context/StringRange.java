@@ -62,7 +62,7 @@ public class StringRange {
     /**
      * Returns the start of this {@link StringRange} (inclusive).
      *
-     * @return the start of this {@link StringRange} (inclusive).
+     * @return the start of this {@link StringRange} (inclusive)
      */
     public int getStart() {
         return start;
