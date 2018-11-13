@@ -19,6 +19,9 @@ import java.util.Map;
  * <p>
  * This consists of e.g. the command source to invoke it for, the command to invoke, child contexts (for subcommands)
  * or arguments parsed by {@link ArgumentType}s.
+ * <p>
+ * <br>This class is <strong>immutable</strong>. Use {@link #copyFor(Object)} to create copies with a different command
+ * source.
  *
  * @param <S> the type of the command source
  */
@@ -53,10 +56,10 @@ public class CommandContext<S> {
      *
      * @param source the command source to invoke the command for
      * @param input the full input
-     * @param arguments the parsed arguments, as created by {@link ArgumentType}s
+     * @param arguments the parsed arguments
      * @param command the command to invoke
      * @param rootNode the root node of the command tree
-     * @param nodes the
+     * @param nodes all nodes associated with this context
      * @param range the string range indicating what part in the input this context covers
      * @param child the child context, or null if none
      * @param modifier the {@link RedirectModifier} to apply when invoking the command
@@ -76,7 +79,7 @@ public class CommandContext<S> {
     }
 
     /**
-     * Creates a copy of this {@link CommandContext} that for a different command source but otherwise identical
+     * Creates a copy of this {@link CommandContext} with a different command source but otherwise identical
      *
      * @param source the command source to copy it for
      * @return a {@link CommandContext} that is identical to this one, except for the command source
@@ -102,7 +105,7 @@ public class CommandContext<S> {
      * <p>
      * As each CommandContext can have a child, you can have a child of a child. This method returns the lowest
      * possible child you can reach, i.e. the last command context that has no children.
-     * This can be this command context instance, if it has no child .
+     * This can be this command context instance, if it has no child.
      *
      * @return the last child command context
      */
@@ -117,7 +120,7 @@ public class CommandContext<S> {
     /**
      * Returns the command that should be executed.
      *
-     * @return the command to execute or null if not found
+     * @return the command to execute or null if not set
      */
     public Command<S> getCommand() {
         return command;
@@ -136,10 +139,10 @@ public class CommandContext<S> {
      * Returns an argument that was stored in this context while parsing the command.
      *
      * @param name the name of the argument to retrieve
-     * @param clazz the class of the argument type
+     * @param clazz the class of the argument
      * @param <V> the type of the argument
      * @return the argument
-     * @throws IllegalArgumentException if the command does not exist or is of a different type
+     * @throws IllegalArgumentException if the argument does not exist or is of a different type
      */
     public <V> V getArgument(final String name, final Class<V> clazz) {
         final ParsedArgument<S, ?> argument = arguments.get(name);

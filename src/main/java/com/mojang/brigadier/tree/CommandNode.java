@@ -52,7 +52,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     /**
      * Returns the command to execute when executing this command.
      *
-     * @return the command to execute when executing this command
+     * @return the command to execute when executing this command or null if not set
      */
     public Command<S> getCommand() {
         return command;

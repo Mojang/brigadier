@@ -6,7 +6,12 @@ package com.mojang.brigadier;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 /**
- * A convenient wrapper around a string that allows you to read and iterate through it.
+ * A mutable implementation of an {@link ImmutableStringReader}, that allows moving the cursor.
+ * This is done by calling some of the methods that consume some part of the input string (like {@link #readInt}), as
+ * they advance the cursor behind the input they have read.
+ *
+ * <p>
+ * This class also provides methods to freely set the cursor.
  */
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
@@ -32,7 +37,7 @@ public class StringReader implements ImmutableStringReader {
     /**
      * Sets the cursor index position.
      *
-     * @param cursor the new curso position
+     * @param cursor the new cursor position
      */
     public void setCursor(final int cursor) {
         this.cursor = cursor;
@@ -176,7 +181,7 @@ public class StringReader implements ImmutableStringReader {
      * The double may only contain characters that match {@link #isAllowedNumber(char)}.
      *
      * @return the read double
-     * @throws CommandSyntaxException if the command is no proper int
+     * @throws CommandSyntaxException if the command is no proper double
      */
     public double readDouble() throws CommandSyntaxException {
         final int start = cursor;
@@ -201,7 +206,7 @@ public class StringReader implements ImmutableStringReader {
      * The float may only contain characters that match {@link #isAllowedNumber(char)}.
      *
      * @return the read float
-     * @throws CommandSyntaxException if the command is no proper int
+     * @throws CommandSyntaxException if the command is no proper float
      */
     public float readFloat() throws CommandSyntaxException {
         final int start = cursor;
@@ -223,15 +228,18 @@ public class StringReader implements ImmutableStringReader {
     /**
      * Checks if a character is allowed in an unquoted string or needs to be escaped.
      *
+     * <em>Currently</em> allowed characters are:<br>
+     * {@code [0-9A-Za-z_\-.+]} (as a regular expression set)
+     *
      * @param c the character to check
      * @return true if the character is allowed to appear in an unquoted string
      */
     public static boolean isAllowedInUnquotedString(final char c) {
         return c >= '0' && c <= '9'
-                || c >= 'A' && c <= 'Z'
-                || c >= 'a' && c <= 'z'
-                || c == '_' || c == '-'
-                || c == '.' || c == '+';
+            || c >= 'A' && c <= 'Z'
+            || c >= 'a' && c <= 'z'
+            || c == '_' || c == '-'
+            || c == '.' || c == '+';
     }
 
     /**
@@ -247,13 +255,25 @@ public class StringReader implements ImmutableStringReader {
         return string.substring(start, cursor);
     }
 
+    // @formatter:off
     /**
      * Returns a quoted string.
      *
-     * @return a quoted string or an empty String, if {@link #canRead} is false
-     * @throws CommandSyntaxException if the next character is not a quote. an invalid escape character is encountered
+     * The format of a quoted string is as follows:
+     * <ul>
+     *     <li>
+     *         Starts and ends with {@code "} (quotation mark)
+     *     </li>
+     *     <li>
+     *         Escape character {@code \} (backslash) has to be used for quotation marks and literal escape
+     *         characters within the string
+     *     </li>
+     * </ul>
+     * @return a quoted string or an empty string, if {@link #canRead} is false
+     * @throws CommandSyntaxException if the next character is not a quote, an invalid escape character is encountered
      * or the closing quote was not found
      */
+    // @formatter:on
     public String readQuotedString() throws CommandSyntaxException {
         if (!canRead()) {
             return "";
@@ -286,7 +306,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     /**
-     * Reads a string, deciding between {@link #readQuotedString}  and {@link #readUnquotedString} based on whether the
+     * Reads a string, deciding between {@link #readQuotedString} and {@link #readUnquotedString} based on whether the
      * next character is a quote.
      *
      * @return the read string
@@ -302,9 +322,11 @@ public class StringReader implements ImmutableStringReader {
 
     /**
      * Reads a single boolean.
+     * <p>
+     * A boolean can be either {@code true} or {@code false} and is case sensitive.
      *
      * @return the read boolean
-     * @throws CommandSyntaxException if the input was empty or the read word is not a valid boolean
+     * @throws CommandSyntaxException if the input was empty or the read string is not a valid boolean
      */
     public boolean readBoolean() throws CommandSyntaxException {
         final int start = cursor;
@@ -324,7 +346,8 @@ public class StringReader implements ImmutableStringReader {
     }
 
     /**
-     * Peel at the next char and consume it, if it is the expected character{@literal .} If not, throw an exception.
+     * Peeks at the next char and consumes it, if it is the expected character{@literal .} If not, it throws an
+     * exception.
      *
      * @param c the character that is expected to occur next
      * @throws CommandSyntaxException if the character was not the expected character or the end of the input was

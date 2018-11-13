@@ -36,13 +36,13 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     /**
      * A factory method to create a new builder for an argument command node.
      * <p>
-     * This method is intended for static importing, so you can just use {@code argument(<name>, <type>)"} in your code.
+     * This method is intended for static importing, so you can just use {@code "argument(<name>, <type>)"} in your code.
      *
      * @param name the name of the argument. Used with {@link CommandContext#getArgument} to retrieve the parsed
      * argument out of a {@link CommandContext}
      * @param type the {@link ArgumentType} this command builder takes
      * @param <S> the type of the command source
-     * @param <T> the java type of the argument this command builder takes
+     * @param <T> the type of the argument this command builder takes
      * @return a RequiredArgumentBuilder with a given name and argument type
      */
     public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {

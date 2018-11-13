@@ -10,12 +10,22 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+// @formatter:off
 /**
  * An {@link ArgumentType} that parses doubles.
  * <p>
- * Allows for numbers in the following format:<br>
+ * Allows for numbers like the following:
+ * <ul>
+ *     <li>{@code 1.2}</li>
+ *     <li>{@code 0}</li>
+ *     <li>{@code .5}</li>
+ *     <li>{@code -.5}</li>
+ *     <li>{@code -1}</li>
+ *     <li>{@code -132323.4242}</li>
+ * </ul>
  * {@literal (-)?\d+('.'\d+)*}
  */
+// @formatter:on
 public class DoubleArgumentType implements ArgumentType<Double> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
@@ -49,7 +59,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
      * argument("name", doubleArg(0))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param min the minimal value for the double to be considered valid. Inclusive
      * @return an instance of this argument type
      */
     public static DoubleArgumentType doubleArg(final double min) {
@@ -65,7 +75,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
      * argument("name", doubleArg(0, 100))
      * </code>
      *
-     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param min the minimal value for the double to be considered valid. Inclusive
      * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
      * @return an instance of this argument type
      */

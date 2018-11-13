@@ -23,7 +23,7 @@ public interface RedirectModifier<S> {
      * Applies the modifier to the context, so it creates a list of command sources to invoke the target command for.
      *
      * @param context the context to base it on
-     * @return a list with command sources to invoke the command for
+     * @return a collection with command sources to invoke the command for
      * @throws CommandSyntaxException if an error occurred
      */
     Collection<S> apply(CommandContext<S> context) throws CommandSyntaxException;

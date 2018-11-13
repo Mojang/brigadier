@@ -4,7 +4,10 @@
 package com.mojang.brigadier;
 
 /**
- * Basically a string reader that can not be modified.
+ * A string reader can be used to progressively read through a string.
+ * To do this the string reader has the concept of a "cursor", which is the current position in the input string.
+ * All operations not explicitly stating otherwise, like {@link #peek} or {@link #canRead}, are relative to the
+ * cursor position.
  */
 public interface ImmutableStringReader {
     /**
@@ -53,7 +56,7 @@ public interface ImmutableStringReader {
      * Checks if the reader has enough input to read {@code length} more characters.
      *
      * @param length the amount of characters to read
-     * @return true of the reader has enough input to read {@code length} more characters
+     * @return true if the reader has enough input to read {@code length} more characters
      */
     boolean canRead(int length);
 
@@ -74,11 +77,11 @@ public interface ImmutableStringReader {
     char peek();
 
     /**
-     * Returns the character {@code offset} places from now without consuming it (so the cursor stays at its current
-     * position).
+     * Returns the character {@code offset} places from the cursor position without consuming it
+     * (so the cursor stays at its current position).
      *
      * @param offset the offset of the character to peek at
-     * @return the character {@code offset} places from now
+     * @return the character {@code offset} places from the current cursor position
      */
     char peek(int offset);
 }

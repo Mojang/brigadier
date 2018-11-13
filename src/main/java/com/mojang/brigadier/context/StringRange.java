@@ -4,7 +4,6 @@
 package com.mojang.brigadier.context;
 
 import com.mojang.brigadier.ImmutableStringReader;
-import com.mojang.brigadier.StringReader;
 
 import java.util.Objects;
 
@@ -28,10 +27,10 @@ public class StringRange {
     }
 
     /**
-     * Returns a StringRange spanning only a single index, the one given as an argument.
+     * Returns a StringRange containing <strong>no</strong> index,
      *
      * @param pos the position the range should include
-     * @return a StringRange that only includes the given index
+     * @return a StringRange that includes no index
      */
     public static StringRange at(final int pos) {
         return new StringRange(pos, pos);
@@ -42,7 +41,7 @@ public class StringRange {
      *
      * @param start the start index (inclusive)
      * @param end the end index (exclusive)
-     * @return s StringRange spanning the given range
+     * @return a StringRange spanning the given range
      */
     public static StringRange between(final int start, final int end) {
         return new StringRange(start, end);
@@ -53,7 +52,8 @@ public class StringRange {
      *
      * @param a the first StringRange
      * @param b the second StringRange
-     * @return a StringRange that includes everything from the lowest to highest index in both ranges
+     * @return a StringRange that includes everything from the lowest (inclusive) to the highest index (exclusive)
+     * from both ranges
      */
     public static StringRange encompassing(final StringRange a, final StringRange b) {
         return new StringRange(Math.min(a.getStart(), b.getStart()), Math.max(a.getEnd(), b.getEnd()));
@@ -78,21 +78,24 @@ public class StringRange {
     }
 
     /**
-     * Returns the substring between the given indices from the passed {@link StringReader}.
+     * Applies this range to the complete String of the passed {@link ImmutableStringReader}, returning all
+     * characters from it that lie within this range.
+     * <p>
+     * Equivalent to: {@code reader.getString().substring(range.getStart(), range.getEnd()}
      *
      * @param reader the string reader to read from
-     * @return all characters in this range in the passed reader
+     * @return the substring of the passed reader that is defined by this range
      */
     public String get(final ImmutableStringReader reader) {
         return reader.getString().substring(start, end);
     }
 
     /**
-     * Returns the substring between the given indices from the passed String.
+     * Returns the substring of the passed string, that is defined by this range.
      * <p>
      * Equivalent to: {@code string.substring(range.getStart(), range.getEnd()}
      *
-     * @param string the string to read from
+     * @param string the string to get the substring from
      * @return all characters in this range in the passed string
      */
     public String get(final String string) {
@@ -100,9 +103,9 @@ public class StringRange {
     }
 
     /**
-     * Checks if this range is emtpy, i.e. contains not even a single index.
+     * Checks if this range is empty, i.e. contains not even a single index.
      *
-     * @return true if this range is emtpy, i.e. contains not even a single index
+     * @return true if this range is empty, i.e. contains not even a single index
      */
     public boolean isEmpty() {
         return start == end;
@@ -137,8 +140,8 @@ public class StringRange {
     @Override
     public String toString() {
         return "StringRange{" +
-                "start=" + start +
-                ", end=" + end +
-                '}';
+            "start=" + start +
+            ", end=" + end +
+            '}';
     }
 }

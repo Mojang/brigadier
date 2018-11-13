@@ -31,7 +31,7 @@ public class CommandContextBuilder<S> {
     private boolean forks;
 
     /**
-     * Creates a new CommandContextBuilder with a few required arguments.
+     * Creates a new CommandContextBuilder.
      *
      * @param dispatcher the CommandDispatcher TODO: Why does this exist here?
      * @param source the command source
@@ -126,9 +126,7 @@ public class CommandContextBuilder<S> {
     }
 
     /**
-     * Creates a copy of this builder.
-     * <p>
-     * Not a deep copy as Command, child, range and the arguments themselves are shared.
+     * Creates a shallow copy of this builder.
      *
      * @return a copy of this builder
      */
@@ -144,7 +142,7 @@ public class CommandContextBuilder<S> {
     }
 
     /**
-     * Sets a child context, which is the context for a sub command.
+     * Sets a child context, which is the context for a child command node.
      *
      * @param child the child context
      * @return this builder
@@ -155,9 +153,9 @@ public class CommandContextBuilder<S> {
     }
 
     /**
-     * Returns the child context, i.e. the context for a subcommand.
+     * Returns the child context, i.e. the context for a child command node.
      *
-     * @return the child context, i.e. the context for a subcommand
+     * @return the child context, i.e. the context for a child command node
      */
     public CommandContextBuilder<S> getChild() {
         return child;
@@ -166,11 +164,11 @@ public class CommandContextBuilder<S> {
     /**
      * Returns the last child command context in the chain, i.e. the lowest child you can reach from this context.
      * <p>
-     * As each {@link CommandContext} can have child, you can have a child of a child. This method returns the lowest
+     * As each CommandContextBuilder can have a child, you can have a child of a child. This method returns the lowest
      * possible child you can reach, i.e. the last command context that has no children.
-     * This can be this command context instance, if it has no child .
+     * This can be this command context instance, if it has no child.
      *
-     * @return the last child command context
+     * @return the last child command context builder
      * @see CommandContext#getLastChild()
      */
     public CommandContextBuilder<S> getLastChild() {
@@ -184,7 +182,7 @@ public class CommandContextBuilder<S> {
     /**
      * Returns the command to execute.
      *
-     * @return the command to execute
+     * @return the command to execute or null if not set
      */
     public Command<S> getCommand() {
         return command;

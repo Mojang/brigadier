@@ -23,8 +23,7 @@ public class StringArgumentType implements ArgumentType<String> {
     /**
      * A factory method that provides an instance of a word type string argument.
      * <p>
-     * Allowed are only characters where the reader's {@link StringReader#isAllowedInUnquotedString(char)} method would
-     * return true.<br>
+     * Allowed are only characters where {@link StringReader#isAllowedInUnquotedString(char)} would return true.<br>
      * The parser stops parsing at the first character that is not allowed. Typically this needs to be a space.
      *
      * @return an instance of this argument type parsing a single word
@@ -55,11 +54,11 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     /**
-     * Retrieves the argument with the given name from the context and casts it to an string.
+     * Retrieves the argument with the given name from the context and casts it to a string.
      *
      * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
      * @param name the name of the argument to retrieve
-     * @return the argument as an string
+     * @return the argument as a string
      * @see CommandContext#getArgument
      */
     public static String getString(final CommandContext<?> context, final String name) {
@@ -100,13 +99,14 @@ public class StringArgumentType implements ArgumentType<String> {
 
     // @formatter:off
     /**
-     * Converts a String to phrase {@link StringType#QUOTABLE_PHRASE} would match.
+     * Converts a string to one that {@link StringType#QUOTABLE_PHRASE} would match.
      * <p>
-     * This will escape all characters that can not appear in an unquoted and wrap the string in quotes, if required.
-     * More specifically, this will always wrap the string in quotes, if <em>any</em> character in it needs to be escaped.
+     * If the given string contains any character that does not match
+     * {@link StringReader#isAllowedInUnquotedString(char)}, then it is wrapped in quotation marks and quotation marks
+     * and escaping characters within the string are escaped, otherwise the given string is returned unaltered.
      * <p>
      * <p>
-     * Some sample in and outputs:
+     * Some sample in- and outputs:
      * <ul>
      *     <li>{@code hey} to {@code hey}</li>
      *     <li>{@code hey you} to {@code "hey you"}</li>
@@ -147,9 +147,9 @@ public class StringArgumentType implements ArgumentType<String> {
      */
     public enum StringType {
         /**
-         * Matches a single word, optionally concatenated with underscores.
-         * Can contain the following characters: <br>
-         * {@code [a-zA-Z0-9_\-.+]}
+         * Matches a single word.
+         * Can contain the characters outline in {@link StringReader#isAllowedInUnquotedString(char)}.
+         * Everything else constitutes a word border.
          */
         SINGLE_WORD("word", "words_with_underscores"),
         /**

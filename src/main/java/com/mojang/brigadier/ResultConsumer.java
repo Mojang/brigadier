@@ -17,7 +17,8 @@ public interface ResultConsumer<S> {
      *
      * @param context the command context of the execution
      * @param success whether the command completed successfully
-     * @param result the result of the command, if it completed successfully
+     * @param result the result of the command, if it completed successfully. If not, the meaning of the result is not
+     * defined.
      */
     void onCommandComplete(CommandContext<S> context, boolean success, int result);
 }

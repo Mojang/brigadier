@@ -61,6 +61,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
      *
      * @param argument the command node to add
      * @return this object
+     * @throws IllegalStateException if {@link #getRedirect()} is set (i.e. not null)
      */
     public T then(final CommandNode<S> argument) {
         if (target != null) {
@@ -71,9 +72,9 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns all registered child command nodes, which are the registered arguments.
+     * Returns all registered child command nodes.
      *
-     * @return all registered child command nodes, which are the registered arguments
+     * @return all registered child command nodes
      */
     public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
@@ -93,17 +94,20 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     /**
      * Returns the {@link Command} the built command node will execute.
      *
-     * @return the {@link Command} the built command node will execute
+     * @return the {@link Command} the built command node will execute or null if not set
      */
     public Command<S> getCommand() {
         return command;
     }
 
     /**
-     * Sets the predicate that must be true for a command source in order to be able to use the built command node.
+     * Sets the predicate that must be true for a command source in order to be able to use the built command node
+     * or its children.
+     * <p>
+     * The default requirement, if you set none, is always true.
      *
      * @param requirement the requirement each command source needs to fulfill in order to be able to use the built
-     * command node
+     * command node or its children
      * @return this object
      */
     public T requires(final Predicate<S> requirement) {
@@ -126,7 +130,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
      * A redirected node will appear in usage listings, but will otherwise behave just like an alias to the command node
      * it points to.
      * <p>
-     * This method sets {@code fork} to false and applies no {@link RedirectModifier}.
+     * This method sets {@link #isFork()} to false and applies no {@link RedirectModifier}.
      *
      * @param target the command node that will be invoked when the built command node is executed
      * @return this object
@@ -142,9 +146,10 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
      * A redirected node will appear in usage listings, but will otherwise behave just like an alias to the command
      * node it points to.
      * <p>
-     * This method sets {@code fork} to false and applies no {@link RedirectModifier}.
+     * This method sets {@link #isFork()} to false and applies the given {@link SingleRedirectModifier}.
      *
      * @param target the command node that will be invoked when the built command node is executed
+     * @param modifier the redirect modifier to apply
      * @return this object
      * @see #forward
      */

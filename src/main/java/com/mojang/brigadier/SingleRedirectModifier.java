@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 /**
- * Basically a {@link RedirectModifier} (though no subtype) that only converts to a single command source-
+ * Basically a {@link RedirectModifier} (though no subtype) that only converts to a single command source.
  *
  * @param <S> the type of the command source
  */
