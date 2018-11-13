@@ -19,16 +19,16 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     /**
      * Creates a new {@link LiteralArgumentBuilder} with the given literal
      *
-     * @param literal the literal that identifies the built command
+     * @param literal the literal that identifies the built command node
      */
     protected LiteralArgumentBuilder(final String literal) {
         this.literal = literal;
     }
 
     /**
-     * A factory method to create a new builder for a literal command node
+     * A factory method to create a new builder for a literal command node.
      *
-     * @param name the literal the built command should be identified by
+     * @param name the literal the built command node should be identified by
      * @param <S> the type of the command source
      * @return the created {@link LiteralArgumentBuilder}
      */
@@ -42,9 +42,9 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     }
 
     /**
-     * Returns the literal that the built command will be identified by.
+     * Returns the literal that the built command node will be identified by.
      *
-     * @return the literal that the built command will be identified by
+     * @return the literal that the built command node will be identified by
      */
     public String getLiteral() {
         return literal;

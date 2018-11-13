@@ -21,7 +21,7 @@ import com.mojang.brigadier.tree.CommandNode;
  * {@link IntegerArgumentType} then and the built command would parse things like {@literal "20"} or {@literal "-230"}.
  *
  * @param <S> the type of the command source
- * @param <T> the {@link ArgumentType} the built command will use
+ * @param <T> the {@link ArgumentType} the built command node will use
  */
 public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private final String name;
@@ -40,9 +40,9 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
      *
      * @param name the name of the argument. Used with {@link CommandContext#getArgument} to retrieve the parsed
      * argument out of a {@link CommandContext}
-     * @param type the {@link ArgumentType} this command takes
+     * @param type the {@link ArgumentType} this command builder takes
      * @param <S> the type of the command source
-     * @param <T> the java type of the argument this command takes
+     * @param <T> the java type of the argument this command builder takes
      * @return a {@link RequiredArgumentBuilder} with a given name and argument type
      */
     public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {
@@ -61,7 +61,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     /**
-     * Returns the {@link SuggestionProvider} the command uses to advice the user on possible completions.
+     * Returns the {@link SuggestionProvider} the command node uses to advice the user on possible completions.
      *
      * @return the registered {@link SuggestionProvider} or null if not set
      */
@@ -75,20 +75,20 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 
     /**
-     * Returns the {@link ArgumentType} the built command will use.
+     * Returns the {@link ArgumentType} the built command node will use.
      *
-     * @return the {@link ArgumentType} the built command will use
+     * @return the {@link ArgumentType} the built command node will use
      */
     public ArgumentType<T> getType() {
         return type;
     }
 
     /**
-     * Returns the name of the argument the built command will have.
+     * Returns the name of the argument the built command node will have.
      * <p>
      * Can be used with {@link CommandContext#getArgument} to retrieve the parsed argument
      *
-     * @return the name of the argument the built command will have
+     * @return the name of the argument the built command node will have
      */
     public String getName() {
         return name;

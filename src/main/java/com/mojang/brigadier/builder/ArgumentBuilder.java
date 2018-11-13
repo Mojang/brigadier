@@ -57,7 +57,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Adds the given {@link CommandNode} as a child.
+     * Adds the given command node as a child.
      *
      * @param argument the command node to add
      * @return this object
@@ -71,16 +71,16 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns all registered child commands, which are the registered arguments.
+     * Returns all registered child command nodes, which are the registered arguments.
      *
-     * @return all registered child commands, which are the registered arguments
+     * @return all registered child command nodes, which are the registered arguments
      */
     public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
     }
 
     /**
-     * Sets the command that will be executed by the built {@link CommandNode}.
+     * Sets the command that will be executed by the built command node.
      *
      * @param command the {@link Command} to execute
      * @return this object
@@ -91,19 +91,19 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns the {@link Command} the built {@link CommandNode} will execute.
+     * Returns the {@link Command} the built command node will execute.
      *
-     * @return the {@link Command} the built {@link CommandNode} will execute
+     * @return the {@link Command} the built command node will execute
      */
     public Command<S> getCommand() {
         return command;
     }
 
     /**
-     * Sets the predicate that must be true for a command source in order to be able to use the built command.
+     * Sets the predicate that must be true for a command source in order to be able to use the built command node.
      *
      * @param requirement the requirement each command source needs to fulfill in order to be able to use the built
-     * command
+     * command node
      * @return this object
      */
     public T requires(final Predicate<S> requirement) {
@@ -112,24 +112,24 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns the requirement each command source must meet in order to be able to use this command
+     * Returns the requirement each command source must meet in order to be able to use this command node.
      *
-     * @return the requirement each command source must meet in order to be able to use this command
+     * @return the requirement each command source must meet in order to be able to use this command node
      */
     public Predicate<S> getRequirement() {
         return requirement;
     }
 
     /**
-     * Redirects this command to the target {@link CommandNode}.
+     * Redirects this command node to the target {@link CommandNode}.
      * <p>
-     * A redirected node will appear in usage listings, but will otherwise behave just like an alias to the command
+     * A redirected node will appear in usage listings, but will otherwise behave just like an alias to the command node
      * it points to.
      * <p>
      * This method sets {@code fork} to false and applies no {@link RedirectModifier}.
      *
-     * @param target the command that will be invoked when the built command is executed
-     * @return this command
+     * @param target the command node that will be invoked when the built command node is executed
+     * @return this object
      * @see #forward
      */
     public T redirect(final CommandNode<S> target) {
@@ -137,15 +137,15 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Redirects this command to the target {@link CommandNode}.
+     * Redirects this command node to the target {@link CommandNode}.
      * <p>
      * A redirected node will appear in usage listings, but will otherwise behave just like an alias to the command
-     * it points to.
+     * node it points to.
      * <p>
      * This method sets {@code fork} to false and applies no {@link RedirectModifier}.
      *
-     * @param target the command that will be invoked when the built command is executed
-     * @return this command
+     * @param target the command node that will be invoked when the built command node is executed
+     * @return this object
      * @see #forward
      */
     public T redirect(final CommandNode<S> target, final SingleRedirectModifier<S> modifier) {
@@ -153,14 +153,15 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Forks this command, i.e. it splits execution and calls the target command multiple times with different sources.
+     * Forks this command node, i.e. it splits execution and calls the target command node multiple times with different
+     * sources.
      * <p>
      * Forking means that the target command will be invoked multiple times, once for each source in the list of
      * sources generated by the passed {@link RedirectModifier}.
      *
-     * @param target the command that will be invoked when the built command is executed
+     * @param target the command node that will be invoked when the built command node is executed
      * @param modifier the redirect modifier to use to generate the command source list
-     * @return this command
+     * @return this object
      * @see #forward
      */
     public T fork(final CommandNode<S> target, final RedirectModifier<S> modifier) {
@@ -170,14 +171,14 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     /**
      * Forwards this command in some way to a given target command.
      * <p>
-     * It will {@code target} command for each command source in the list the {@code modifier} returns, but the
-     * semantics differ slightly. Please have a look at  {@link CommandDispatcher#execute(ParseResults)} for a more
-     * detailed explanation.
+     * It will call the {@code target} command node for each command source in the list the {@code modifier} returns,
+     * but the semantics differ slightly. Please have a look at  {@link CommandDispatcher#execute(ParseResults)}
+     * for a more detailed explanation.
      *
-     * @param target the command that will be invoked when the built command is executed
+     * @param target the command node that will be invoked when the built command node is executed
      * @param modifier the redirect modifier to use to generate the command source list
-     * @param fork whether the command should be forked
-     * @return this command
+     * @param fork whether the command node should be forked
+     * @return this object
      * @see CommandDispatcher#execute(ParseResults)
      */
     public T forward(final CommandNode<S> target, final RedirectModifier<S> modifier, final boolean fork) {
@@ -191,9 +192,9 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns the {@link CommandNode} that the built command redirects to.
+     * Returns the command node that the built command node redirects to.
      *
-     * @return the {@link CommandNode} that the built command redirects to or null if not set
+     * @return the command node that the built command node redirects to or null if not set
      */
     public CommandNode<S> getRedirect() {
         return target;
@@ -209,9 +210,9 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     /**
-     * Returns whether the built command forks.
+     * Returns whether the built command node forks.
      *
-     * @return true if the built command forks
+     * @return true if the built command node forks
      */
     public boolean isFork() {
         return forks;
@@ -220,7 +221,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     /**
      * Builds the {@link CommandNode} based on this builder.
      *
-     * @return the built command
+     * @return the built command node
      */
     public abstract CommandNode<S> build();
 }
