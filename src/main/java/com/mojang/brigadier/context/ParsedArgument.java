@@ -16,7 +16,7 @@ public class ParsedArgument<S, T> {
     private final T result;
 
     /**
-     * Creates a new {@code ParsedArgument} for a given string range with a  given value.
+     * Creates a new ParsedArgument for a given string range with a given value.
      *
      * @param start the start of this argument in the input
      * @param end the end of this argument in the input

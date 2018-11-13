@@ -24,11 +24,12 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
 
     /**
      * A factory method as a simple way to get an instance.
-     * <p>
-     * It is recommended to statically import this method to provide an interface similar to:<br>
+     *
+     * <p>It is recommended to statically import this method to provide an interface similar to:<br>
      * <code>
      * argument("name", bool())
      * </code>
+     * </p>
      *
      * @return an instance of this class
      */

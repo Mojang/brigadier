@@ -27,8 +27,8 @@ public interface ArgumentType<T> {
 
     /**
      * Parses the given {@link StringReader} to an instance of this argument's generic type.
-     * <p>
-     * For example, if this this is an {@code ArgumentType<Integer>} this would return an Integer.
+     *
+     * <p>For example, if this this is an {@code ArgumentType<Integer>} this would return an Integer.</p>
      *
      * @param reader the read to read from
      * @return the parsed argument
@@ -51,7 +51,7 @@ public interface ArgumentType<T> {
      * @param context the context to get them for
      * @param builder the suggestions builder to add them to
      * @return a future that will eventually resolve into a {@link Suggestions} object
-     * @implSpec The default implementation simple returns an empty suggestions object
+     * @implSpec The default implementation simply returns an empty suggestions object
      */
     default <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return Suggestions.empty();
@@ -60,8 +60,8 @@ public interface ArgumentType<T> {
     /**
      * Provides examples of valid arguments that are used by
      * {@link CommandDispatcher#findAmbiguities} to find ambiguities.
-     * <p>
-     * No guarantees about the mutability of the returned collection are made.
+     *
+     * <p>No guarantees about the mutability of the returned collection are made.</p>
      *
      * @return a collection with a few examples for valid type arguments
      * @implSpec The default implementation returns an emtpy immutable collection.

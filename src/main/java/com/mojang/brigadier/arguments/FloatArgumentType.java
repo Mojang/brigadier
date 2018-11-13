@@ -13,8 +13,15 @@ import java.util.Collection;
 /**
  * An {@link ArgumentType} that parses floats.
  * <p>
- * Allows for numbers in the following format:<br>
- * {@literal (-)?\d+('.'\d+)*}
+ * Allows for numbers like the following:
+ * <ul>
+ *     <li>{@code 1.2}</li>
+ *     <li>{@code 0}</li>
+ *     <li>{@code .5}</li>
+ *     <li>{@code -.5}</li>
+ *     <li>{@code -1}</li>
+ *     <li>{@code -132323.4242}</li>
+ * </ul>
  */
 public class FloatArgumentType implements ArgumentType<Float> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");

@@ -148,7 +148,7 @@ public class StringArgumentType implements ArgumentType<String> {
     public enum StringType {
         /**
          * Matches a single word.
-         * Can contain the characters outline in {@link StringReader#isAllowedInUnquotedString(char)}.
+         * Can contain the characters outlined in {@link StringReader#isAllowedInUnquotedString(char)}.
          * Everything else constitutes a word border.
          */
         SINGLE_WORD("word", "words_with_underscores"),

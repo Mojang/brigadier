@@ -23,7 +23,6 @@ import java.util.Collection;
  *     <li>{@code -1}</li>
  *     <li>{@code -132323.4242}</li>
  * </ul>
- * {@literal (-)?\d+('.'\d+)*}
  */
 // @formatter:on
 public class DoubleArgumentType implements ArgumentType<Double> {
