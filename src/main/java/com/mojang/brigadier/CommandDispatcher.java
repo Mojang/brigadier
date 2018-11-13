@@ -568,13 +568,13 @@ public class CommandDispatcher<S> {
      * Gets suggestions for a parsed input string on what comes next.
      *
      * <p>As it is ultimately up to custom argument types to provide suggestions, it may be an asynchronous operation,
-     * for example getting in-game data or player names etc. As such, this method returns a future and no guarantees
-     * are made to when or how the future completes.</p>
+     * for example getting in-game data or player names, reading a file, etc. As such, this method returns a future
+     * and no guarantees are made to when or how the future completes.</p>
      *
      * <p>The suggestions provided will be in the context of the end of the parsed input string, but may suggest
      * new or replacement strings for earlier in the input string. For example, if the end of the string was
-     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for that
-     * whole segment of the input.</p>
+     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for
+     * that whole segment of the input.</p>
      *
      * @param parse the result of a {@link #parse(StringReader, Object)}
      * @return a future that will eventually resolve into a {@link Suggestions} object
@@ -587,13 +587,13 @@ public class CommandDispatcher<S> {
      * Gets suggestions for a parsed input string on what comes next, checking from the given cursor position.
      *
      * <p>As it is ultimately up to custom argument types to provide suggestions, it may be an asynchronous operation,
-     * for example getting in-game data or player names etc. As such, this method returns a future and no guarantees
-     * are made to when or how the future completes.</p>
+     * for example getting in-game data or player names, reading a file, etc. As such, this method returns a future
+     * and no guarantees are made to when or how the future completes.</p>
      *
      * <p>The suggestions provided will be in the context of the end of the parsed input string, but may suggest
      * new or replacement strings for earlier in the input string. For example, if the end of the string was
-     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for that
-     * whole segment of the input.</p>
+     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for
+     * that whole segment of the input.</p>
      *
      * @param parse the result of a {@link #parse(StringReader, Object)}
      * @param cursor the index to fetch suggestions for
