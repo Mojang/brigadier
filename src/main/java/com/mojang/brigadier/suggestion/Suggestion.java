@@ -20,7 +20,7 @@ public class Suggestion implements Comparable<Suggestion> {
     private final Message tooltip;
 
     /**
-     * Creates a new {@link Suggestion} spanning the given string range in the input and that has a given text it
+     * Creates a new Suggestion spanning the given string range in the input and that has a given text it
      * suggests.
      *
      * @param range the range in the input it is applicable in
@@ -31,7 +31,7 @@ public class Suggestion implements Comparable<Suggestion> {
     }
 
     /**
-     * Creates a new {@link Suggestion} spanning the given string range in the input, a given text it suggests and
+     * Creates a new Suggestion spanning the given string range in the input, a given text it suggests and
      * that provides a tooltip.
      *
      * @param range the range in the input it is applicable in

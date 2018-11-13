@@ -41,9 +41,9 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     protected abstract T getThis();
 
     /**
-     * Builds the given {@link ArgumentBuilder} and adds the result as new child node.
+     * Builds the given ArgumentBuilder and adds the result as new child node.
      *
-     * @param argument the {@link ArgumentBuilder} to add
+     * @param argument the ArgumentBuilder to add
      * @return this object
      * @throws IllegalStateException if {@link #getRedirect()} is set (i.e. not null)
      * @see #then(CommandNode)

@@ -125,7 +125,7 @@ public class SuggestionsBuilder {
     }
 
     /**
-     * Adds all suggestions from another {@link SuggestionsBuilder}.
+     * Adds all suggestions from another SuggestionsBuilder.
      *
      * @param other the other builder
      * @return this builder
@@ -136,7 +136,7 @@ public class SuggestionsBuilder {
     }
 
     /**
-     * Create a new {@link SuggestionsBuilder} for the same input but a new start index.
+     * Create a new SuggestionsBuilder for the same input but a new start index.
      *
      * @param start the new start index
      * @return the new builder with the same input, no suggestions and starting at {@code start}

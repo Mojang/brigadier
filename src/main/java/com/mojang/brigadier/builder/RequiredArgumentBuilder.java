@@ -43,7 +43,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
      * @param type the {@link ArgumentType} this command builder takes
      * @param <S> the type of the command source
      * @param <T> the java type of the argument this command builder takes
-     * @return a {@link RequiredArgumentBuilder} with a given name and argument type
+     * @return a RequiredArgumentBuilder with a given name and argument type
      */
     public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {
         return new RequiredArgumentBuilder<>(name, type);

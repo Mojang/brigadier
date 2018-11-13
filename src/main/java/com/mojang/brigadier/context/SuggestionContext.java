@@ -15,7 +15,7 @@ public class SuggestionContext<S> {
     public final int startPos;
 
     /**
-     * Creates a new {@link SuggestionContext} with the given command node and start position.
+     * Creates a new SuggestionContext with the given command node and start position.
      *
      * @param parent the node that handles the completion
      * @param startPos the starting position where it should complete from

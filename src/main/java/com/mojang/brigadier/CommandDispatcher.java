@@ -65,7 +65,7 @@ public class CommandDispatcher<S> {
     };
 
     /**
-     * Create a new {@link CommandDispatcher} with the specified root node.
+     * Create a new CommandDispatcher with the specified root node.
      *
      * <p>This is often useful to copy existing or pre-defined command trees.</p>
      *
@@ -76,7 +76,7 @@ public class CommandDispatcher<S> {
     }
 
     /**
-     * Creates a new {@link CommandDispatcher} with an empty command tree.
+     * Creates a new CommandDispatcher with an empty command tree.
      */
     public CommandDispatcher() {
         this(new RootCommandNode<>());

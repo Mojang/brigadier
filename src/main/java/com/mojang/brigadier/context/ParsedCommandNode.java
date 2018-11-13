@@ -19,7 +19,7 @@ public class ParsedCommandNode<S> {
     private final StringRange range;
 
     /**
-     * Creates a new {@link ParsedCommandNode} for the given node within the given string range.
+     * Creates a new ParsedCommandNode for the given node within the given string range.
      *
      * @param node the node that was parsed
      * @param range the string range in the input it was parsed from

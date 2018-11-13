@@ -17,7 +17,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     private final String literal;
 
     /**
-     * Creates a new {@link LiteralArgumentBuilder} with the given literal
+     * Creates a new LiteralArgumentBuilder with the given literal
      *
      * @param literal the literal that identifies the built command node
      */
@@ -30,7 +30,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
      *
      * @param name the literal the built command node should be identified by
      * @param <S> the type of the command source
-     * @return the created {@link LiteralArgumentBuilder}
+     * @return the created LiteralArgumentBuilder
      */
     public static <S> LiteralArgumentBuilder<S> literal(final String name) {
         return new LiteralArgumentBuilder<>(name);

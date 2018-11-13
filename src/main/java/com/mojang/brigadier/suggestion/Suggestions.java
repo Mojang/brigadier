@@ -81,22 +81,22 @@ public class Suggestions {
     }
 
     /**
-     * Returns a future that instantly completes with an empty {@link Suggestions} instance.
+     * Returns a future that instantly completes with an empty Suggestions instance.
      *
-     * @return a future that instantly completes with an empty {@link Suggestions} instance
+     * @return a future that instantly completes with an empty Suggestions instance
      */
     public static CompletableFuture<Suggestions> empty() {
         return CompletableFuture.completedFuture(EMPTY);
     }
 
     /**
-     * Merges multiple {@link Suggestions} instances for a single command.
+     * Merges multiple Suggestions instances for a single command.
      * <p>
      * Just combines the input into one collection and then calls {@link #create} with the result.
      *
      * @param command the command
      * @param input the suggestions instances
-     * @return returns a merged {@link Suggestions} instance
+     * @return returns a merged Suggestions instance
      */
     public static Suggestions merge(final String command, final Collection<Suggestions> input) {
         if (input.isEmpty()) {
@@ -113,9 +113,9 @@ public class Suggestions {
     }
 
     /**
-     * Creates a {@link Suggestions} instance from a command a list of possible {@link Suggestion}s.
+     * Creates a Suggestions instance from a command a list of possible Suggestions.
      * <p>
-     * The {@link Suggestions} instance will span the entire range, from the minimal index to maximum index found
+     * The Suggestions instance will span the entire range, from the minimal index to maximum index found
      * in the suggestions.
      * <p>
      * It will also automatically call {@link Suggestion#expand} for every possible suggestion, using the command and
@@ -142,7 +142,7 @@ public class Suggestions {
      *
      * @param command the command to get them for
      * @param suggestions a list with possible suggestions
-     * @return a {@link Suggestions} instance for the given command with the passed suggestions
+     * @return a Suggestions instance for the given command with the passed suggestions
      */
     public static Suggestions create(final String command, final Collection<Suggestion> suggestions) {
         if (suggestions.isEmpty()) {

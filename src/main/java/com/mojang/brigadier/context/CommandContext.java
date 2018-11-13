@@ -49,7 +49,7 @@ public class CommandContext<S> {
     private final boolean forks;
 
     /**
-     * Creates a new {@link CommandContext}.
+     * Creates a new CommandContext.
      *
      * @param source the command source to invoke the command for
      * @param input the full input
@@ -100,7 +100,7 @@ public class CommandContext<S> {
     /**
      * Returns the last child command context in the chain, i.e. the lowest child you can reach from this context.
      * <p>
-     * As each {@link CommandContext} can have child, you can have a child of a child. This method returns the lowest
+     * As each CommandContext can have a child, you can have a child of a child. This method returns the lowest
      * possible child you can reach, i.e. the last command context that has no children.
      * This can be this command context instance, if it has no child .
      *

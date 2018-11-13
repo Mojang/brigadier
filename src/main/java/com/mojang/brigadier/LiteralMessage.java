@@ -10,7 +10,7 @@ public class LiteralMessage implements Message {
     private final String string;
 
     /**
-     * Creates a new {@link LiteralMessage} returning the given string.
+     * Creates a new LiteralMessage returning the given string.
      *
      * @param string the string to return
      */

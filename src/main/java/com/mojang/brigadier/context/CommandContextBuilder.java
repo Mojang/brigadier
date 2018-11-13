@@ -31,9 +31,9 @@ public class CommandContextBuilder<S> {
     private boolean forks;
 
     /**
-     * Creates a new {@link CommandContextBuilder} with a few required arguments.
+     * Creates a new CommandContextBuilder with a few required arguments.
      *
-     * @param dispatcher the {@link CommandDispatcher} TODO: Why does this exist here?
+     * @param dispatcher the CommandDispatcher TODO: Why does this exist here?
      * @param source the command source
      * @param rootNode the root node of the command tree
      * @param start the start in the input that this context spans
@@ -126,7 +126,7 @@ public class CommandContextBuilder<S> {
     }
 
     /**
-     * Creates a copy of this {@link CommandContextBuilder}.
+     * Creates a copy of this builder.
      * <p>
      * Not a deep copy as Command, child, range and the arguments themselves are shared.
      *

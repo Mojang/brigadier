@@ -21,7 +21,7 @@ public class CommandSyntaxException extends Exception {
     private final int cursor;
 
     /**
-     * Creates a new {@link CommandSyntaxException} of a given type and with a given message.
+     * Creates a new CommandSyntaxException of a given type and with a given message.
      *
      * @param type the type of the exception
      * @param message the message
@@ -35,7 +35,7 @@ public class CommandSyntaxException extends Exception {
     }
 
     /**
-     * Creates a new {@link CommandSyntaxException} of a given type and message together with the input and cursor
+     * Creates a new CommandSyntaxException of a given type and message together with the input and cursor
      * position.
      *
      * @param type the type of the exception
@@ -110,9 +110,9 @@ public class CommandSyntaxException extends Exception {
     }
 
     /**
-     * Returns the input that caused the {@link CommandSyntaxException}.
+     * Returns the input that caused the CommandSyntaxException.
      *
-     * @return the input that caused the {@link CommandSyntaxException} or null if not set
+     * @return the input that caused the CommandSyntaxException or null if not set
      */
     public String getInput() {
         return input;

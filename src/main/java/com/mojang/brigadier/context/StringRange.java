@@ -16,7 +16,7 @@ public class StringRange {
     private final int end;
 
     /**
-     * Creates a new {@link StringRange} with the given start and end index.
+     * Creates a new StringRange with the given start and end index.
      *
      * @param start the start index (inclusive)
      * @param end the end index (exclusive)
@@ -28,50 +28,50 @@ public class StringRange {
     }
 
     /**
-     * Returns a {@link StringRange} spanning only a single index, the one given as an argument.
+     * Returns a StringRange spanning only a single index, the one given as an argument.
      *
      * @param pos the position the range should include
-     * @return a {@link StringRange} that only includes the given index
+     * @return a StringRange that only includes the given index
      */
     public static StringRange at(final int pos) {
         return new StringRange(pos, pos);
     }
 
     /**
-     * Returns a {@link StringRange} with the given start and end indices.
+     * Returns a StringRange with the given start and end indices.
      *
      * @param start the start index (inclusive)
      * @param end the end index (exclusive)
-     * @return s {@link StringRange} spanning the given range
+     * @return s StringRange spanning the given range
      */
     public static StringRange between(final int start, final int end) {
         return new StringRange(start, end);
     }
 
     /**
-     * Returns a {@link StringRange} that wraps around both passed {@link StringRange}s.
+     * Returns a StringRange} that wraps around both passed StringRanges.
      *
-     * @param a the first {@link StringRange}
-     * @param b the second {@link StringRange}
-     * @return a {@link StringRange} that includes everything from the lowest to highest index in both ranges
+     * @param a the first StringRange
+     * @param b the second StringRange
+     * @return a StringRange that includes everything from the lowest to highest index in both ranges
      */
     public static StringRange encompassing(final StringRange a, final StringRange b) {
         return new StringRange(Math.min(a.getStart(), b.getStart()), Math.max(a.getEnd(), b.getEnd()));
     }
 
     /**
-     * Returns the start of this {@link StringRange} (inclusive).
+     * Returns the start of this StringRange (inclusive).
      *
-     * @return the start of this {@link StringRange} (inclusive)
+     * @return the start of this StringRange (inclusive)
      */
     public int getStart() {
         return start;
     }
 
     /**
-     * Returns the end of this {@link StringRange} (exclusive).
+     * Returns the end of this StringRange (exclusive).
      *
-     * @return the end of this {@link StringRange} (exclusive)
+     * @return the end of this StringRange (exclusive)
      */
     public int getEnd() {
         return end;

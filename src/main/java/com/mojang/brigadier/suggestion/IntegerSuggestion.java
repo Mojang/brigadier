@@ -15,7 +15,7 @@ public class IntegerSuggestion extends Suggestion {
     private int value;
 
     /**
-     * Creates a new {@link IntegerSuggestion} that covers a given range and has a given int value.
+     * Creates a new IntegerSuggestion that covers a given range and has a given int value.
      *
      * @param range the range it covers in the input
      * @param value the integer value
@@ -25,7 +25,7 @@ public class IntegerSuggestion extends Suggestion {
     }
 
     /**
-     * Creates a new {@link IntegerSuggestion} that covers a given range and has a given int value and tooltip.
+     * Creates a new IntegerSuggestion that covers a given range and has a given int value and tooltip.
      *
      * @param range the range it covers in the input
      * @param value the integer value
