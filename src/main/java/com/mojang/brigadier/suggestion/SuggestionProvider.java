@@ -19,13 +19,13 @@ import java.util.concurrent.CompletableFuture;
 @FunctionalInterface
 public interface SuggestionProvider<S> {
     /**
-     * Computes suggestions for the given {@link CommandContext} and adds them to a {@link SuggestionsBuilder} it then
-     * builds.
+     * Computes suggestions for the given {@link CommandContext} and adds them to the given {@link SuggestionsBuilder},
+     * which is then build and returned in the future.
      *
      * @param context the command context to as a base
      * @param builder the builder to add them to
-     * @return a completable future that might complete, as computing the suggestions might involve arbitrary
-     * computations and even I/O
+     * @return a completable future that might complete sometime in the future, as computing the suggestions might
+     * involve arbitrary computations and even I/O
      * @throws CommandSyntaxException if an error occurs parsing the context to return a valid suggestion
      */
     CompletableFuture<Suggestions> getSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) throws CommandSyntaxException;

@@ -64,7 +64,7 @@ public class SuggestionsBuilder {
     /**
      * Builds the suggestions and returns the result in a future that instantly completes.
      *
-     * @return the result as a future
+     * @return a future for the built Suggestions
      */
     public CompletableFuture<Suggestions> buildFuture() {
         return CompletableFuture.completedFuture(build());
@@ -150,7 +150,7 @@ public class SuggestionsBuilder {
      * <p>
      * It effectively creates a copy with nothing set, hence the term "restart".
      *
-     * @return the new builder with the same input and start index, but no completions
+     * @return the new builder with the same input and start index, but no suggestions
      * @see #createOffset
      */
     public SuggestionsBuilder restart() {

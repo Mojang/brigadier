@@ -9,7 +9,7 @@ import com.mojang.brigadier.Message;
 /**
  * A simple {@link CommandExceptionType} that gives a static message, that does not change based on the type of error.
  * <p>
- * An example could be a message displaying a command was not found, but not including the full inout again.
+ * An example could be a message displaying a command was not found, but not including the full input again.
  */
 public class SimpleCommandExceptionType implements CommandExceptionType {
     private final Message message;

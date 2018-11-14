@@ -6,7 +6,7 @@ package com.mojang.brigadier.exceptions;
 import com.mojang.brigadier.LiteralMessage;
 
 /**
- * Contains all inbuilt exceptions, that are used by Brigadier.
+ * Contains all built-in exceptions, that are used by Brigadier.
  */
 public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final Dynamic2CommandExceptionType DOUBLE_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Double must not be less than " + min + ", found " + found));

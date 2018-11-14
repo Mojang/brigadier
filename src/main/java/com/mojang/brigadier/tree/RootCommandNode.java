@@ -107,9 +107,9 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     /**
-     * Returns an empty list
+     * Returns an empty immutable collection
      *
-     * @return an empty list
+     * @return an empty immutable collection
      */
     @Override
     public Collection<String> getExamples() {

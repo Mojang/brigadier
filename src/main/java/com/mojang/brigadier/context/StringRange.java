@@ -27,9 +27,9 @@ public class StringRange {
     }
 
     /**
-     * Returns a StringRange containing <strong>no</strong> index,
+     * Returns a StringRange containing <strong>no</strong> index.
      *
-     * @param pos the position the range should include
+     * @param pos the minimum and maximum index of the range
      * @return a StringRange that includes no index
      */
     public static StringRange at(final int pos) {

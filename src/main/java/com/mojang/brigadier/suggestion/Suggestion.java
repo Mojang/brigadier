@@ -9,10 +9,12 @@ import com.mojang.brigadier.context.StringRange;
 import java.util.Objects;
 
 /**
- * A suggestion that the user could incorporate into his command, which can be used for displaying information about
- * possible next values.
+ * Represents a suggestion which for a possible next value as well as an optional tooltip.
  * <p>
  * An example would be tab completion showing you the suggestions on the fly.
+ * <p>
+ * <br>Instances of this class are compared based on the natural order of {@link #getText()}.
+ * A case insensitive comparison method is provided as {@link #compareToIgnoreCase(Suggestion)}.
  */
 public class Suggestion implements Comparable<Suggestion> {
     private final StringRange range;
@@ -31,8 +33,8 @@ public class Suggestion implements Comparable<Suggestion> {
     }
 
     /**
-     * Creates a new Suggestion spanning the given string range in the input, a given text it suggests and
-     * that provides a tooltip.
+     * Creates a new Suggestion spanning the given string range in the input, with a given text it suggests and
+     * a tooltip it provides.
      *
      * @param range the range in the input it is applicable in
      * @param text the replacement it suggests
@@ -94,7 +96,7 @@ public class Suggestion implements Comparable<Suggestion> {
      * </ul>
      * @param input the input string to apply it to
      * @return the result of applying the suggestion to the input
-     * @throws StringIndexOutOfBoundsException if the range is not contained into the input string
+     * @throws StringIndexOutOfBoundsException if the range is not contained in the input string
      */
     // @formatter:on
     public String apply(final String input) {
@@ -132,24 +134,38 @@ public class Suggestion implements Comparable<Suggestion> {
     @Override
     public String toString() {
         return "Suggestion{" +
-                "range=" + range +
-                ", text='" + text + '\'' +
-                ", tooltip='" + tooltip + '\'' +
-                '}';
+            "range=" + range +
+            ", text='" + text + '\'' +
+            ", tooltip='" + tooltip + '\'' +
+            '}';
     }
 
+    /**
+     * Compares the {@link #getText()} of this suggestion to the {@link #getText()} of the passed suggestion.
+     * <p>
+     * This method is case sensitive, see {@link #compareToIgnoreCase(Suggestion)} if you need it to the ignore the
+     * case.
+     *
+     * @param o the suggestion to compare it to
+     * @return -1 if this suggestion is less than the other, 0 if they are equal or 1 if this suggestion should appear
+     * behind the passed one
+     * @see #compareToIgnoreCase
+     * @see String#compareTo
+     */
     @Override
     public int compareTo(final Suggestion o) {
         return text.compareTo(o.text);
     }
 
     /**
-     * Compares the {@link #getText()}  of this suggestion ot the {@link #getText()} of the other, ignoring case.
+     * Compares the {@link #getText()} of this suggestion to the {@link #getText()} of the passed suggestion, ignoring
+     * case.
      *
      * @param b the suggestion to compare it to
-     * @return -1 if this suggestion is less than the other, 0 if they are equal or 1 if this suggestion is bigger
-     * than the other
+     * @return -1 if this suggestion is less than the other, 0 if they are equal or 1 if this suggestion should appear
+     * behind the passed one
      * @see String#compareToIgnoreCase
+     * @see #compareTo
      */
     public int compareToIgnoreCase(final Suggestion b) {
         return text.compareToIgnoreCase(b.text);
@@ -173,8 +189,8 @@ public class Suggestion implements Comparable<Suggestion> {
      *     </li>
      *     <li>
      *         {@code expand("123", StringRange.between(1, 3)}:
-     *         <br>{@code a----123defghi}, as the passed range (1,3) was taken and 3 character from the command were
-     *         used to fill up the indices 1,2 and 3, as the range of the original suggestion was 0. it is then inserted
+     *         <br>{@code a----123defghi}, as the passed range (1,3) was taken and 3 characters from the command were
+     *         used to fill up the indices 1, 2 and 3, as the range of the original suggestion was 0. it is then inserted
      *         after the first character in the text it is applied to (after the a) and replaces everything that lies in
      *         its interval (bc).
      *     </li>

@@ -35,9 +35,9 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     /**
-     * Returns the literal this command is triggered by.
+     * Returns the literal this command represents.
      *
-     * @return the literal this command is triggered by
+     * @return the literal this command represents
      */
     public String getLiteral() {
         return literal;

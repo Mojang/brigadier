@@ -11,7 +11,14 @@ import com.mojang.brigadier.Message;
  * TODO: Why is this named syntax exception, when it can also occur when executing a command?
  */
 public class CommandSyntaxException extends Exception {
+    /**
+     * The amount of characters from the input that should be displayed in the {@link #getContext()}.
+     */
     public static final int CONTEXT_AMOUNT = 10;
+    /**
+     * Enables suppression as defined in {@link Exception#Exception(String, Throwable, boolean, boolean)}, i.e.
+     * whether to ignore calls to {@link Exception#addSuppressed(Throwable)}
+     */
     public static boolean ENABLE_COMMAND_STACK_TRACES = true;
     public static BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = new BuiltInExceptions();
 
@@ -78,7 +85,8 @@ public class CommandSyntaxException extends Exception {
     /**
      * Returns some contextual information about where the error occurred.
      * <p>
-     * This is done by returning a few characters of the input and a pointer to where the exception it happened.
+     * This is done by returning a few characters ({@value #CONTEXT_AMOUNT}) of the faulty {@link #getInput()} and a
+     * pointer to where the exception happened.
      *
      * @return some contextual information about where the error occurred or null if {@link #getInput()} or
      * {@link #getCursor()} are null/0.

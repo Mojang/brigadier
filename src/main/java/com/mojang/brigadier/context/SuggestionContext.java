@@ -6,7 +6,7 @@ package com.mojang.brigadier.context;
 import com.mojang.brigadier.tree.CommandNode;
 
 /**
- * Represents a context for a suggestion, just encompassing a command node and where the completion start.
+ * Represents a context for a suggestion, just encompassing a command node and where the completion starts.
  *
  * @param <S> the type of the command source
  */

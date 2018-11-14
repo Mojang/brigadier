@@ -46,7 +46,7 @@ public class Suggestions {
     }
 
     /**
-     * Checks if no suggestions are stored in this object..
+     * Checks if no suggestions are stored in this object.
      *
      * @return true if no suggestions are stored in this object
      */
@@ -113,7 +113,7 @@ public class Suggestions {
     }
 
     /**
-     * Creates a Suggestions instance from a command a list of possible Suggestions.
+     * Creates a Suggestions instance from a command and a list of possible Suggestions.
      * <p>
      * The Suggestions instance will span the entire range, from the minimal index to maximum index found
      * in the suggestions.
@@ -125,19 +125,19 @@ public class Suggestions {
      * <p>
      * <br>Some examples:
      * <pre>
-     *     Suggestion foo = new Suggestion(StringRange.between(0, 2), "foo");
-     *     Suggestion bar = new Suggestion(StringRange.at(2), "bar");
+     * Suggestion foo = new Suggestion(StringRange.between(0, 2), "foo");
+     * Suggestion bar = new Suggestion(StringRange.at(2), "bar");
      *
-     *     Suggestions suggestions = Suggestions.create("1234567", List.of(foo, bar));
-     *     for (Suggestion suggestion : suggestions.getList()) {
-     *         System.out.println(suggestion.apply("abcdefgh"));
-     *     }
+     * Suggestions suggestions = Suggestions.create("1234567", List.of(foo, bar));
+     * for (Suggestion suggestion : suggestions.getList()) {
+     *     System.out.println(suggestion.apply("abcdefgh"));
+     * }
      * </pre>
      * Prints:
      * <pre>
-     *     (ordered alphabetically)
-     *     12barcdefgh (range expanded from 0 to 2, so it replaced "ab"
-     *     foocdefgh (range was already 0 to 2, so nothing really changed
+     * (ordered alphabetically)
+     * 12barcdefgh (range expanded from 0 to 2, so it replaced "ab")
+     * foocdefgh (range was already 0 to 2, so nothing really changed)
      * </pre>
      *
      * @param command the command to get them for
