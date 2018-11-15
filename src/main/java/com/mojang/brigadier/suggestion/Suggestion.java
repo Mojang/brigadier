@@ -9,7 +9,7 @@ import com.mojang.brigadier.context.StringRange;
 import java.util.Objects;
 
 /**
- * Represents a suggestion which for a possible next value as well as an optional tooltip.
+ * Represents a suggestion for a possible next value as well as an optional tooltip.
  * <p>
  * An example would be tab completion showing you the suggestions on the fly.
  * <p>
@@ -190,7 +190,7 @@ public class Suggestion implements Comparable<Suggestion> {
      *     <li>
      *         {@code expand("123", StringRange.between(1, 3)}:
      *         <br>{@code a----123defghi}, as the passed range (1,3) was taken and 3 characters from the command were
-     *         used to fill up the indices 1, 2 and 3, as the range of the original suggestion was 0. it is then inserted
+     *         used to fill up the indices 1, 2 and 3, as the range of the original suggestion was 0. It is then inserted
      *         after the first character in the text it is applied to (after the a) and replaces everything that lies in
      *         its interval (bc).
      *     </li>

@@ -17,7 +17,12 @@ public class CommandSyntaxException extends Exception {
     public static final int CONTEXT_AMOUNT = 10;
     /**
      * Enables suppression as defined in {@link Exception#Exception(String, Throwable, boolean, boolean)}, i.e.
-     * whether to ignore calls to {@link Exception#addSuppressed(Throwable)}
+     * whether to ignore calls to {@link Exception#addSuppressed(Throwable)}.
+     * Additionally it is also used as the second boolean in the constructor mentioned above, i.e. specifies whether
+     * the stack trace is writable.
+     *
+     * @see Exception#fillInStackTrace()
+     * @see Exception#addSuppressed(Throwable)
      */
     public static boolean ENABLE_COMMAND_STACK_TRACES = true;
     public static BuiltInExceptionProvider BUILT_IN_EXCEPTIONS = new BuiltInExceptions();
