@@ -10,6 +10,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * An {@link ArgumentType} that parses longs.
+ * <p>
+ * Allows for numbers in the following format:<br>
+ * {@literal (-)?\d+}
+ */
 public class LongArgumentType implements ArgumentType<Long> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
 
@@ -21,26 +27,79 @@ public class LongArgumentType implements ArgumentType<Long> {
         this.maximum = maximum;
     }
 
+    /**
+     * A factory method as a simple way to get an instance.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", longArg())
+     * </code>
+     *
+     *
+     * @return an instance of this argument type
+     */
     public static LongArgumentType longArg() {
         return longArg(Long.MIN_VALUE);
     }
 
+    /**
+     * A factory method as a simple way to get an instance of this class with an enforced minimum value.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", longArg(0))
+     * </code>
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @return an instance of this argument type
+     */
     public static LongArgumentType longArg(final long min) {
         return longArg(min, Long.MAX_VALUE);
     }
 
+    /**
+     * A factory method as a simple way to get an instance of this class with an enforced minimum and maximum value.
+     * If you want to only define a maximum value, use {@code Long.MIN_VALUE} as minimum.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", longArg(0, 100))
+     * </code>
+     *
+     * @param min the minimal value it needs to be in order to be a valid argument. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
+     * @return an instance of this argument type
+     */
     public static LongArgumentType longArg(final long min, final long max) {
         return new LongArgumentType(min, max);
     }
 
+    /**
+     * Retrieves the argument with the given name from the context and casts it to a long.
+     *
+     * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
+     * @param name the name of the argument to retrieve
+     * @return the argument as a long
+     * @see CommandContext#getArgument
+     */
     public static long getLong(final CommandContext<?> context, final String name) {
         return context.getArgument(name, long.class);
     }
 
+    /**
+     * The minimum value an argument is allowed to be (inclusive).
+     *
+     * @return the minimum value an argument is allowed to be (inclusive)
+     */
     public long getMinimum() {
         return minimum;
     }
 
+    /**
+     * The maximal value an argument is allowed to be (inclusive).
+     *
+     * @return the maximal value an argument is allowed to be (inclusive)
+     */
     public long getMaximum() {
         return maximum;
     }

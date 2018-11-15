@@ -7,6 +7,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -20,6 +21,19 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
+/**
+ * A {@link CommandNode} that is triggered by an argument, like a number.
+ * <p>
+ * The type of the argument is set via an {@link ArgumentType}, which takes care of parsing the stringified argument
+ * passed by users.
+ * <p>
+ * <br>A short <strong>example</strong>:
+ * <br>A subcommand for a delete command, taking the number of messages to delete. The {@link ArgumentType} would be an
+ * {@link IntegerArgumentType} then and the built command would parse things like {@literal "20"} or {@literal "-230"}.
+ *
+ * @param <S> the type of the command source
+ * @param <T> the {@link ArgumentType} the built command will use
+ */
 public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private static final String USAGE_ARGUMENT_OPEN = "<";
     private static final String USAGE_ARGUMENT_CLOSE = ">";
@@ -35,6 +49,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         this.customSuggestions = customSuggestions;
     }
 
+    /**
+     * Returns the {@link ArgumentType} of this command
+     *
+     * @return the {@link ArgumentType} of this command
+     */
     public ArgumentType<T> getType() {
         return type;
     }
@@ -49,6 +68,11 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
     }
 
+    /**
+     * Returns the {@link SuggestionProvider} the command uses to advice the user on possible completions.
+     *
+     * @return the registered {@link SuggestionProvider} or null if none
+     */
     public SuggestionProvider<S> getCustomSuggestions() {
         return customSuggestions;
     }
@@ -126,6 +150,6 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     @Override
     public String toString() {
-        return "<argument " + name + ":" + type +">";
+        return "<argument " + name + ":" + type + ">";
     }
 }

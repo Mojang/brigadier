@@ -10,6 +10,21 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+// @formatter:off
+/**
+ * An {@link ArgumentType} that parses doubles.
+ * <p>
+ * Allows for numbers like the following:
+ * <ul>
+ *     <li>{@code 1.2}</li>
+ *     <li>{@code 0}</li>
+ *     <li>{@code .5}</li>
+ *     <li>{@code -.5}</li>
+ *     <li>{@code -1}</li>
+ *     <li>{@code -132323.4242}</li>
+ * </ul>
+ */
+// @formatter:on
 public class DoubleArgumentType implements ArgumentType<Double> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
 
@@ -21,26 +36,78 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         this.maximum = maximum;
     }
 
+    /**
+     * A factory method as a simple way to get an instance.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", doubleArg())
+     * </code>
+     *
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg() {
         return doubleArg(-Double.MAX_VALUE);
     }
 
+    /**
+     * A factory method as a simple way to get an instance of this class with an enforced minimum value.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", doubleArg(0))
+     * </code>
+     *
+     * @param min the minimal value for the double to be considered valid. Inclusive
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg(final double min) {
         return doubleArg(min, Double.MAX_VALUE);
     }
 
+    /**
+     * A factory method as a simple way to get an instance of this class with an enforced minimum and maximum value.
+     * If you want to only define a maximum value, use {@code -Double.MAX_VALUE} as minimum.
+     * <p>
+     * It is recommended to statically import this method to provide an interface similar to:<br>
+     * <code>
+     * argument("name", doubleArg(0, 100))
+     * </code>
+     *
+     * @param min the minimal value for the double to be considered valid. Inclusive
+     * @param max the maximal value it needs to be in order to be a valid argument. Inclusive
+     * @return an instance of this argument type
+     */
     public static DoubleArgumentType doubleArg(final double min, final double max) {
         return new DoubleArgumentType(min, max);
     }
 
+    /**
+     * Retrieves the argument with the given name from the context and casts it to a double.
+     *
+     * @param context the context to get the argument from, calls {@link CommandContext#getArgument}
+     * @param name the name of the argument to retrieve
+     * @return the argument as a double
+     * @see CommandContext#getArgument
+     */
     public static double getDouble(final CommandContext<?> context, final String name) {
         return context.getArgument(name, Double.class);
     }
 
+    /**
+     * The minimum value an argument is allowed to be (inclusive).
+     *
+     * @return the minimum value an argument is allowed to be (inclusive)
+     */
     public double getMinimum() {
         return minimum;
     }
 
+    /**
+     * The maximal value an argument is allowed to be (inclusive).
+     *
+     * @return the maximal value an argument is allowed to be (inclusive)
+     */
     public double getMaximum() {
         return maximum;
     }

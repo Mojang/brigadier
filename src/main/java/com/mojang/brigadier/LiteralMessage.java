@@ -3,9 +3,17 @@
 
 package com.mojang.brigadier;
 
+/**
+ * A {@link Message} that has a literal string it returns.
+ */
 public class LiteralMessage implements Message {
     private final String string;
 
+    /**
+     * Creates a new LiteralMessage returning the given string.
+     *
+     * @param string the string to return
+     */
     public LiteralMessage(final String string) {
         this.string = string;
     }

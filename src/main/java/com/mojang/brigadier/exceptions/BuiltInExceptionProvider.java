@@ -3,6 +3,9 @@
 
 package com.mojang.brigadier.exceptions;
 
+/**
+ * Defines all built-in exceptions, that are used internally by Brigadier.
+ */
 public interface BuiltInExceptionProvider {
     Dynamic2CommandExceptionType doubleTooLow();
 

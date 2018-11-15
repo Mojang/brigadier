@@ -65,7 +65,7 @@ public class CommandDispatcher<S> {
     };
 
     /**
-     * Create a new {@link CommandDispatcher} with the specified root node.
+     * Create a new CommandDispatcher with the specified root node.
      *
      * <p>This is often useful to copy existing or pre-defined command trees.</p>
      *
@@ -76,7 +76,7 @@ public class CommandDispatcher<S> {
     }
 
     /**
-     * Creates a new {@link CommandDispatcher} with an empty command tree.
+     * Creates a new CommandDispatcher with an empty command tree.
      */
     public CommandDispatcher() {
         this(new RootCommandNode<>());
@@ -194,7 +194,7 @@ public class CommandDispatcher<S> {
      * results than this method will return, especially when a command forks.</p>
      *
      * @param parse the result of a successful {@link #parse(StringReader, Object)}
-     * @return a numeric result from a "command" that was performed.
+     * @return a numeric result from a "command" that was performed
      * @throws CommandSyntaxException if the command failed to parse or execute
      * @throws RuntimeException if the command failed to execute and was not handled gracefully
      * @see #parse(String, Object)
@@ -426,6 +426,7 @@ public class CommandDispatcher<S> {
         return new ParseResults<>(contextSoFar, originalReader, errors == null ? Collections.emptyMap() : errors);
     }
 
+    // @formatter:off
     /**
      * Gets all possible executable commands following the given node.
      *
@@ -447,6 +448,7 @@ public class CommandDispatcher<S> {
      * @param restricted if true, commands that the {@code source} cannot access will not be mentioned
      * @return array of full usage strings under the target node
      */
+    // @formatter:on
     public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
         final ArrayList<String> result = new ArrayList<>();
         getAllUsage(node, source, result, "", restricted);
@@ -472,6 +474,7 @@ public class CommandDispatcher<S> {
         }
     }
 
+    // @formatter:off
     /**
      * Gets the possible executable commands from a specified node.
      *
@@ -493,6 +496,7 @@ public class CommandDispatcher<S> {
      * @param source a custom "source" object, usually representing the originator of this command
      * @return array of full usage strings under the target node
      */
+    // @formatter:on
     public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
         final Map<CommandNode<S>, String> result = new LinkedHashMap<>();
 
@@ -564,13 +568,13 @@ public class CommandDispatcher<S> {
      * Gets suggestions for a parsed input string on what comes next.
      *
      * <p>As it is ultimately up to custom argument types to provide suggestions, it may be an asynchronous operation,
-     * for example getting in-game data or player names etc. As such, this method returns a future and no guarantees
-     * are made to when or how the future completes.</p>
+     * for example getting in-game data or player names, reading a file, etc. As such, this method returns a future
+     * and no guarantees are made to when or how the future completes.</p>
      *
      * <p>The suggestions provided will be in the context of the end of the parsed input string, but may suggest
      * new or replacement strings for earlier in the input string. For example, if the end of the string was
-     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for that
-     * whole segment of the input.</p>
+     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for
+     * that whole segment of the input.</p>
      *
      * @param parse the result of a {@link #parse(StringReader, Object)}
      * @return a future that will eventually resolve into a {@link Suggestions} object
@@ -579,6 +583,22 @@ public class CommandDispatcher<S> {
         return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
     }
 
+    /**
+     * Gets suggestions for a parsed input string on what comes next, checking from the given cursor position.
+     *
+     * <p>As it is ultimately up to custom argument types to provide suggestions, it may be an asynchronous operation,
+     * for example getting in-game data or player names, reading a file, etc. As such, this method returns a future
+     * and no guarantees are made to when or how the future completes.</p>
+     *
+     * <p>The suggestions provided will be in the context of the end of the parsed input string, but may suggest
+     * new or replacement strings for earlier in the input string. For example, if the end of the string was
+     * {@code foobar} but an argument preferred it to be {@code minecraft:foobar}, it will suggest a replacement for
+     * that whole segment of the input.</p>
+     *
+     * @param parse the result of a {@link #parse(StringReader, Object)}
+     * @param cursor the index to fetch suggestions for
+     * @return a future that will eventually resolve into a {@link Suggestions} object
+     */
     public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
         final CommandContextBuilder<S> context = parse.getContext();
 

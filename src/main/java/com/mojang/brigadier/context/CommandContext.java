@@ -4,13 +4,27 @@
 package com.mojang.brigadier.context;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.RedirectModifier;
+import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A general container class storing information needed to invoke a command.
+ * <p>
+ * This consists of e.g. the command source to invoke it for, the command to invoke, child contexts (for subcommands)
+ * or arguments parsed by {@link ArgumentType}s.
+ * <p>
+ * <br>This class is <strong>immutable</strong>. Use {@link #copyFor(Object)} to create copies with a different command
+ * source.
+ *
+ * @param <S> the type of the command source
+ */
 public class CommandContext<S> {
 
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
@@ -37,6 +51,20 @@ public class CommandContext<S> {
     private final RedirectModifier<S> modifier;
     private final boolean forks;
 
+    /**
+     * Creates a new CommandContext.
+     *
+     * @param source the command source to invoke the command for
+     * @param input the full input
+     * @param arguments the parsed arguments
+     * @param command the command to invoke
+     * @param rootNode the root node of the command tree
+     * @param nodes all nodes associated with this context
+     * @param range the string range indicating what part in the input this context covers
+     * @param child the child context, or null if none
+     * @param modifier the {@link RedirectModifier} to apply when invoking the command
+     * @param forks whether this command forks. See {@link CommandDispatcher#execute(ParseResults)} for an explanation
+     */
     public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
         this.source = source;
         this.input = input;
@@ -50,6 +78,12 @@ public class CommandContext<S> {
         this.forks = forks;
     }
 
+    /**
+     * Creates a copy of this {@link CommandContext} with a different command source but otherwise identical
+     *
+     * @param source the command source to copy it for
+     * @return a {@link CommandContext} that is identical to this one, except for the command source
+     */
     public CommandContext<S> copyFor(final S source) {
         if (this.source == source) {
             return this;
@@ -57,10 +91,24 @@ public class CommandContext<S> {
         return new CommandContext<>(source, input, arguments, command, rootNode, nodes, range, child, modifier, forks);
     }
 
+    /**
+     * Returns the child context, if it is present.
+     *
+     * @return the child context, or null if there is none
+     */
     public CommandContext<S> getChild() {
         return child;
     }
 
+    /**
+     * Returns the last child command context in the chain, i.e. the lowest child you can reach from this context.
+     * <p>
+     * As each CommandContext can have a child, you can have a child of a child. This method returns the lowest
+     * possible child you can reach, i.e. the last command context that has no children.
+     * This can be this command context instance, if it has no child.
+     *
+     * @return the last child command context
+     */
     public CommandContext<S> getLastChild() {
         CommandContext<S> result = this;
         while (result.getChild() != null) {
@@ -69,15 +117,33 @@ public class CommandContext<S> {
         return result;
     }
 
+    /**
+     * Returns the command that should be executed.
+     *
+     * @return the command to execute or null if not set
+     */
     public Command<S> getCommand() {
         return command;
     }
 
+    /**
+     * The command source to invoke the command for
+     *
+     * @return the command source to invoke the command for
+     */
     public S getSource() {
         return source;
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Returns an argument that was stored in this context while parsing the command.
+     *
+     * @param name the name of the argument to retrieve
+     * @param clazz the class of the argument
+     * @param <V> the type of the argument
+     * @return the argument
+     * @throws IllegalArgumentException if the argument does not exist or is of a different type
+     */
     public <V> V getArgument(final String name, final Class<V> clazz) {
         final ParsedArgument<S, ?> argument = arguments.get(name);
 
@@ -87,7 +153,9 @@ public class CommandContext<S> {
 
         final Object result = argument.getResult();
         if (PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
-            return (V) result;
+            @SuppressWarnings("unchecked")
+            V v = (V) result;
+            return v;
         } else {
             throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
         }
@@ -121,30 +189,73 @@ public class CommandContext<S> {
         return result;
     }
 
+    /**
+     * Returns the {@link RedirectModifier} to apply when invoking the command.
+     *
+     * @return the  {@link RedirectModifier} to apply when invoking the command or null if none is set
+     */
     public RedirectModifier<S> getRedirectModifier() {
         return modifier;
     }
 
+    /**
+     * Returns the range this context takes up in the input string.
+     *
+     * @return the range this context takes up in the input string
+     */
     public StringRange getRange() {
         return range;
     }
 
+    /**
+     * Returns the full input, of which this command context is a part.
+     *
+     * @return the full input, of which this command context is a part
+     */
     public String getInput() {
         return input;
     }
 
+    /**
+     * Returns the root command node in the command tree.
+     *
+     * @return the root command node in the command tree
+     */
     public CommandNode<S> getRootNode() {
         return rootNode;
     }
 
+    /**
+     * Returns all nodes associated with this context.
+     * <p>
+     * That is the node that {@link #getCommand()} comes from any anything else that nodes pushes onto it in its
+     * {@link CommandNode#parse} method.
+     * <p>
+     * TODO: Why is this a List?
+     *
+     * @return all nodes associated with this context
+     */
     public List<ParsedCommandNode<S>> getNodes() {
         return nodes;
     }
 
+    /**
+     * Returns true if this context has any {@link CommandNode} associated with it.
+     *
+     * @return true if this context has any {@link CommandNode} associated with it
+     */
     public boolean hasNodes() {
         return !nodes.isEmpty();
     }
 
+    /**
+     * Returns true if this command is forked.
+     * <p>
+     * See {@link CommandDispatcher#execute(ParseResults)} for a detailed explanation.
+     *
+     * @return true if this command is forked
+     * @see CommandDispatcher#execute(ParseResults)
+     */
     public boolean isForked() {
         return forks;
     }
