@@ -157,6 +157,30 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readSingleQuotedString() throws Exception {
+        final StringReader reader = new StringReader("'hello world'");
+        assertThat(reader.readQuotedString(), equalTo("hello world"));
+        assertThat(reader.getRead(), equalTo("'hello world'"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readMixedQuotedString_doubleInsideSingle() throws Exception {
+        final StringReader reader = new StringReader("'hello \"world\"'");
+        assertThat(reader.readQuotedString(), equalTo("hello \"world\""));
+        assertThat(reader.getRead(), equalTo("'hello \"world\"'"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readMixedQuotedString_singleInsideDouble() throws Exception {
+        final StringReader reader = new StringReader("\"hello 'world'\"");
+        assertThat(reader.readQuotedString(), equalTo("hello 'world'"));
+        assertThat(reader.getRead(), equalTo("\"hello 'world'\""));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
     public void readQuotedString_empty() throws Exception {
         final StringReader reader = new StringReader("");
         assertThat(reader.readQuotedString(), equalTo(""));
@@ -240,6 +264,40 @@ public class StringReaderTest {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape()));
             assertThat(ex.getCursor(), is(7));
         }
+    }
+
+    @Test
+    public void readQuotedString_invalidQuoteEscape() throws Exception {
+        try {
+            new StringReader("'hello\\\"\'world").readQuotedString();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape()));
+            assertThat(ex.getCursor(), is(7));
+        }
+    }
+
+    @Test
+    public void readString_noQuotes() throws Exception {
+        final StringReader reader = new StringReader("hello world");
+        assertThat(reader.readString(), equalTo("hello"));
+        assertThat(reader.getRead(), equalTo("hello"));
+        assertThat(reader.getRemaining(), equalTo(" world"));
+    }
+
+    @Test
+    public void readString_singleQuotes() throws Exception {
+        final StringReader reader = new StringReader("'hello world'");
+        assertThat(reader.readString(), equalTo("hello world"));
+        assertThat(reader.getRead(), equalTo("'hello world'"));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readString_doubleQuotes() throws Exception {
+        final StringReader reader = new StringReader("\"hello world\"");
+        assertThat(reader.readString(), equalTo("hello world"));
+        assertThat(reader.getRead(), equalTo("\"hello world\""));
+        assertThat(reader.getRemaining(), equalTo(""));
     }
 
     @Test
