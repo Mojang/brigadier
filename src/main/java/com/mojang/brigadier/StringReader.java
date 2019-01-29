@@ -7,7 +7,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
-    private static final char SYNTAX_QUOTE = '"';
+    private static final char SYNTAX_DOUBLE_QUOTE = '"';
+    private static final char SYNTAX_SINGLE_QUOTE = '\'';
 
     private final String string;
     private int cursor;
@@ -85,6 +86,10 @@ public class StringReader implements ImmutableStringReader {
 
     public static boolean isAllowedNumber(final char c) {
         return c >= '0' && c <= '9' || c == '.' || c == '-';
+    }
+
+    public static boolean isQuotedStringStart(char c) {
+        return c == SYNTAX_DOUBLE_QUOTE || c == SYNTAX_SINGLE_QUOTE;
     }
 
     public void skipWhitespace() {
@@ -180,16 +185,22 @@ public class StringReader implements ImmutableStringReader {
     public String readQuotedString() throws CommandSyntaxException {
         if (!canRead()) {
             return "";
-        } else if (peek() != SYNTAX_QUOTE) {
+        }
+        final char next = peek();
+        if (!isQuotedStringStart(next)) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote().createWithContext(this);
         }
         skip();
+        return readStringUntil(next);
+    }
+
+    public String readStringUntil(char terminator) throws CommandSyntaxException {
         final StringBuilder result = new StringBuilder();
         boolean escaped = false;
         while (canRead()) {
             final char c = read();
             if (escaped) {
-                if (c == SYNTAX_QUOTE || c == SYNTAX_ESCAPE) {
+                if (c == terminator || c == SYNTAX_ESCAPE) {
                     result.append(c);
                     escaped = false;
                 } else {
@@ -198,7 +209,7 @@ public class StringReader implements ImmutableStringReader {
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true;
-            } else if (c == SYNTAX_QUOTE) {
+            } else if (c == terminator) {
                 return result.toString();
             } else {
                 result.append(c);
@@ -209,11 +220,15 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String readString() throws CommandSyntaxException {
-        if (canRead() && peek() == SYNTAX_QUOTE) {
-            return readQuotedString();
-        } else {
-            return readUnquotedString();
+        if (!canRead()) {
+            return "";
         }
+        final char next = peek();
+        if (isQuotedStringStart(next)) {
+            skip();
+            return readStringUntil(next);
+        }
+        return readUnquotedString();
     }
 
     public boolean readBoolean() throws CommandSyntaxException {
