@@ -4,11 +4,9 @@
 package com.mojang.brigadier.arguments;
 
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
@@ -21,8 +19,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BoolArgumentTypeTest {
     private BoolArgumentType type;
-    @Mock
-    private CommandContextBuilder<Object> context;
 
     @Before
     public void setUp() throws Exception {

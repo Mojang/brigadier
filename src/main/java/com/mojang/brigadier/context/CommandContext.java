@@ -37,7 +37,7 @@ public class CommandContext<S> {
     private final RedirectModifier<S> modifier;
     private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, final boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -105,9 +105,7 @@ public class CommandContext<S> {
         if (nodes.size() != that.nodes.size() || !nodes.equals(that.nodes)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
         if (!source.equals(that.source)) return false;
-        if (child != null ? !child.equals(that.child) : that.child != null) return false;
-
-        return true;
+        return child != null ? child.equals(that.child) : that.child == null;
     }
 
     @Override

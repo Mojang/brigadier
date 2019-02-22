@@ -56,7 +56,7 @@ public class CommandSyntaxException extends Exception {
             builder.append("...");
         }
 
-        builder.append(input.substring(Math.max(0, cursor - CONTEXT_AMOUNT), cursor));
+        builder.append(input, Math.max(0, cursor - CONTEXT_AMOUNT), cursor);
         builder.append("<--[HERE]");
 
         return builder.toString();

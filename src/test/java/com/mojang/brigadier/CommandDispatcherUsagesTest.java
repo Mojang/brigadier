@@ -5,8 +5,6 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;

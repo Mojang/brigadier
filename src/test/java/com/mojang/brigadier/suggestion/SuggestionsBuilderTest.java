@@ -8,7 +8,6 @@ import com.mojang.brigadier.context.StringRange;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,22 +67,22 @@ public class SuggestionsBuilderTest {
 
     @Test
     public void sort_alphabetical() {
-        Suggestions result = builder.suggest("2").suggest("4").suggest("6").suggest("8").suggest("30").suggest("32").build();
-        List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+        final Suggestions result = builder.suggest("2").suggest("4").suggest("6").suggest("8").suggest("30").suggest("32").build();
+        final List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
         assertThat(actual, equalTo(Lists.newArrayList( "2", "30", "32", "4", "6", "8")));
     }
 
     @Test
     public void sort_numerical() {
-        Suggestions result = builder.suggest(2).suggest(4).suggest(6).suggest(8).suggest(30).suggest(32).build();
-        List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+        final Suggestions result = builder.suggest(2).suggest(4).suggest(6).suggest(8).suggest(30).suggest(32).build();
+        final List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
         assertThat(actual, equalTo(Lists.newArrayList( "2", "4", "6", "8", "30", "32")));
     }
 
     @Test
     public void sort_mixed() {
-        Suggestions result = builder.suggest("11").suggest("22").suggest("33").suggest("a").suggest("b").suggest("c").suggest(2).suggest(4).suggest(6).suggest(8).suggest(30).suggest(32).suggest("3a").suggest("a3").build();
-        List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+        final Suggestions result = builder.suggest("11").suggest("22").suggest("33").suggest("a").suggest("b").suggest("c").suggest(2).suggest(4).suggest(6).suggest(8).suggest(30).suggest(32).suggest("3a").suggest("a3").build();
+        final List<String> actual = result.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
         assertThat(actual, equalTo(Lists.newArrayList( "11", "2", "22", "33", "3a", "4", "6", "8", "30", "32", "a", "a3", "b", "c")));
     }
 }

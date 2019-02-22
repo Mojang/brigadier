@@ -17,7 +17,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractCommandNodeTest {
     @Mock
-    private Command command;
+    private Command<Object> command;
 
     protected abstract CommandNode<Object> getCommandNode();
 

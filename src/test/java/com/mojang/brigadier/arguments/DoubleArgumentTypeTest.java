@@ -5,12 +5,9 @@ package com.mojang.brigadier.arguments;
 
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.DoubleArgumentType.doubleArg;
@@ -21,15 +18,6 @@ import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DoubleArgumentTypeTest {
-    private DoubleArgumentType type;
-    @Mock
-    private CommandContextBuilder<Object> context;
-
-    @Before
-    public void setUp() throws Exception {
-        type = doubleArg(-100, 100);
-    }
-
     @Test
     public void parse() throws Exception {
         final StringReader reader = new StringReader("15");

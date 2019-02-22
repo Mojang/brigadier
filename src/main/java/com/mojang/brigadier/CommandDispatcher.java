@@ -223,9 +223,7 @@ public class CommandDispatcher<S> {
         ArrayList<CommandContext<S>> next = null;
 
         while (contexts != null) {
-            final int size = contexts.size();
-            for (int i = 0; i < size; i++) {
-                final CommandContext<S> context = contexts.get(i);
+            for (final CommandContext<S> context : contexts) {
                 final CommandContext<S> child = context.getChild();
                 if (child != null) {
                     forked |= context.isForked();
@@ -579,7 +577,7 @@ public class CommandDispatcher<S> {
         return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
     }
 
-    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
+    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, final int cursor) {
         final CommandContextBuilder<S> context = parse.getContext();
 
         final SuggestionContext<S> nodeBeforeCursor = context.findSuggestionContext(cursor);

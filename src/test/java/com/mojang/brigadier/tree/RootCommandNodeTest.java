@@ -50,6 +50,7 @@ public class RootCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testSuggestions() throws Exception {
+        @SuppressWarnings("unchecked")
         final CommandContext<Object> context = mock(CommandContext.class);
         final Suggestions result = node.listSuggestions(context, new SuggestionsBuilder("", 0)).join();
         assertThat(result.isEmpty(), is(true));

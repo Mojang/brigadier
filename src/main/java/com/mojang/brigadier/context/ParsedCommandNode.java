@@ -13,7 +13,7 @@ public class ParsedCommandNode<S> {
 
     private final StringRange range;
 
-    public ParsedCommandNode(CommandNode<S> node, StringRange range) {
+    public ParsedCommandNode(final CommandNode<S> node, final StringRange range) {
         this.node = node;
         this.range = range;
     }
@@ -32,10 +32,10 @@ public class ParsedCommandNode<S> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParsedCommandNode<?> that = (ParsedCommandNode<?>) o;
+        final ParsedCommandNode<?> that = (ParsedCommandNode<?>) o;
         return Objects.equals(node, that.node) &&
                 Objects.equals(range, that.range);
     }

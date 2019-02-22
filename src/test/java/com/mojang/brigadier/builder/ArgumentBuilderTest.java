@@ -36,6 +36,7 @@ public class ArgumentBuilderTest {
 
     @Test
     public void testRedirect() throws Exception {
+        @SuppressWarnings("unchecked")
         final CommandNode<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         assertThat(builder.getRedirect(), is(target));
@@ -43,6 +44,7 @@ public class ArgumentBuilderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testRedirect_withChild() throws Exception {
+        @SuppressWarnings("unchecked")
         final CommandNode<Object> target = mock(CommandNode.class);
         builder.then(literal("foo"));
         builder.redirect(target);
@@ -50,6 +52,7 @@ public class ArgumentBuilderTest {
 
     @Test(expected = IllegalStateException.class)
     public void testThen_withRedirect() throws Exception {
+        @SuppressWarnings("unchecked")
         final CommandNode<Object> target = mock(CommandNode.class);
         builder.redirect(target);
         builder.then(literal("foo"));

@@ -205,7 +205,7 @@ public class CommandSuggestionsTest {
             .then(literal("gaz"))
         );
 
-        final LiteralCommandNode<Object> actualTwo = subject.register(literal("actual_two"));
+        subject.register(literal("actual_two"));
 
         subject.register(literal("redirect_one").redirect(actualOne));
         subject.register(literal("redirect_two").redirect(actualOne));
