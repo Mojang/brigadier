@@ -4,7 +4,6 @@
 package com.mojang.brigadier;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.dispatching.DispatchingStack;
