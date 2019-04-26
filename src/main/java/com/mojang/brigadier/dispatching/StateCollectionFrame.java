@@ -22,10 +22,10 @@ final class StateCollectionFrame<S> implements ExceptionHandlerFrame<S> {
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> result) throws CommandSyntaxException {
+    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
         stack.setCurrentState(lastState);
-        if (!result.hasFoundCommands()) {
-            result.getConsumer().onCommandComplete(original, false, 0);
+        if (!state.hasFoundCommands()) {
+            state.getConsumer().onCommandComplete(original, false, 0);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(reader);
         }
     }

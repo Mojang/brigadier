@@ -3,59 +3,74 @@ package com.mojang.brigadier.dispatching;
 import com.mojang.brigadier.ResultConsumer;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+/**
+ * A cumulative dispatching result that is in progress of collection.
+ *
+ * @param <S> the command source type
+ */
 public final class DispatchingState<S> {
+
     private int result = 0;
     private int successfulForks = 0;
     private boolean forked = false;
     private boolean foundCommands = false;
-    private final ResultConsumer<S> consumer;
     private CommandSyntaxException exception;
+    private final ResultConsumer<S> consumer;
 
     DispatchingState(ResultConsumer<S> consumer) {
         this.consumer = consumer;
     }
 
-    public void addResult(int result) {
-        this.result += result;
-    }
-
-    public void setForked() {
-        this.forked = true;
-    }
-
-    public void addFork() {
-        this.successfulForks++;
-    }
-
-    public void foundCommand() {
-        this.foundCommands = true;
-    }
-
-    public int getReturnValue() {
+    /**
+     * Gets the current return value of the dispatching state.
+     *
+     * @return the current result of the dispatching state
+     * @throws CommandSyntaxException if the state has observed an exception
+     */
+    public int getReturnValue() throws CommandSyntaxException {
+        if (exception != null) {
+            throw exception;
+        }
         return forked ? successfulForks : result;
     }
 
-    public int getResult() {
+    void addResult(int result) {
+        this.result += result;
+    }
+
+    void setForked() {
+        this.forked = true;
+    }
+
+    void addFork() {
+        this.successfulForks++;
+    }
+
+    void foundCommand() {
+        this.foundCommands = true;
+    }
+
+    int getResult() {
         return result;
     }
 
-    public boolean isForked() {
+    boolean isForked() {
         return forked;
     }
 
-    public boolean hasFoundCommands() {
+    boolean hasFoundCommands() {
         return foundCommands;
     }
 
-    public ResultConsumer<S> getConsumer() {
+    ResultConsumer<S> getConsumer() {
         return this.consumer;
     }
 
-    public void setException(CommandSyntaxException ex) {
+    void setException(CommandSyntaxException ex) {
         this.exception = ex;
     }
 
-    public CommandSyntaxException getException() {
+    CommandSyntaxException getException() {
         return this.exception;
     }
 }

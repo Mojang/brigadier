@@ -18,7 +18,7 @@ final class ParsedResultFrame<S> implements Frame<S> {
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> result) throws CommandSyntaxException {
+    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
         final String command = parse.getReader().getString();
         final CommandContext<S> original = parse.getContext().build(command);
 

@@ -19,15 +19,15 @@ final class RecursiveCommandReturnFrame<S, I> implements Frame<S> {
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> result) throws CommandSyntaxException {
+    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
         try {
             final int value = command.finish(context, intermediate);
-            result.addResult(value);
-            result.getConsumer().onCommandComplete(context, true, value);
-            result.addFork();
+            state.addResult(value);
+            state.getConsumer().onCommandComplete(context, true, value);
+            state.addFork();
         } catch (final CommandSyntaxException ex) {
-            result.getConsumer().onCommandComplete(context, false, 0);
-            if (!result.isForked()) {
+            state.getConsumer().onCommandComplete(context, false, 0);
+            if (!state.isForked()) {
                 throw ex;
             }
         }

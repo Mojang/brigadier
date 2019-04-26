@@ -18,14 +18,14 @@ final class CommandContextFrame<S> implements Frame<S> {
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> result) throws CommandSyntaxException {
+    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
         final CommandContext<S> child = context.getChild();
         if (child != null) {
             if (context.isForked()) {
-                result.setForked();
+                state.setForked();
             }
             if (child.hasNodes()) {
-                result.foundCommand();
+                state.foundCommand();
                 final RedirectModifier<S> modifier = context.getRedirectModifier();
                 if (modifier == null) {
                     waitlist.add(new CommandContextFrame<>(child.copyFor(context.getSource())));
@@ -38,28 +38,28 @@ final class CommandContextFrame<S> implements Frame<S> {
                             }
                         }
                     } catch (final CommandSyntaxException ex) {
-                        result.getConsumer().onCommandComplete(context, false, 0);
-                        if (!result.isForked()) {
+                        state.getConsumer().onCommandComplete(context, false, 0);
+                        if (!state.isForked()) {
                             throw ex;
                         }
                     }
                 }
             }
         } else if (context.getCommand() != null) {
-            result.foundCommand();
+            state.foundCommand();
             try {
                 final Command<S> cmd = context.getCommand();
                 if (cmd instanceof RecursiveCommand) {
                     addRecursiveCommand(waitlist, (RecursiveCommand<S, ?>) cmd);
                 } else {
                     final int value = cmd.run(context);
-                    result.addResult(value);
-                    result.getConsumer().onCommandComplete(context, true, value);
-                    result.addFork();
+                    state.addResult(value);
+                    state.getConsumer().onCommandComplete(context, true, value);
+                    state.addFork();
                 }
             } catch (final CommandSyntaxException ex) {
-                result.getConsumer().onCommandComplete(context, false, 0);
-                if (!result.isForked()) {
+                state.getConsumer().onCommandComplete(context, false, 0);
+                if (!state.isForked()) {
                     throw ex;
                 }
             }

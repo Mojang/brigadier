@@ -6,6 +6,7 @@ package com.mojang.brigadier;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.dispatching.DispatchingState;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
@@ -31,6 +32,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
@@ -399,5 +403,41 @@ public class CommandDispatcherTest {
     @Test
     public void testFindNodeDoesntExist() {
         assertThat(subject.findNode(Lists.newArrayList("foo", "bar")), is(nullValue()));
+    }
+
+    @Test
+    public void testExecuteRecursiveCommand() throws Exception {
+        subject.register(literal("called").executes(ctx -> 67));
+        subject.register(
+                literal("recursive-caller").executes(new RecursiveCommand<Object, DispatchingState<Object>>() {
+                    @Override
+                    public DispatchingState<Object> start(CommandContext<Object> context) throws CommandSyntaxException {
+                        return subject.executeCumulative("called", source);
+                    }
+
+                    @Override
+                    public int finish(CommandContext<Object> context, DispatchingState<Object> intermediate) throws CommandSyntaxException {
+                        return intermediate.getReturnValue() + 5;
+                    }
+                })
+        );
+
+        subject.register(
+                literal("father-caller").executes(new RecursiveCommand<Object, List<DispatchingState<Object>>>() {
+                    @Override
+                    public List<DispatchingState<Object>> start(CommandContext<Object> context) throws CommandSyntaxException {
+                        return Lists.newArrayList(subject.executeCumulative("recursive-caller", source), subject.executeCumulative("called", source));
+                    }
+
+                    @Override
+                    public int finish(CommandContext<Object> context, List<DispatchingState<Object>> intermediate) throws CommandSyntaxException {
+                        return intermediate.get(0).getReturnValue() * intermediate.get(1).getReturnValue();
+                    }
+                })
+        );
+
+        assertThat(subject.execute("called", source), is(67));
+        assertThat(subject.execute("recursive-caller", source), is(72));
+        assertThat(subject.execute("father-caller", source), is(67 * 72));
     }
 }

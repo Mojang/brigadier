@@ -144,6 +144,10 @@ public class CommandDispatcher<S> {
         return execute(new StringReader(input), source);
     }
 
+    public DispatchingState<S> executeCumulative(final String input, final S source) throws CommandSyntaxException {
+        return executeCumulative(new StringReader(input), source);
+    }
+
     /**
      * Parses and executes a given command.
      *
@@ -179,6 +183,11 @@ public class CommandDispatcher<S> {
         return execute(parse);
     }
 
+    public DispatchingState<S> executeCumulative(final StringReader input, final S source) throws CommandSyntaxException {
+        final ParseResults<S> parse = parse(input, source);
+        return executeCumulative(parse);
+    }
+
     /**
      * Executes a given pre-parsed command.
      *
@@ -209,6 +218,10 @@ public class CommandDispatcher<S> {
         return execute(parse, this.stack);
     }
 
+    public DispatchingState<S> executeCumulative(final ParseResults<S> parse) throws CommandSyntaxException {
+        return executeCumulative(parse, this.stack);
+    }
+
     /**
      * Executes a parsed command for a specific dispatching stack.
      *
@@ -218,12 +231,13 @@ public class CommandDispatcher<S> {
      * @throws CommandSyntaxException if the command failed to parse or execute
      */
     public int execute(final ParseResults<S> parse, final DispatchingStack<S> stack) throws CommandSyntaxException {
+        return executeCumulative(parse, stack).getReturnValue();
+    }
+
+    public DispatchingState<S> executeCumulative(final ParseResults<S> parse, final DispatchingStack<S> stack) throws CommandSyntaxException {
         final DispatchingState<S> state = stack.addCommand(parse, consumer);
         stack.execute();
-        final CommandSyntaxException ex = state.getException();
-        if (ex != null)
-            throw ex;
-        return state.getReturnValue();
+        return state;
     }
 
     /**
