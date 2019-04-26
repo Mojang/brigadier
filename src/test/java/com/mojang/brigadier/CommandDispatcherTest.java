@@ -18,6 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
@@ -33,7 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -407,6 +407,8 @@ public class CommandDispatcherTest {
 
     @Test
     public void testExecuteRecursiveCommand() throws Exception {
+        final List<Integer> list = Lists.newArrayList();
+        subject.setConsumer((ctx, succ, result) -> list.add(result));
         subject.register(literal("called").executes(ctx -> 67));
         subject.register(
                 literal("recursive-caller").executes(new RecursiveCommand<Object, DispatchingState<Object>>() {
@@ -439,5 +441,6 @@ public class CommandDispatcherTest {
         assertThat(subject.execute("called", source), is(67));
         assertThat(subject.execute("recursive-caller", source), is(72));
         assertThat(subject.execute("father-caller", source), is(67 * 72));
+        assertThat(list, contains(67, 67, 72, 67, 72, 67, 67 * 72));
     }
 }
