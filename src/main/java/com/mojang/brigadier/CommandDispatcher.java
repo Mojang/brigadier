@@ -7,6 +7,8 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.SuggestionContext;
+import com.mojang.brigadier.dispatching.DispatchingStack;
+import com.mojang.brigadier.dispatching.DispatchingState;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -63,6 +65,7 @@ public class CommandDispatcher<S> {
     };
     private ResultConsumer<S> consumer = (c, s, r) -> {
     };
+    private final DispatchingStack<S> stack = new DispatchingStack<>();
 
     /**
      * Create a new {@link CommandDispatcher} with the specified root node.
@@ -203,85 +206,24 @@ public class CommandDispatcher<S> {
      * @see #execute(StringReader, Object)
      */
     public int execute(final ParseResults<S> parse) throws CommandSyntaxException {
-        if (parse.getReader().canRead()) {
-            if (parse.getExceptions().size() == 1) {
-                throw parse.getExceptions().values().iterator().next();
-            } else if (parse.getContext().getRange().isEmpty()) {
-                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
-            } else {
-                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
-            }
-        }
+        return execute(parse, this.stack);
+    }
 
-        int result = 0;
-        int successfulForks = 0;
-        boolean forked = false;
-        boolean foundCommand = false;
-        final String command = parse.getReader().getString();
-        final CommandContext<S> original = parse.getContext().build(command);
-        List<CommandContext<S>> contexts = Collections.singletonList(original);
-        ArrayList<CommandContext<S>> next = null;
-
-        while (contexts != null) {
-            final int size = contexts.size();
-            for (int i = 0; i < size; i++) {
-                final CommandContext<S> context = contexts.get(i);
-                final CommandContext<S> child = context.getChild();
-                if (child != null) {
-                    forked |= context.isForked();
-                    if (child.hasNodes()) {
-                        foundCommand = true;
-                        final RedirectModifier<S> modifier = context.getRedirectModifier();
-                        if (modifier == null) {
-                            if (next == null) {
-                                next = new ArrayList<>(1);
-                            }
-                            next.add(child.copyFor(context.getSource()));
-                        } else {
-                            try {
-                                final Collection<S> results = modifier.apply(context);
-                                if (!results.isEmpty()) {
-                                    if (next == null) {
-                                        next = new ArrayList<>(results.size());
-                                    }
-                                    for (final S source : results) {
-                                        next.add(child.copyFor(source));
-                                    }
-                                }
-                            } catch (final CommandSyntaxException ex) {
-                                consumer.onCommandComplete(context, false, 0);
-                                if (!forked) {
-                                    throw ex;
-                                }
-                            }
-                        }
-                    }
-                } else if (context.getCommand() != null) {
-                    foundCommand = true;
-                    try {
-                        final int value = context.getCommand().run(context);
-                        result += value;
-                        consumer.onCommandComplete(context, true, value);
-                        successfulForks++;
-                    } catch (final CommandSyntaxException ex) {
-                        consumer.onCommandComplete(context, false, 0);
-                        if (!forked) {
-                            throw ex;
-                        }
-                    }
-                }
-            }
-
-            contexts = next;
-            next = null;
-        }
-
-        if (!foundCommand) {
-            consumer.onCommandComplete(original, false, 0);
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
-        }
-
-        return forked ? successfulForks : result;
+    /**
+     * Executes a parsed command for a specific dispatching stack.
+     *
+     * @param parse the result of a successful parse
+     * @param stack the stack for dispatching
+     * @return a numeric result from commands
+     * @throws CommandSyntaxException if the command failed to parse or execute
+     */
+    public int execute(final ParseResults<S> parse, final DispatchingStack<S> stack) throws CommandSyntaxException {
+        final DispatchingState<S> state = stack.addCommand(parse, consumer);
+        stack.execute();
+        final CommandSyntaxException ex = state.getException();
+        if (ex != null)
+            throw ex;
+        return state.getReturnValue();
     }
 
     /**
