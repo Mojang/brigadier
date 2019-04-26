@@ -5,12 +5,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 public interface RecursiveCommand<S, I> extends Command<S> {
 
+    @Deprecated
     @Override
-    default int run(CommandContext<S> context) throws CommandSyntaxException {
+    default int run(final CommandContext<S> context) throws CommandSyntaxException {
         return finish(context, start(context));
     }
 
-    I start(CommandContext<S> context) throws CommandSyntaxException;
+    I start(final CommandContext<S> context) throws CommandSyntaxException;
 
-    int finish(CommandContext<S> context, I intermediate) throws CommandSyntaxException;
+    int finish(final CommandContext<S> context, I intermediate) throws CommandSyntaxException;
 }

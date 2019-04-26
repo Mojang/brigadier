@@ -12,7 +12,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
  * @param <S> the command source type
  */
 public final class DispatchingState<S> {
-
     private int result = 0;
     private int successfulForks = 0;
     private boolean forked = false;
@@ -20,7 +19,7 @@ public final class DispatchingState<S> {
     private CommandSyntaxException exception;
     private final ResultConsumer<S> consumer;
 
-    DispatchingState(ResultConsumer<S> consumer) {
+    DispatchingState(final ResultConsumer<S> consumer) {
         this.consumer = consumer;
     }
 
@@ -37,7 +36,7 @@ public final class DispatchingState<S> {
         return forked ? successfulForks : result;
     }
 
-    void addResult(int result) {
+    void addResult(final int result) {
         this.result += result;
     }
 
@@ -69,7 +68,7 @@ public final class DispatchingState<S> {
         return this.consumer;
     }
 
-    void setException(CommandSyntaxException ex) {
+    void setException(final CommandSyntaxException ex) {
         this.exception = ex;
     }
 

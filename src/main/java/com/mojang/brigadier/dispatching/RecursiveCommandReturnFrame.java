@@ -10,19 +10,18 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Deque;
 
 final class RecursiveCommandReturnFrame<S, I> implements Frame<S> {
-
     private final CommandContext<S> context;
     private final I intermediate;
     private final RecursiveCommand<S, I> command;
 
-    RecursiveCommandReturnFrame(CommandContext<S> context, I intermediate, RecursiveCommand<S, I> recursiveCommand) {
+    RecursiveCommandReturnFrame(final CommandContext<S> context, final I intermediate, final RecursiveCommand<S, I> recursiveCommand) {
         this.command = recursiveCommand;
         this.context = context;
         this.intermediate = intermediate;
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
+    public void expand(final Deque<Frame<S>> waitlist, final DispatchingState<S> state) throws CommandSyntaxException {
         try {
             final int value = command.finish(context, intermediate);
             state.addResult(value);

@@ -11,7 +11,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 public final class DispatchingStack<S> {
-
     private final Deque<Frame<S>> stack = new ArrayDeque<>();
     private final Deque<Frame<S>> waitlist = new ArrayDeque<>();
     private DispatchingState<S> currentState = new DispatchingState<>((a, b, c) -> {
@@ -26,11 +25,11 @@ public final class DispatchingStack<S> {
         return this.currentState;
     }
 
-    void setCurrentState(DispatchingState<S> state) {
+    void setCurrentState(final DispatchingState<S> state) {
         this.currentState = state;
     }
 
-    public DispatchingState<S> addCommand(ParseResults<S> parse, ResultConsumer<S> consumer) throws CommandSyntaxException {
+    public DispatchingState<S> addCommand(final ParseResults<S> parse, final ResultConsumer<S> consumer) throws CommandSyntaxException {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -41,7 +40,7 @@ public final class DispatchingStack<S> {
             }
         }
 
-        DispatchingState<S> collectingState = new DispatchingState<>(consumer);
+        final DispatchingState<S> collectingState = new DispatchingState<>(consumer);
         waitlist.addLast(new ParsedResultFrame<>(parse, collectingState, this));
 
         return collectingState;
@@ -64,19 +63,19 @@ public final class DispatchingStack<S> {
                 break;
             }
 
-            Frame<S> frame = stack.removeFirst();
+            final Frame<S> frame = stack.removeFirst();
             try {
                 frame.expand(waitlist, currentState);
-            } catch (CommandSyntaxException ex) {
+            } catch (final CommandSyntaxException ex) {
                 waitlist.clear();
                 CommandSyntaxException currentException = ex;
                 while (!stack.isEmpty() && currentException != null) {
-                    Frame<S> top = stack.removeFirst();
+                    final Frame<S> top = stack.removeFirst();
                     if (top instanceof ExceptionHandlerFrame) {
                         try {
                             ((ExceptionHandlerFrame<S>) top).handleException(ex, currentState);
                             currentException = null;
-                        } catch (CommandSyntaxException ex2) {
+                        } catch (final CommandSyntaxException ex2) {
                             currentException = ex2;
                         }
                     }
@@ -89,6 +88,4 @@ public final class DispatchingStack<S> {
         }
         this.executing = false;
     }
-
-
 }

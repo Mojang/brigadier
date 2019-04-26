@@ -14,18 +14,18 @@ final class ParsedResultFrame<S> implements Frame<S> {
     private final DispatchingState<S> collectingState;
     private final DispatchingStack<S> stack;
 
-    ParsedResultFrame(ParseResults<S> parse, DispatchingState<S> state, DispatchingStack<S> stack) {
+    ParsedResultFrame(final ParseResults<S> parse, final DispatchingState<S> state, final DispatchingStack<S> stack) {
         this.parse = parse;
         this.collectingState = state;
         this.stack = stack;
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
+    public void expand(final Deque<Frame<S>> waitlist, final DispatchingState<S> state) throws CommandSyntaxException {
         final String command = parse.getReader().getString();
         final CommandContext<S> original = parse.getContext().build(command);
 
-        DispatchingState<S> old = stack.getCurrentState();
+        final DispatchingState<S> old = stack.getCurrentState();
         stack.setCurrentState(collectingState);
         waitlist.addLast(new CommandContextFrame<>(original));
         waitlist.addLast(new StateCollectionFrame<>(original, parse.getReader(), stack, old));

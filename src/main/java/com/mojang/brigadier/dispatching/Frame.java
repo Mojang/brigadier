@@ -9,7 +9,6 @@ import java.util.Deque;
 
 @FunctionalInterface
 interface Frame<S> {
-
     /**
      * Executes the frame and add more frames as necessary.
      *
@@ -19,6 +18,5 @@ interface Frame<S> {
      * @param state the current dispatching state
      * @throws CommandSyntaxException if an exception emerges during execution
      */
-    void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException;
-
+    void expand(final Deque<Frame<S>> waitlist, final DispatchingState<S> state) throws CommandSyntaxException;
 }

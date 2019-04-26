@@ -13,15 +13,14 @@ import java.util.Collection;
 import java.util.Deque;
 
 final class CommandContextFrame<S> implements Frame<S> {
-
     private final CommandContext<S> context;
 
-    CommandContextFrame(CommandContext<S> context) {
+    CommandContextFrame(final CommandContext<S> context) {
         this.context = context;
     }
 
     @Override
-    public void expand(Deque<Frame<S>> waitlist, DispatchingState<S> state) throws CommandSyntaxException {
+    public void expand(final Deque<Frame<S>> waitlist, final DispatchingState<S> state) throws CommandSyntaxException {
         final CommandContext<S> child = context.getChild();
         if (child != null) {
             if (context.isForked()) {
@@ -70,7 +69,7 @@ final class CommandContextFrame<S> implements Frame<S> {
     }
 
     // bypasses generic limits
-    private <I> void addRecursiveCommand(Deque<Frame<S>> waitlist, RecursiveCommand<S, I> command) throws CommandSyntaxException {
+    private <I> void addRecursiveCommand(final Deque<Frame<S>> waitlist, final RecursiveCommand<S, I> command) throws CommandSyntaxException {
         waitlist.addLast(new RecursiveCommandReturnFrame<>(context, command.start(context), command));
     }
 }

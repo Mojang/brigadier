@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Deque;
 
 interface ExceptionHandlerFrame<S> extends Frame<S> {
-
     /**
      * Handles a command exception thrown in a deeper frame.
      *
@@ -18,5 +17,5 @@ interface ExceptionHandlerFrame<S> extends Frame<S> {
      * @param result the current dispatching state in the stack
      * @throws CommandSyntaxException if a new exception emerges or if this handler wants to rethrow the exception
      */
-    void handleException(CommandSyntaxException ex, DispatchingState<S> result) throws CommandSyntaxException;
+    void handleException(final CommandSyntaxException ex, final DispatchingState<S> result) throws CommandSyntaxException;
 }
