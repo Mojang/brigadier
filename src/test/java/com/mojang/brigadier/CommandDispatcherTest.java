@@ -12,13 +12,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
@@ -26,10 +26,15 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -406,41 +411,138 @@ public class CommandDispatcherTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testExecuteRecursiveCommand() throws Exception {
-        final List<Integer> list = Lists.newArrayList();
-        subject.setConsumer((ctx, succ, result) -> list.add(result));
-        subject.register(literal("called").executes(ctx -> 67));
-        subject.register(
-                literal("recursive-caller").executes(new RecursiveCommand<Object, DispatchingState<Object>>() {
-                    @Override
-                    public DispatchingState<Object> start(CommandContext<Object> context) throws CommandSyntaxException {
-                        return subject.executeCumulative("called", source);
-                    }
+        final int diff = (int)(Math.random() * 1024);
+        final Command<Object> calledCommand = mock(Command.class);
+        final RecursiveCommand<Object, DispatchingState<Object>> recursiveCallerCommand = spy(new RecursiveCommand<Object, DispatchingState<Object>>() {
+            @Override
+            public DispatchingState<Object> start(final CommandContext<Object> context) throws CommandSyntaxException {
+                return subject.executeCumulative("called", context.getSource());
+            }
 
-                    @Override
-                    public int finish(CommandContext<Object> context, DispatchingState<Object> intermediate) throws CommandSyntaxException {
-                        return intermediate.getReturnValue() + 5;
-                    }
-                })
-        );
+            @Override
+            public int finish(final CommandContext<Object> context, final DispatchingState<Object> intermediate) throws CommandSyntaxException {
+                return intermediate.getReturnValue() + diff;
+            }
+        });
+        final RecursiveCommand<Object, List<DispatchingState<Object>>> fatherCallerCommand = spy(new RecursiveCommand<Object, List<DispatchingState<Object>>>() {
+            @Override
+            public List<DispatchingState<Object>> start(final CommandContext<Object> context) throws CommandSyntaxException {
+                return Lists.newArrayList(subject.executeCumulative("recursive-caller", context.getSource()), subject.executeCumulative("called", context.getSource()));
+            }
 
-        subject.register(
-                literal("father-caller").executes(new RecursiveCommand<Object, List<DispatchingState<Object>>>() {
-                    @Override
-                    public List<DispatchingState<Object>> start(CommandContext<Object> context) throws CommandSyntaxException {
-                        return Lists.newArrayList(subject.executeCumulative("recursive-caller", source), subject.executeCumulative("called", source));
-                    }
+            @Override
+            public int finish(final CommandContext<Object> context, final List<DispatchingState<Object>> intermediate) throws CommandSyntaxException {
+                int ret = 1;
+                for (final DispatchingState<Object> each : intermediate) {
+                    ret *= each.getReturnValue();
+                }
+                return ret;
+            }
+        });
+        final ResultConsumer<Object> consumer = mock(ResultConsumer.class);
 
-                    @Override
-                    public int finish(CommandContext<Object> context, List<DispatchingState<Object>> intermediate) throws CommandSyntaxException {
-                        return intermediate.get(0).getReturnValue() * intermediate.get(1).getReturnValue();
-                    }
-                })
-        );
+        subject.setConsumer(consumer);
+        subject.register(literal("called").executes(calledCommand));
+        subject.register(literal("recursive-caller").executes(recursiveCallerCommand));
+        final LiteralCommandNode<Object> fatherCallerNode = subject.register(literal("father-caller").executes(fatherCallerCommand));
 
-        assertThat(subject.execute("called", source), is(67));
-        assertThat(subject.execute("recursive-caller", source), is(72));
-        assertThat(subject.execute("father-caller", source), is(67 * 72));
-        assertThat(list, contains(67, 67, 72, 67, 72, 67, 67 * 72));
+        final int baseCalledResult = (int)(Math.random() * 1024);
+        when(calledCommand.run(any())).thenReturn(baseCalledResult);
+        assertThat(subject.execute("called", source), is(baseCalledResult));
+        verify(calledCommand).run(any());
+        verify(consumer).onCommandComplete(any(), eq(true), eq(baseCalledResult));
+        verify(consumer, never()).onCommandComplete(any(), eq(false), anyInt());
+        reset(calledCommand, recursiveCallerCommand, fatherCallerCommand, consumer);
+
+        final int simpleResult = (int)(Math.random() * 1024);
+        when(calledCommand.run(any())).thenReturn(simpleResult);
+        assertThat(subject.execute("recursive-caller", source), is(simpleResult + diff));
+        final InOrder simpleInOrder = inOrder(calledCommand, recursiveCallerCommand, consumer);
+        simpleInOrder.verify(recursiveCallerCommand).start(any());
+        simpleInOrder.verify(calledCommand).run(any());
+        simpleInOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(simpleResult));
+        simpleInOrder.verify(recursiveCallerCommand).finish(any(), any());
+        simpleInOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(simpleResult + diff));
+        verify(consumer, never()).onCommandComplete(any(), eq(false), anyInt());
+        reset(calledCommand, recursiveCallerCommand, fatherCallerCommand, consumer);
+
+        final int embeddedResult = (int)(Math.random() * 1024);
+        when(calledCommand.run(any())).thenReturn(embeddedResult);
+        assertThat(subject.execute("father-caller", source), is(embeddedResult * (embeddedResult + diff)));
+        final InOrder embeddedOrder = inOrder(calledCommand, recursiveCallerCommand, fatherCallerCommand, consumer);
+        embeddedOrder.verify(fatherCallerCommand).start(any());
+        embeddedOrder.verify(recursiveCallerCommand).start(any());
+        embeddedOrder.verify(calledCommand).run(any());
+        embeddedOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(embeddedResult));
+        embeddedOrder.verify(recursiveCallerCommand).finish(any(), any());
+        embeddedOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(embeddedResult + diff));
+        embeddedOrder.verify(calledCommand).run(any());
+        embeddedOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(embeddedResult));
+        embeddedOrder.verify(fatherCallerCommand).finish(any(), any());
+        embeddedOrder.verify(consumer).onCommandComplete(any(), eq(true), eq(embeddedResult * (embeddedResult + diff)));
+        verify(consumer, never()).onCommandComplete(any(), eq(false), anyInt());
+        reset(calledCommand, recursiveCallerCommand, fatherCallerCommand, consumer);
+
+        final RedirectModifier<Object> modifier = mock(RedirectModifier.class);
+        final Object source1 = new Object();
+        final Object source2 = new Object();
+
+        final int firstRedirectedResult = (int)(Math.random() * 1024);
+        final int secondRedirectedResult = (int)(Math.random() * 1024);
+        final int thirdRedirectedResult = (int)(Math.random() * 1024);
+        final int fourthRedirectedResult = (int)(Math.random() * 1024);
+        when(calledCommand.run(any())).thenReturn(firstRedirectedResult, secondRedirectedResult, thirdRedirectedResult, fourthRedirectedResult);
+        when(modifier.apply(argThat(hasProperty("source", is(source))))).thenReturn(Lists.newArrayList(source1, source2));
+
+        final LiteralCommandNode<Object> redirectNode = subject.register(literal("redirected").fork(subject.getRoot(), modifier));
+
+        final String input = "redirected father-caller";
+        final ParseResults<Object> parse = subject.parse(input, source);
+        assertThat(parse.getContext().getRange().get(input), equalTo("redirected"));
+        assertThat(parse.getContext().getNodes().size(), is(1));
+        assertThat(parse.getContext().getRootNode(), equalTo(subject.getRoot()));
+        assertThat(parse.getContext().getNodes().get(0).getRange(), equalTo(parse.getContext().getRange()));
+        assertThat(parse.getContext().getNodes().get(0).getNode(), is(redirectNode));
+        assertThat(parse.getContext().getSource(), is(source));
+
+        final CommandContextBuilder<Object> parent = parse.getContext().getChild();
+        assertThat(parent, is(notNullValue()));
+        assertThat(parent.getRange().get(input), equalTo("father-caller"));
+        assertThat(parent.getNodes().size(), is(1));
+        assertThat(parse.getContext().getRootNode(), equalTo(subject.getRoot()));
+        assertThat(parent.getNodes().get(0).getRange(), equalTo(parent.getRange()));
+        assertThat(parent.getNodes().get(0).getNode(), is(fatherCallerNode));
+        assertThat(parent.getSource(), is(source));
+
+        subject.setConsumer(consumer);
+        assertThat(subject.execute(parse), is(2));
+
+        final InOrder redirectedOrder = inOrder(calledCommand, recursiveCallerCommand, fatherCallerCommand, consumer);
+
+        redirectedOrder.verify(fatherCallerCommand).start(argThat(hasProperty("source", is(source1))));
+        redirectedOrder.verify(recursiveCallerCommand).start(argThat(hasProperty("source", is(source1))));
+        redirectedOrder.verify(calledCommand).run(argThat(hasProperty("source", is(source1))));
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source1))), eq(true), eq(firstRedirectedResult));
+        redirectedOrder.verify(recursiveCallerCommand).finish(argThat(hasProperty("source", is(source1))), any());
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source1))), eq(true), eq(firstRedirectedResult + diff));
+        redirectedOrder.verify(calledCommand).run(argThat(hasProperty("source", is(source1))));
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source1))), eq(true), eq(secondRedirectedResult));
+        redirectedOrder.verify(fatherCallerCommand).finish(argThat(hasProperty("source", is(source1))), any());
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source1))), eq(true), eq((firstRedirectedResult + diff) * secondRedirectedResult));
+
+        redirectedOrder.verify(fatherCallerCommand).start(argThat(hasProperty("source", is(source2))));
+        redirectedOrder.verify(recursiveCallerCommand).start(argThat(hasProperty("source", is(source2))));
+        redirectedOrder.verify(calledCommand).run(argThat(hasProperty("source", is(source2))));
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source2))), eq(true), eq(thirdRedirectedResult));
+        redirectedOrder.verify(recursiveCallerCommand).finish(argThat(hasProperty("source", is(source2))), any());
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source2))), eq(true), eq(thirdRedirectedResult + diff));
+        redirectedOrder.verify(calledCommand).run(argThat(hasProperty("source", is(source2))));
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source2))), eq(true), eq(fourthRedirectedResult));
+        redirectedOrder.verify(fatherCallerCommand).finish(argThat(hasProperty("source", is(source2))), any());
+        redirectedOrder.verify(consumer).onCommandComplete(argThat(hasProperty("source", is(source2))), eq(true), eq((thirdRedirectedResult + diff) * fourthRedirectedResult));
+
+        verify(consumer, never()).onCommandComplete(any(), eq(false), anyInt());
     }
 }
