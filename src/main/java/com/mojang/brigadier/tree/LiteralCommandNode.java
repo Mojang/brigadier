@@ -16,6 +16,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
@@ -24,7 +25,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         super(command, requirement, redirect, modifier, forks);
-        this.literal = literal;
+        this.literal = literal.toLowerCase(Locale.ENGLISH);
     }
 
     public String getLiteral() {
@@ -52,7 +53,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         final int start = reader.getCursor();
         if (reader.canRead(literal.length())) {
             final int end = start + literal.length();
-            if (reader.getString().substring(start, end).equals(literal)) {
+            if (reader.getString().toLowerCase(Locale.ENGLISH).substring(start, end).equals(literal)) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;
@@ -66,7 +67,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     @Override
     public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        if (literal.toLowerCase().startsWith(builder.getRemaining().toLowerCase())) {
+        if (literal.toLowerCase(Locale.ENGLISH).startsWith(builder.getRemaining().toLowerCase(Locale.ENGLISH))) {
             return builder.suggest(literal).buildFuture();
         } else {
             return Suggestions.empty();
