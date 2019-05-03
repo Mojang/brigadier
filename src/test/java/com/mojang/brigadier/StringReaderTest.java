@@ -469,7 +469,7 @@ public class StringReaderTest {
         assertThat(reader.getRead(), equalTo("12.34"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
-    
+
     @Test
     public void readFloat_negative() throws Exception {
         final StringReader reader = new StringReader("-123");
