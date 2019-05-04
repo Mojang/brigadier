@@ -25,7 +25,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         super(command, requirement, redirect, modifier, forks);
-        this.literal = literal.toLowerCase(Locale.ENGLISH);
+        this.literal = literal.toLowerCase(Locale.ROOT);
     }
 
     public String getLiteral() {
