@@ -11,6 +11,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class BoolArgumentType implements ArgumentType<Boolean> {
@@ -34,10 +35,11 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        if ("true".startsWith(builder.getRemaining().toLowerCase())) {
+        String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+        if ("true".startsWith(remaining)) {
             builder.suggest("true");
         }
-        if ("false".startsWith(builder.getRemaining().toLowerCase())) {
+        if ("false".startsWith(remaining)) {
             builder.suggest("false");
         }
         return builder.buildFuture();
