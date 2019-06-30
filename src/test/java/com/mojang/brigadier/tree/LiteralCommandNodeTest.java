@@ -130,7 +130,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     public void testCreateBuilder() throws Exception {
         final LiteralArgumentBuilder<Object> builder = node.createBuilder();
         assertThat(builder.getLiteral(), is(node.getLiteral()));
-        assertThat(builder.getRequirement(), is(node.getRequirement()));
+        assertThat(builder.getRequirements(), is(node.getRequirements()));
         assertThat(builder.getCommand(), is(node.getCommand()));
     }
 }

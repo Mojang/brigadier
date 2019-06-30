@@ -18,7 +18,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -28,18 +30,20 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
     private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
-    private final Predicate<S> requirement;
+    private final List<Predicate<S>> requirements;
+    private final Predicate<S> combined;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S> command, final List<Predicate<S>> requirements, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
-        this.requirement = requirement;
+        this.requirements = requirements;
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
+        this.combined = requirements.stream().reduce(__ -> true, Predicate::and);
     }
 
     public Command<S> getCommand() {
@@ -63,7 +67,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     }
 
     public boolean canUse(final S source) {
-        return requirement.test(source);
+        return combined.test(source);
     }
 
     public void addChild(final CommandNode<S> node) {
@@ -127,9 +131,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         final CommandNode<S> that = (CommandNode<S>) o;
 
         if (!children.equals(that.children)) return false;
-        if (command != null ? !command.equals(that.command) : that.command != null) return false;
-
-        return true;
+        return Objects.equals(command, that.command);
     }
 
     @Override
@@ -137,8 +139,13 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return 31 * children.hashCode() + (command != null ? command.hashCode() : 0);
     }
 
+    @Deprecated
     public Predicate<S> getRequirement() {
-        return requirement;
+        return requirements.get(0);
+    }
+
+    public List<Predicate<S>> getRequirements() {
+        return requirements;
     }
 
     public abstract String getName();
