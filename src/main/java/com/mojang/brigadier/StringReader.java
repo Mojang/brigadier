@@ -167,13 +167,10 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public static boolean isAllowedInUnquotedString(final char c) {
-        return c >= '0' && c <= '9'
-            || c >= 'A' && c <= 'Z'
-            || c >= 'a' && c <= 'z'
-            || c >= 'а' && c <= 'я'
-            || c >= 'А' && c <= 'Я'
-            || c == '_' || c == '-'
-            || c == '.' || c == '+';
+        return Character.isAlphabetic(c)
+                || c >= '0' && c <= '9'
+                || c == '_' || c == '-'
+                || c == '.' || c == '+';
     }
 
     public String readUnquotedString() {
