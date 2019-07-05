@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.internal.util.PredicateUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
@@ -42,7 +43,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
-        this.combined = requirements.stream().reduce(__ -> true, Predicate::and);
+        this.combined = PredicateUtil.join(requirements);
     }
 
     public Command<S> getCommand() {

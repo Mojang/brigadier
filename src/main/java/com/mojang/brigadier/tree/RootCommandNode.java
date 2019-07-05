@@ -14,12 +14,10 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 
 public class RootCommandNode<S> extends CommandNode<S> {
-    private static final Predicate<?> TRUE = __ -> true;
     public RootCommandNode() {
-        super(null, Collections.singleton((Predicate<S>) TRUE), null, s -> Collections.singleton(s.getSource()), false);
+        super(null, Collections.emptySet(), null, s -> Collections.singleton(s.getSource()), false);
     }
 
     @Override

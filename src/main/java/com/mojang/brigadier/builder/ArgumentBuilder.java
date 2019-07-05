@@ -6,6 +6,7 @@ package com.mojang.brigadier.builder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.SingleRedirectModifier;
+import com.mojang.brigadier.internal.util.PredicateUtil;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
@@ -16,7 +17,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
-    private static final Predicate<?> TRUE = __ -> true;
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
     private final Set<Predicate<S>> requirements = new HashSet<>(1);
@@ -26,7 +26,6 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private boolean forks;
 
     protected ArgumentBuilder() {
-        requirements.add((Predicate<S>) TRUE);
         requirementsView = Collections.unmodifiableSet(requirements);
     }
 
@@ -73,7 +72,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     @Deprecated
     public Predicate<S> getRequirement() {
-        return requirements.stream().reduce(__ -> true, Predicate::and);
+        return PredicateUtil.join(requirements);
     }
 
     public Set<Predicate<S>> getRequirements() {
