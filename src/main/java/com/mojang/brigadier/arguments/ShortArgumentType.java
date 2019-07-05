@@ -33,7 +33,7 @@ public class ShortArgumentType implements ArgumentType<Short> {
         return new ShortArgumentType(min, max);
     }
 
-    public static int getShort(final CommandContext<?> context, final String name) {
+    public static short getShort(final CommandContext<?> context, final String name) {
         return context.getArgument(name, short.class);
     }
 

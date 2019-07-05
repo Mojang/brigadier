@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public class UuidArgumentType implements ArgumentType<UUID> {
 
+    private UuidArgumentType() { }
+
     public static UuidArgumentType uuid() {
         return new UuidArgumentType();
     }
