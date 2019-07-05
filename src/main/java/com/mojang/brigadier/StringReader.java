@@ -115,6 +115,23 @@ public class StringReader implements ImmutableStringReader {
         }
     }
 
+    public short readShort() throws CommandSyntaxException {
+        final int start = cursor;
+        while (canRead() && isAllowedNumber(peek())) {
+            skip();
+        }
+        final String number = string.substring(start, cursor);
+        if (number.isEmpty()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedShort().createWithContext(this);
+        }
+        try {
+            return Short.parseShort(number);
+        } catch (final NumberFormatException ex) {
+            cursor = start;
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidShort().createWithContext(this, number);
+        }
+    }
+
     public long readLong() throws CommandSyntaxException {
         final int start = cursor;
         while (canRead() && isAllowedNumber(peek())) {
@@ -163,6 +180,23 @@ public class StringReader implements ImmutableStringReader {
         } catch (final NumberFormatException ex) {
             cursor = start;
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().createWithContext(this, number);
+        }
+    }
+
+    public byte readByte() throws CommandSyntaxException {
+        final int start = cursor;
+        while (canRead() && isAllowedNumber(peek())) {
+            skip();
+        }
+        final String number = string.substring(start, cursor);
+        if (number.isEmpty()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedByte().createWithContext(this);
+        }
+        try {
+            return Byte.parseByte(number);
+        } catch (final NumberFormatException ex) {
+            cursor = start;
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidByte().createWithContext(this, number);
         }
     }
 
