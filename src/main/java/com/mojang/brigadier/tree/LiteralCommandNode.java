@@ -16,14 +16,21 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
 
+    public LiteralCommandNode(final String literal, final Command<S> command, final Set<Predicate<S>> requirements, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+        super(command, requirements, redirect, modifier, forks);
+        this.literal = literal;
+    }
+
+    @Deprecated
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
-        super(command, requirement, redirect, modifier, forks);
+        super(command, Collections.singleton(requirement), redirect, modifier, forks);
         this.literal = literal;
     }
 
@@ -104,7 +111,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     @Override
     public LiteralArgumentBuilder<S> createBuilder() {
         final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
-        builder.requires(getRequirement());
+        builder.requiresAll(getRequirements());
         builder.forward(getRedirect(), getRedirectModifier(), isFork());
         if (getCommand() != null) {
             builder.executes(getCommand());

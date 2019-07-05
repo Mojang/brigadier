@@ -16,9 +16,17 @@ public interface BuiltInExceptionProvider {
 
     Dynamic2CommandExceptionType integerTooHigh();
 
+    Dynamic2CommandExceptionType byteTooLow();
+
+    Dynamic2CommandExceptionType byteTooHigh();
+
     Dynamic2CommandExceptionType longTooLow();
 
     Dynamic2CommandExceptionType longTooHigh();
+
+    Dynamic2CommandExceptionType shortTooLow();
+
+    Dynamic2CommandExceptionType shortTooHigh();
 
     DynamicCommandExceptionType literalIncorrect();
 
@@ -34,6 +42,10 @@ public interface BuiltInExceptionProvider {
 
     SimpleCommandExceptionType readerExpectedInt();
 
+    DynamicCommandExceptionType readerInvalidByte();
+
+    SimpleCommandExceptionType readerExpectedByte();
+
     DynamicCommandExceptionType readerInvalidLong();
 
     SimpleCommandExceptionType readerExpectedLong();
@@ -45,6 +57,10 @@ public interface BuiltInExceptionProvider {
     DynamicCommandExceptionType readerInvalidFloat();
 
     SimpleCommandExceptionType readerExpectedFloat();
+
+    DynamicCommandExceptionType readerInvalidShort();
+
+    SimpleCommandExceptionType readerExpectedShort();
 
     SimpleCommandExceptionType readerExpectedBool();
 

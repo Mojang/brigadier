@@ -92,7 +92,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
         final RequiredArgumentBuilder<Object, Integer> builder = node.createBuilder();
         assertThat(builder.getName(), is(node.getName()));
         assertThat(builder.getType(), is(node.getType()));
-        assertThat(builder.getRequirement(), is(node.getRequirement()));
+        assertThat(builder.getRequirements(), is(node.getRequirements()));
         assertThat(builder.getCommand(), is(node.getCommand()));
     }
 }

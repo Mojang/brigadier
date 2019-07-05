@@ -6,20 +6,28 @@ package com.mojang.brigadier.builder;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.SingleRedirectModifier;
+import com.mojang.brigadier.util.PredicateUtil;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
-    private Predicate<S> requirement = s -> true;
+    private final Set<Predicate<S>> requirements = new HashSet<>(1);
+    private final Set<Predicate<S>> requirementsView;
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
+
+    protected ArgumentBuilder() {
+        requirementsView = Collections.unmodifiableSet(requirements);
+    }
 
     protected abstract T getThis();
 
@@ -53,12 +61,22 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public T requires(final Predicate<S> requirement) {
-        this.requirement = requirement;
+        requirements.add(requirement);
         return getThis();
     }
 
+    public T requiresAll(final Iterable<Predicate<S>> requirements) {
+        requirements.forEach(this.requirements::add);
+        return getThis();
+    }
+
+    @Deprecated
     public Predicate<S> getRequirement() {
-        return requirement;
+        return PredicateUtil.join(requirements);
+    }
+
+    public Set<Predicate<S>> getRequirements() {
+        return requirementsView;
     }
 
     public T redirect(final CommandNode<S> target) {

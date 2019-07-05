@@ -15,8 +15,14 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final Dynamic2CommandExceptionType INTEGER_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Integer must not be less than " + min + ", found " + found));
     private static final Dynamic2CommandExceptionType INTEGER_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Integer must not be more than " + max + ", found " + found));
 
+    private static final Dynamic2CommandExceptionType BYTE_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Byte must not be less than " + min + ", found " + found));
+    private static final Dynamic2CommandExceptionType BYTE_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Byte must not be more than " + max + ", found " + found));
+
     private static final Dynamic2CommandExceptionType LONG_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Long must not be less than " + min + ", found " + found));
     private static final Dynamic2CommandExceptionType LONG_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Long must not be more than " + max + ", found " + found));
+
+    private static final Dynamic2CommandExceptionType SHORT_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Short must not be less than " + min + ", found " + found));
+    private static final Dynamic2CommandExceptionType SHORT_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Short must not be more than " + max + ", found " + found));
 
     private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(expected -> new LiteralMessage("Expected literal " + expected));
 
@@ -26,12 +32,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid bool, expected true or false but found '" + value + "'"));
     private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid integer '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(new LiteralMessage("Expected integer"));
+    private static final DynamicCommandExceptionType READER_INVALID_BYTE = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid byte '" + value + "'"));
+    private static final SimpleCommandExceptionType READER_EXPECTED_BYTE = new SimpleCommandExceptionType(new LiteralMessage("Expected byte"));
     private static final DynamicCommandExceptionType READER_INVALID_LONG = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid long '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_LONG = new SimpleCommandExceptionType((new LiteralMessage("Expected long")));
     private static final DynamicCommandExceptionType READER_INVALID_DOUBLE = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid double '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_DOUBLE = new SimpleCommandExceptionType(new LiteralMessage("Expected double"));
     private static final DynamicCommandExceptionType READER_INVALID_FLOAT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid float '" + value + "'"));
     private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(new LiteralMessage("Expected float"));
+    private static final DynamicCommandExceptionType READER_INVALID_SHORT = new DynamicCommandExceptionType(value -> new LiteralMessage("Invalid short '" + value + "'"));
+    private static final SimpleCommandExceptionType READER_EXPECTED_SHORT = new SimpleCommandExceptionType(new LiteralMessage("Expected short"));
     private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(new LiteralMessage("Expected bool"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> new LiteralMessage("Expected '" + symbol + "'"));
 
@@ -71,6 +81,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public Dynamic2CommandExceptionType byteTooLow() {
+        return BYTE_TOO_SMALL;
+    }
+
+    @Override
+    public Dynamic2CommandExceptionType byteTooHigh() {
+        return BYTE_TOO_BIG;
+    }
+
+    @Override
     public Dynamic2CommandExceptionType longTooLow() {
         return LONG_TOO_SMALL;
     }
@@ -78,6 +98,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public Dynamic2CommandExceptionType longTooHigh() {
         return LONG_TOO_BIG;
+    }
+
+    @Override
+    public Dynamic2CommandExceptionType shortTooLow() {
+        return SHORT_TOO_SMALL;
+    }
+
+    @Override
+    public Dynamic2CommandExceptionType shortTooHigh() {
+        return SHORT_TOO_BIG;
     }
 
     @Override
@@ -116,6 +146,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
+    public DynamicCommandExceptionType readerInvalidByte() {
+        return READER_INVALID_BYTE;
+    }
+
+    @Override
+    public SimpleCommandExceptionType readerExpectedByte() {
+        return READER_EXPECTED_BYTE;
+    }
+
+    @Override
     public DynamicCommandExceptionType readerInvalidLong() {
         return READER_INVALID_LONG;
     }
@@ -143,6 +183,16 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public SimpleCommandExceptionType readerExpectedFloat() {
         return READER_EXPECTED_FLOAT;
+    }
+
+    @Override
+    public DynamicCommandExceptionType readerInvalidShort() {
+        return READER_INVALID_SHORT;
+    }
+
+    @Override
+    public SimpleCommandExceptionType readerExpectedShort() {
+        return READER_EXPECTED_SHORT;
     }
 
     @Override

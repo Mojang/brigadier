@@ -10,6 +10,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CommandContext<S> {
 
@@ -103,21 +104,19 @@ public class CommandContext<S> {
         if (!arguments.equals(that.arguments)) return false;
         if (!rootNode.equals(that.rootNode)) return false;
         if (nodes.size() != that.nodes.size() || !nodes.equals(that.nodes)) return false;
-        if (command != null ? !command.equals(that.command) : that.command != null) return false;
+        if (!Objects.equals(command, that.command)) return false;
         if (!source.equals(that.source)) return false;
-        if (child != null ? !child.equals(that.child) : that.child != null) return false;
-
-        return true;
+        return Objects.equals(child, that.child);
     }
 
     @Override
     public int hashCode() {
         int result = source.hashCode();
         result = 31 * result + arguments.hashCode();
-        result = 31 * result + (command != null ? command.hashCode() : 0);
+        result = 31 * result + Objects.hashCode(command);
         result = 31 * result + rootNode.hashCode();
         result = 31 * result + nodes.hashCode();
-        result = 31 * result + (child != null ? child.hashCode() : 0);
+        result = 31 * result + Objects.hashCode(child);
         return result;
     }
 
