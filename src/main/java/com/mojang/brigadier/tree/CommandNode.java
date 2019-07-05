@@ -135,7 +135,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     @Override
     public int hashCode() {
-        return 31 * children.hashCode() + (command != null ? command.hashCode() : 0);
+        return 31 * children.hashCode() + Objects.hashCode(command);
     }
 
     @Deprecated
