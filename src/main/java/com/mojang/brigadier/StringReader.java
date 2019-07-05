@@ -202,9 +202,8 @@ public class StringReader implements ImmutableStringReader {
 
     public static boolean isAllowedInUnquotedString(final char c) {
         return Character.isAlphabetic(c)
-                || c >= '0' && c <= '9'
-                || c == '_' || c == '-'
-                || c == '.' || c == '+';
+                || isAllowedNumber(c)
+                || c == '_' || c == '+';
     }
 
     public String readUnquotedString() {
