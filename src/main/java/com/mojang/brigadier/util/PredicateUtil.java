@@ -1,4 +1,4 @@
-package com.mojang.brigadier.internal.util;
+package com.mojang.brigadier.util;
 
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
