@@ -37,8 +37,9 @@ dependencies {
     annotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.21'
 }
 
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'

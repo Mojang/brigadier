@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -30,14 +29,14 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
     private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
-    private final List<Predicate<S>> requirements;
+    private final Set<Predicate<S>> requirements;
     private final Predicate<S> combined;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final List<Predicate<S>> requirements, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S> command, final Set<Predicate<S>> requirements, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
         this.requirements = requirements;
         this.redirect = redirect;
@@ -141,10 +140,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     @Deprecated
     public Predicate<S> getRequirement() {
-        return requirements.get(0);
+        return combined;
     }
 
-    public List<Predicate<S>> getRequirements() {
+    public Set<Predicate<S>> getRequirements() {
         return requirements;
     }
 

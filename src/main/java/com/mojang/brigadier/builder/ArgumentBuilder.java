@@ -9,24 +9,25 @@ import com.mojang.brigadier.SingleRedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
+    private static final Predicate<?> TRUE = __ -> true;
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
-    private final List<Predicate<S>> requirements = new ArrayList<>(1);
-    private final List<Predicate<S>> requirementsView;
+    private final Set<Predicate<S>> requirements = new HashSet<>(1);
+    private final Set<Predicate<S>> requirementsView;
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
 
     protected ArgumentBuilder() {
-        requirementsView = Collections.unmodifiableList(requirements);
-        requirements.add(__ -> true);
+        requirements.add((Predicate<S>) TRUE);
+        requirementsView = Collections.unmodifiableSet(requirements);
     }
 
     protected abstract T getThis();
@@ -65,17 +66,17 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return getThis();
     }
 
-    public T requiresAll(final Collection<Predicate<S>> requirements) {
-        this.requirements.addAll(requirements);
+    public T requiresAll(final Iterable<Predicate<S>> requirements) {
+        requirements.forEach(this.requirements::add);
         return getThis();
     }
 
     @Deprecated
     public Predicate<S> getRequirement() {
-        return requirements.get(0);
+        return requirements.stream().reduce(__ -> true, Predicate::and);
     }
 
-    public List<Predicate<S>> getRequirements() {
+    public Set<Predicate<S>> getRequirements() {
         return requirementsView;
     }
 
