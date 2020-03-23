@@ -26,43 +26,43 @@ public class ArgumentBuilderTest {
 
     @Test
     public void testArguments() throws Exception {
-        final RequiredArgumentBuilder<Object, ?> argument = argument("bar", integer());
+        final RequiredArgumentBuilder<Object, Integer, ?> argument = argument("bar", integer());
 
         builder.then(argument);
 
         assertThat(builder.getArguments(), hasSize(1));
-        assertThat(builder.getArguments(), hasItem((CommandNode<Object>) argument.build()));
+        assertThat(builder.getArguments(), hasItem((CommandNode<Object, Integer>) argument.build()));
     }
 
     @Test
     public void testRedirect() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNode<Object, Integer> target = mock(CommandNode.class);
         builder.redirect(target);
         assertThat(builder.getRedirect(), is(target));
     }
 
     @Test(expected = IllegalStateException.class)
     public void testRedirect_withChild() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNode<Object, Integer> target = mock(CommandNode.class);
         builder.then(literal("foo"));
         builder.redirect(target);
     }
 
     @Test(expected = IllegalStateException.class)
     public void testThen_withRedirect() throws Exception {
-        final CommandNode<Object> target = mock(CommandNode.class);
+        final CommandNode<Object, Integer> target = mock(CommandNode.class);
         builder.redirect(target);
         builder.then(literal("foo"));
     }
 
-    private static class TestableArgumentBuilder<S> extends ArgumentBuilder<S, TestableArgumentBuilder<S>> {
+    private static class TestableArgumentBuilder<S> extends ArgumentBuilder<S, Integer, TestableArgumentBuilder<S>> {
         @Override
         protected TestableArgumentBuilder<S> getThis() {
             return this;
         }
 
         @Override
-        public CommandNode<S> build() {
+        public CommandNode<S, Integer> build() {
             return null;
         }
     }

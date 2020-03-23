@@ -24,17 +24,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
-    private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
-    private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
+public abstract class CommandNode<S, R> implements Comparable<CommandNode<S, R>> {
+    private Map<String, CommandNode<S, R>> children = new LinkedHashMap<>();
+    private Map<String, LiteralCommandNode<S, R>> literals = new LinkedHashMap<>();
+    private Map<String, ArgumentCommandNode<S, R, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
-    private final CommandNode<S> redirect;
-    private final RedirectModifier<S> modifier;
+    private final CommandNode<S, R> redirect;
+    private final RedirectModifier<S, R> modifier;
     private final boolean forks;
-    private Command<S> command;
+    private Command<S, R> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S, R> command, final Predicate<S> requirement, final CommandNode<S, R> redirect, final RedirectModifier<S, R> modifier, final boolean forks) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
@@ -42,23 +42,23 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         this.forks = forks;
     }
 
-    public Command<S> getCommand() {
+    public Command<S, R> getCommand() {
         return command;
     }
 
-    public Collection<CommandNode<S>> getChildren() {
+    public Collection<CommandNode<S, R>> getChildren() {
         return children.values();
     }
 
-    public CommandNode<S> getChild(final String name) {
+    public CommandNode<S, R> getChild(final String name) {
         return children.get(name);
     }
 
-    public CommandNode<S> getRedirect() {
+    public CommandNode<S, R> getRedirect() {
         return redirect;
     }
 
-    public RedirectModifier<S> getRedirectModifier() {
+    public RedirectModifier<S, R> getRedirectModifier() {
         return modifier;
     }
 
@@ -66,37 +66,37 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         return requirement.test(source);
     }
 
-    public void addChild(final CommandNode<S> node) {
+    public void addChild(final CommandNode<S, R> node) {
         if (node instanceof RootCommandNode) {
             throw new UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode");
         }
 
-        final CommandNode<S> child = children.get(node.getName());
+        final CommandNode<S, R> child = children.get(node.getName());
         if (child != null) {
             // We've found something to merge onto
             if (node.getCommand() != null) {
                 child.command = node.getCommand();
             }
-            for (final CommandNode<S> grandchild : node.getChildren()) {
+            for (final CommandNode<S, R> grandchild : node.getChildren()) {
                 child.addChild(grandchild);
             }
         } else {
             children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
-                literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                literals.put(node.getName(), (LiteralCommandNode<S, R>) node);
             } else if (node instanceof ArgumentCommandNode) {
-                arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
+                arguments.put(node.getName(), (ArgumentCommandNode<S, R, ?>) node);
             }
         }
 
         children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
-    public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
+    public void findAmbiguities(final AmbiguityConsumer<S, R> consumer) {
         Set<String> matches = new HashSet<>();
 
-        for (final CommandNode<S> child : children.values()) {
-            for (final CommandNode<S> sibling : children.values()) {
+        for (final CommandNode<S, R> child : children.values()) {
+            for (final CommandNode<S, R> sibling : children.values()) {
                 if (child == sibling) {
                     continue;
                 }
@@ -124,7 +124,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
-        final CommandNode<S> that = (CommandNode<S>) o;
+        final CommandNode<S, R> that = (CommandNode<S, R>) o;
 
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
@@ -145,15 +145,15 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public abstract String getUsageText();
 
-    public abstract void parse(StringReader reader, CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException;
+    public abstract void parse(StringReader reader, CommandContextBuilder<S, R> contextBuilder) throws CommandSyntaxException;
 
-    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) throws CommandSyntaxException;
+    public abstract CompletableFuture<Suggestions> listSuggestions(CommandContext<S, R> context, SuggestionsBuilder builder) throws CommandSyntaxException;
 
-    public abstract ArgumentBuilder<S, ?> createBuilder();
+    public abstract ArgumentBuilder<S, R, ?> createBuilder();
 
     protected abstract String getSortedKey();
 
-    public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
+    public Collection<? extends CommandNode<S, R>> getRelevantNodes(final StringReader input) {
         if (literals.size() > 0) {
             final int cursor = input.getCursor();
             while (input.canRead() && input.peek() != ' ') {
@@ -161,7 +161,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
             }
             final String text = input.getString().substring(cursor, input.getCursor());
             input.setCursor(cursor);
-            final LiteralCommandNode<S> literal = literals.get(text);
+            final LiteralCommandNode<S, R> literal = literals.get(text);
             if (literal != null) {
                 return Collections.singleton(literal);
             } else {
@@ -173,7 +173,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     }
 
     @Override
-    public int compareTo(final CommandNode<S> o) {
+    public int compareTo(final CommandNode<S, R> o) {
         if (this instanceof LiteralCommandNode == o instanceof LiteralCommandNode) {
             return getSortedKey().compareTo(o.getSortedKey());
         }

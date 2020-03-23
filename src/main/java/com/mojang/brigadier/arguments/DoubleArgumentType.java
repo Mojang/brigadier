@@ -33,7 +33,7 @@ public class DoubleArgumentType implements ArgumentType<Double> {
         return new DoubleArgumentType(min, max);
     }
 
-    public static double getDouble(final CommandContext<?> context, final String name) {
+    public static double getDouble(final CommandContext<?, ?> context, final String name) {
         return context.getArgument(name, Double.class);
     }
 

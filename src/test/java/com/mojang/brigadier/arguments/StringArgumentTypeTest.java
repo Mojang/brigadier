@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StringArgumentTypeTest {
     @Mock
-    private CommandContextBuilder<Object> context;
+    private CommandContextBuilder<Object, Integer> context;
 
     @Test
     public void testParseWord() throws Exception {

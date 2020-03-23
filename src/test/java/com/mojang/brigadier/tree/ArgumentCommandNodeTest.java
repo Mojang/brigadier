@@ -5,7 +5,6 @@ package com.mojang.brigadier.tree;
 
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -14,25 +13,26 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.mojang.brigadier.Helpers.argument;
+import static com.mojang.brigadier.Helpers.create;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
-    private ArgumentCommandNode<Object, Integer> node;
-    private CommandContextBuilder<Object> contextBuilder;
+    private ArgumentCommandNode<Object, Integer, Integer> node;
+    private CommandContextBuilder<Object, Integer> contextBuilder;
 
     @Override
-    protected CommandNode<Object> getCommandNode() {
+    protected CommandNode<Object, Integer> getCommandNode() {
         return node;
     }
 
     @Before
     public void setUp() throws Exception {
         node = argument("foo", integer()).build();
-        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), new RootCommandNode<>(), 0);
+        contextBuilder = new CommandContextBuilder<>(create(), new Object(), new RootCommandNode<>(), 0);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        @SuppressWarnings("unchecked") final Command<Object> command = (Command<Object>) mock(Command.class);
+        @SuppressWarnings("unchecked") final Command<Object, Integer> command = (Command<Object, Integer>) mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(
@@ -89,7 +89,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testCreateBuilder() throws Exception {
-        final RequiredArgumentBuilder<Object, Integer> builder = node.createBuilder();
+        final RequiredArgumentBuilder<Object, Integer, Integer> builder = node.createBuilder();
         assertThat(builder.getName(), is(node.getName()));
         assertThat(builder.getType(), is(node.getType()));
         assertThat(builder.getRequirement(), is(node.getRequirement()));

@@ -17,18 +17,19 @@ import org.openjdk.jmh.annotations.State;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.Helpers.create;
+import static com.mojang.brigadier.Helpers.literal;
 
 @State(Scope.Benchmark)
 public class ExecuteBenchmarks {
-    private CommandDispatcher<Object> dispatcher;
-    private ParseResults<Object> simple;
-    private ParseResults<Object> singleRedirect;
-    private ParseResults<Object> forkedRedirect;
+    private CommandDispatcher<Object, Integer> dispatcher;
+    private ParseResults<Object, Integer> simple;
+    private ParseResults<Object, Integer> singleRedirect;
+    private ParseResults<Object, Integer> forkedRedirect;
 
     @Setup
     public void setup() {
-        dispatcher = new CommandDispatcher<>();
+        dispatcher = create();
         dispatcher.register(literal("command").executes(c -> 0));
         dispatcher.register(literal("redirect").redirect(dispatcher.getRoot()));
         dispatcher.register(literal("fork").fork(dispatcher.getRoot(), o -> Lists.newArrayList(new Object(), new Object(), new Object())));

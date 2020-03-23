@@ -19,10 +19,10 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public class LiteralCommandNode<S> extends CommandNode<S> {
+public class LiteralCommandNode<S, R> extends CommandNode<S, R> {
     private final String literal;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    public LiteralCommandNode(final String literal, final Command<S, R> command, final Predicate<S> requirement, final CommandNode<S, R> redirect, final RedirectModifier<S, R> modifier, final boolean forks) {
         super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
     }
@@ -37,7 +37,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S, R> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final int end = parse(reader);
         if (end > -1) {
@@ -65,7 +65,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S, R> context, final SuggestionsBuilder builder) {
         if (literal.toLowerCase().startsWith(builder.getRemaining().toLowerCase())) {
             return builder.suggest(literal).buildFuture();
         } else {
@@ -102,8 +102,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public LiteralArgumentBuilder<S> createBuilder() {
-        final LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.literal(this.literal);
+    public LiteralArgumentBuilder<S, R> createBuilder() {
+        final LiteralArgumentBuilder<S, R> builder = LiteralArgumentBuilder.literal(this.literal);
         builder.requires(getRequirement());
         builder.forward(getRedirect(), getRedirectModifier(), isFork());
         if (getCommand() != null) {

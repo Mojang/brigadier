@@ -8,6 +8,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface AmbiguityConsumer<S> {
-    void ambiguous(final CommandNode<S> parent, final CommandNode<S> child, final CommandNode<S> sibling, final Collection<String> inputs);
+public interface AmbiguityConsumer<S, R> {
+    void ambiguous(final CommandNode<S, R> parent, final CommandNode<S, R> child, final CommandNode<S, R> sibling, final Collection<String> inputs);
 }

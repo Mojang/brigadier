@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommandContext<S> {
+public class CommandContext<S, R> {
 
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
 
@@ -28,16 +28,16 @@ public class CommandContext<S> {
 
     private final S source;
     private final String input;
-    private final Command<S> command;
+    private final Command<S, R> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
-    private final CommandNode<S> rootNode;
-    private final List<ParsedCommandNode<S>> nodes;
+    private final CommandNode<S, R> rootNode;
+    private final List<ParsedCommandNode<S, R>> nodes;
     private final StringRange range;
-    private final CommandContext<S> child;
-    private final RedirectModifier<S> modifier;
+    private final CommandContext<S, R> child;
+    private final RedirectModifier<S, R> modifier;
     private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S, R> command, final CommandNode<S, R> rootNode, final List<ParsedCommandNode<S, R>> nodes, final StringRange range, final CommandContext<S, R> child, final RedirectModifier<S, R> modifier, boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -50,26 +50,26 @@ public class CommandContext<S> {
         this.forks = forks;
     }
 
-    public CommandContext<S> copyFor(final S source) {
+    public CommandContext<S, R> copyFor(final S source) {
         if (this.source == source) {
             return this;
         }
         return new CommandContext<>(source, input, arguments, command, rootNode, nodes, range, child, modifier, forks);
     }
 
-    public CommandContext<S> getChild() {
+    public CommandContext<S, R> getChild() {
         return child;
     }
 
-    public CommandContext<S> getLastChild() {
-        CommandContext<S> result = this;
+    public CommandContext<S, R> getLastChild() {
+        CommandContext<S, R> result = this;
         while (result.getChild() != null) {
             result = result.getChild();
         }
         return result;
     }
 
-    public Command<S> getCommand() {
+    public Command<S, R> getCommand() {
         return command;
     }
 
@@ -121,7 +121,7 @@ public class CommandContext<S> {
         return result;
     }
 
-    public RedirectModifier<S> getRedirectModifier() {
+    public RedirectModifier<S, R> getRedirectModifier() {
         return modifier;
     }
 
@@ -133,11 +133,11 @@ public class CommandContext<S> {
         return input;
     }
 
-    public CommandNode<S> getRootNode() {
+    public CommandNode<S, R> getRootNode() {
         return rootNode;
     }
 
-    public List<ParsedCommandNode<S>> getNodes() {
+    public List<ParsedCommandNode<S, R>> getNodes() {
         return nodes;
     }
 

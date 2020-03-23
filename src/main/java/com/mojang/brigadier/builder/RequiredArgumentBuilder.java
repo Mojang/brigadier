@@ -8,31 +8,31 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 
-public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
+public class RequiredArgumentBuilder<S, R, T> extends ArgumentBuilder<S, R, RequiredArgumentBuilder<S, R, T>> {
     private final String name;
     private final ArgumentType<T> type;
-    private SuggestionProvider<S> suggestionsProvider = null;
+    private SuggestionProvider<S, R> suggestionsProvider = null;
 
     private RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
         this.name = name;
         this.type = type;
     }
 
-    public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {
+    public static <S, R, T> RequiredArgumentBuilder<S, R, T> argument(final String name, final ArgumentType<T> type) {
         return new RequiredArgumentBuilder<>(name, type);
     }
 
-    public RequiredArgumentBuilder<S, T> suggests(final SuggestionProvider<S> provider) {
+    public RequiredArgumentBuilder<S, R, T> suggests(final SuggestionProvider<S, R> provider) {
         this.suggestionsProvider = provider;
         return getThis();
     }
 
-    public SuggestionProvider<S> getSuggestionsProvider() {
+    public SuggestionProvider<S, R> getSuggestionsProvider() {
         return suggestionsProvider;
     }
 
     @Override
-    protected RequiredArgumentBuilder<S, T> getThis() {
+    protected RequiredArgumentBuilder<S, R, T> getThis() {
         return this;
     }
 
@@ -44,10 +44,10 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         return name;
     }
 
-    public ArgumentCommandNode<S, T> build() {
-        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), getSuggestionsProvider());
+    public ArgumentCommandNode<S, R, T> build() {
+        final ArgumentCommandNode<S, R, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), getSuggestionsProvider());
 
-        for (final CommandNode<S> argument : getArguments()) {
+        for (final CommandNode<S, R> argument : getArguments()) {
             result.addChild(argument);
         }
 

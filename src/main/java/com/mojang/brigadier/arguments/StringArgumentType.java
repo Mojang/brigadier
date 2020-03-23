@@ -29,7 +29,7 @@ public class StringArgumentType implements ArgumentType<String> {
         return new StringArgumentType(StringType.GREEDY_PHRASE);
     }
 
-    public static String getString(final CommandContext<?> context, final String name) {
+    public static String getString(final CommandContext<?, ?> context, final String name) {
         return context.getArgument(name, String.class);
     }
 

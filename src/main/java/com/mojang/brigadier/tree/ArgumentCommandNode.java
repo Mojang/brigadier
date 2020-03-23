@@ -20,15 +20,15 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public class ArgumentCommandNode<S, T> extends CommandNode<S> {
+public class ArgumentCommandNode<S, R, T> extends CommandNode<S, R> {
     private static final String USAGE_ARGUMENT_OPEN = "<";
     private static final String USAGE_ARGUMENT_CLOSE = ">";
 
     private final String name;
     private final ArgumentType<T> type;
-    private final SuggestionProvider<S> customSuggestions;
+    private final SuggestionProvider<S, R> customSuggestions;
 
-    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S, R> command, final Predicate<S> requirement, final CommandNode<S, R> redirect, final RedirectModifier<S, R> modifier, final boolean forks, final SuggestionProvider<S, R> customSuggestions) {
         super(command, requirement, redirect, modifier, forks);
         this.name = name;
         this.type = type;
@@ -49,12 +49,12 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE;
     }
 
-    public SuggestionProvider<S> getCustomSuggestions() {
+    public SuggestionProvider<S, R> getCustomSuggestions() {
         return customSuggestions;
     }
 
     @Override
-    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S, R> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         final T result = type.parse(reader);
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
@@ -64,7 +64,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
+    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S, R> context, final SuggestionsBuilder builder) throws CommandSyntaxException {
         if (customSuggestions == null) {
             return type.listSuggestions(context, builder);
         } else {
@@ -73,8 +73,8 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     }
 
     @Override
-    public RequiredArgumentBuilder<S, T> createBuilder() {
-        final RequiredArgumentBuilder<S, T> builder = RequiredArgumentBuilder.argument(name, type);
+    public RequiredArgumentBuilder<S, R, T> createBuilder() {
+        final RequiredArgumentBuilder<S, R, T> builder = RequiredArgumentBuilder.argument(name, type);
         builder.requires(getRequirement());
         builder.forward(getRedirect(), getRedirectModifier(), isFork());
         builder.suggests(customSuggestions);

@@ -23,7 +23,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
         return new BoolArgumentType();
     }
 
-    public static boolean getBool(final CommandContext<?> context, final String name) {
+    public static boolean getBool(final CommandContext<?, ?> context, final String name) {
         return context.getArgument(name, Boolean.class);
     }
 
@@ -33,7 +33,7 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
     }
 
     @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+    public <S, R> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S, R> context, final SuggestionsBuilder builder) {
         if ("true".startsWith(builder.getRemaining().toLowerCase())) {
             builder.suggest("true");
         }

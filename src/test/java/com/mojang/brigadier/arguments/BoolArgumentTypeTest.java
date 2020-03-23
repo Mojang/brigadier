@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class BoolArgumentTypeTest {
     private BoolArgumentType type;
     @Mock
-    private CommandContextBuilder<Object> context;
+    private CommandContextBuilder<Object, Integer> context;
 
     @Before
     public void setUp() throws Exception {

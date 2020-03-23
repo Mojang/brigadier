@@ -5,11 +5,11 @@ package com.mojang.brigadier.context;
 
 import com.mojang.brigadier.tree.CommandNode;
 
-public class SuggestionContext<S> {
-    public final CommandNode<S> parent;
+public class SuggestionContext<S, R> {
+    public final CommandNode<S, R> parent;
     public final int startPos;
 
-    public SuggestionContext(CommandNode<S> parent, int startPos) {
+    public SuggestionContext(CommandNode<S, R> parent, int startPos) {
         this.parent = parent;
         this.startPos = startPos;
     }

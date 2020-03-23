@@ -14,9 +14,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.mojang.brigadier.Helpers.argument;
+import static com.mojang.brigadier.Helpers.create;
+import static com.mojang.brigadier.Helpers.literal;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
@@ -34,15 +35,15 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
-    private CommandDispatcher<Object> subject;
+    private CommandDispatcher<Object, Integer> subject;
     @Mock
-    private Command<Object> command;
+    private Command<Object, Integer> command;
     @Mock
     private Object source;
 
     @Before
     public void setUp() throws Exception {
-        subject = new CommandDispatcher<>();
+        subject = create();
         when(command.run(any())).thenReturn(42);
     }
 
@@ -167,7 +168,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteSubcommand() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         subject.register(literal("foo").then(
@@ -187,7 +188,7 @@ public class CommandDispatcherTest {
     public void testParseIncompleteLiteral() throws Exception {
         subject.register(literal("foo").then(literal("bar").executes(command)));
 
-        final ParseResults<Object> parse = subject.parse("foo ", source);
+        final ParseResults<Object, Integer> parse = subject.parse("foo ", source);
         assertThat(parse.getReader().getRemaining(), equalTo(" "));
         assertThat(parse.getContext().getNodes().size(), is(1));
     }
@@ -197,7 +198,7 @@ public class CommandDispatcherTest {
     public void testParseIncompleteArgument() throws Exception {
         subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
 
-        final ParseResults<Object> parse = subject.parse("foo ", source);
+        final ParseResults<Object, Integer> parse = subject.parse("foo ", source);
         assertThat(parse.getReader().getRemaining(), equalTo(" "));
         assertThat(parse.getContext().getNodes().size(), is(1));
     }
@@ -205,7 +206,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteAmbiguiousParentSubcommand() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         subject.register(
@@ -231,20 +232,20 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteAmbiguiousParentSubcommandViaRedirect() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
-        final LiteralCommandNode<Object> real = subject.register(
-            literal("test")
-                .then(
-                    argument("incorrect", integer())
-                        .executes(command)
-                )
-                .then(
-                    argument("right", integer())
+        final LiteralCommandNode<Object, Integer> real = subject.register(
+                literal("test")
                         .then(
-                            argument("sub", integer())
-                                .executes(subCommand)
+                                argument("incorrect", integer())
+                                        .executes(command)
+                        )
+                        .then(
+                                argument("right", integer())
+                                        .then(
+                                                argument("sub", integer())
+                                                        .executes(subCommand)
                         )
                 )
         );
@@ -259,19 +260,19 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteRedirectedMultipleTimes() throws Exception {
-        final LiteralCommandNode<Object> concreteNode = subject.register(literal("actual").executes(command));
-        final LiteralCommandNode<Object> redirectNode = subject.register(literal("redirected").redirect(subject.getRoot()));
+        final LiteralCommandNode<Object, Integer> concreteNode = subject.register(literal("actual").executes(command));
+        final LiteralCommandNode<Object, Integer> redirectNode = subject.register(literal("redirected").redirect(subject.getRoot()));
 
         final String input = "redirected redirected actual";
 
-        final ParseResults<Object> parse = subject.parse(input, source);
+        final ParseResults<Object, Integer> parse = subject.parse(input, source);
         assertThat(parse.getContext().getRange().get(input), equalTo("redirected"));
         assertThat(parse.getContext().getNodes().size(), is(1));
         assertThat(parse.getContext().getRootNode(), is(subject.getRoot()));
         assertThat(parse.getContext().getNodes().get(0).getRange(), equalTo(parse.getContext().getRange()));
         assertThat(parse.getContext().getNodes().get(0).getNode(), is(redirectNode));
 
-        final CommandContextBuilder<Object> child1 = parse.getContext().getChild();
+        final CommandContextBuilder<Object, Integer> child1 = parse.getContext().getChild();
         assertThat(child1, is(notNullValue()));
         assertThat(child1.getRange().get(input), equalTo("redirected"));
         assertThat(child1.getNodes().size(), is(1));
@@ -279,7 +280,7 @@ public class CommandDispatcherTest {
         assertThat(child1.getNodes().get(0).getRange(), equalTo(child1.getRange()));
         assertThat(child1.getNodes().get(0).getNode(), is(redirectNode));
 
-        final CommandContextBuilder<Object> child2 = child1.getChild();
+        final CommandContextBuilder<Object, Integer> child2 = child1.getChild();
         assertThat(child2, is(notNullValue()));
         assertThat(child2.getRange().get(input), equalTo("actual"));
         assertThat(child2.getNodes().size(), is(1));
@@ -294,17 +295,17 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteRedirected() throws Exception {
-        final RedirectModifier<Object> modifier = mock(RedirectModifier.class);
+        final RedirectModifier<Object, Integer> modifier = mock(RedirectModifier.class);
         final Object source1 = new Object();
         final Object source2 = new Object();
 
         when(modifier.apply(argThat(hasProperty("source", is(source))))).thenReturn(Lists.newArrayList(source1, source2));
 
-        final LiteralCommandNode<Object> concreteNode = subject.register(literal("actual").executes(command));
-        final LiteralCommandNode<Object> redirectNode = subject.register(literal("redirected").fork(subject.getRoot(), modifier));
+        final LiteralCommandNode<Object, Integer> concreteNode = subject.register(literal("actual").executes(command));
+        final LiteralCommandNode<Object, Integer> redirectNode = subject.register(literal("redirected").fork(subject.getRoot(), modifier));
 
         final String input = "redirected actual";
-        final ParseResults<Object> parse = subject.parse(input, source);
+        final ParseResults<Object, Integer> parse = subject.parse(input, source);
         assertThat(parse.getContext().getRange().get(input), equalTo("redirected"));
         assertThat(parse.getContext().getNodes().size(), is(1));
         assertThat(parse.getContext().getRootNode(), equalTo(subject.getRoot()));
@@ -312,7 +313,7 @@ public class CommandDispatcherTest {
         assertThat(parse.getContext().getNodes().get(0).getNode(), is(redirectNode));
         assertThat(parse.getContext().getSource(), is(source));
 
-        final CommandContextBuilder<Object> parent = parse.getContext().getChild();
+        final CommandContextBuilder<Object, Integer> parent = parse.getContext().getChild();
         assertThat(parent, is(notNullValue()));
         assertThat(parent.getRange().get(input), equalTo("actual"));
         assertThat(parent.getNodes().size(), is(1));
@@ -343,7 +344,7 @@ public class CommandDispatcherTest {
 
     @Test
     public void testExecute_invalidOther() throws Exception {
-        final Command<Object> wrongCommand = mock(Command.class);
+        final Command<Object, Integer> wrongCommand = mock(Command.class);
         subject.register(literal("w").executes(wrongCommand));
         subject.register(literal("world").executes(command));
 
@@ -382,7 +383,7 @@ public class CommandDispatcherTest {
 
     @Test
     public void testGetPath() {
-        final LiteralCommandNode<Object> bar = literal("bar").build();
+        final LiteralCommandNode<Object, Integer> bar = literal("bar").build();
         subject.register(literal("foo").then(bar));
 
         assertThat(subject.getPath(bar), equalTo(Lists.newArrayList("foo", "bar")));
@@ -390,7 +391,7 @@ public class CommandDispatcherTest {
 
     @Test
     public void testFindNodeExists() {
-        final LiteralCommandNode<Object> bar = literal("bar").build();
+        final LiteralCommandNode<Object, Integer> bar = literal("bar").build();
         subject.register(literal("foo").then(bar));
 
         assertThat(subject.findNode(Lists.newArrayList("foo", "bar")), is(bar));

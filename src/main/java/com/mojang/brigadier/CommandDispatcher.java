@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BinaryOperator;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -31,8 +33,9 @@ import java.util.stream.Collectors;
  * The core command dispatcher, for registering, parsing, and executing commands.
  *
  * @param <S> a custom "source" type, such as a user or originator of a command
+ * @param <R> The result type, which is returned by the command
  */
-public class CommandDispatcher<S> {
+public class CommandDispatcher<S, R> {
     /**
      * The string required to separate individual arguments in an input string
      *
@@ -53,15 +56,18 @@ public class CommandDispatcher<S> {
     private static final String USAGE_REQUIRED_CLOSE = ")";
     private static final String USAGE_OR = "|";
 
-    private final RootCommandNode<S> root;
+    private final RootCommandNode<S, R> root;
 
-    private final Predicate<CommandNode<S>> hasCommand = new Predicate<CommandNode<S>>() {
+    private final Predicate<CommandNode<S, R>> hasCommand = new Predicate<CommandNode<S, R>>() {
         @Override
-        public boolean test(final CommandNode<S> input) {
+        public boolean test(final CommandNode<S, R> input) {
             return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
         }
     };
-    private ResultConsumer<S> consumer = (c, s, r) -> {
+    private final R defaultValue;
+    private final BinaryOperator<R> resultCombiner;
+    private final IntFunction<R> successfulForksFunction;
+    private ResultConsumer<S, R> consumer = (c, s, r) -> {
     };
 
     /**
@@ -69,17 +75,24 @@ public class CommandDispatcher<S> {
      *
      * <p>This is often useful to copy existing or pre-defined command trees.</p>
      *
-     * @param root the existing {@link RootCommandNode} to use as the basis for this tree
+     * @param root                    the existing {@link RootCommandNode} to use as the basis for this tree
+     * @param defaultValue            The default value
+     * @param resultCombiner          Combines two results. The first parameter is the initial (nullable) value and the second
+     *                                parameter is the result of the last run command
+     * @param successfulForksFunction Converts the number of forks into the result type.
      */
-    public CommandDispatcher(final RootCommandNode<S> root) {
+    public CommandDispatcher(final RootCommandNode<S, R> root, R defaultValue, BinaryOperator<R> resultCombiner, IntFunction<R> successfulForksFunction) {
         this.root = root;
+        this.defaultValue = defaultValue;
+        this.resultCombiner = resultCombiner;
+        this.successfulForksFunction = successfulForksFunction;
     }
 
     /**
      * Creates a new {@link CommandDispatcher} with an empty command tree.
      */
-    public CommandDispatcher() {
-        this(new RootCommandNode<>());
+    public CommandDispatcher(R defaultValue, BinaryOperator<R> resultCombiner, IntFunction<R> successfulForksFunction) {
+        this(new RootCommandNode<>(), defaultValue, resultCombiner, successfulForksFunction);
     }
 
     /**
@@ -92,8 +105,8 @@ public class CommandDispatcher<S> {
      * @param command a literal argument builder to add to this command tree
      * @return the node added to this tree
      */
-    public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
-        final LiteralCommandNode<S> build = command.build();
+    public LiteralCommandNode<S, R> register(final LiteralArgumentBuilder<S, R> command) {
+        final LiteralCommandNode<S, R> build = command.build();
         root.addChild(build);
         return build;
     }
@@ -103,7 +116,7 @@ public class CommandDispatcher<S> {
      *
      * @param consumer the new result consumer to be called
      */
-    public void setConsumer(final ResultConsumer<S> consumer) {
+    public void setConsumer(final ResultConsumer<S, R> consumer) {
         this.consumer = consumer;
     }
 
@@ -137,7 +150,7 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(StringReader, Object)
      */
-    public int execute(final String input, final S source) throws CommandSyntaxException {
+    public R execute(final String input, final S source) throws CommandSyntaxException {
         return execute(new StringReader(input), source);
     }
 
@@ -171,8 +184,8 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(String, Object)
      */
-    public int execute(final StringReader input, final S source) throws CommandSyntaxException {
-        final ParseResults<S> parse = parse(input, source);
+    public R execute(final StringReader input, final S source) throws CommandSyntaxException {
+        final ParseResults<S, R> parse = parse(input, source);
         return execute(parse);
     }
 
@@ -202,7 +215,7 @@ public class CommandDispatcher<S> {
      * @see #execute(String, Object)
      * @see #execute(StringReader, Object)
      */
-    public int execute(final ParseResults<S> parse) throws CommandSyntaxException {
+    public R execute(final ParseResults<S, R> parse) throws CommandSyntaxException {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -213,25 +226,25 @@ public class CommandDispatcher<S> {
             }
         }
 
-        int result = 0;
+        R result = defaultValue;
         int successfulForks = 0;
         boolean forked = false;
         boolean foundCommand = false;
         final String command = parse.getReader().getString();
-        final CommandContext<S> original = parse.getContext().build(command);
-        List<CommandContext<S>> contexts = Collections.singletonList(original);
-        ArrayList<CommandContext<S>> next = null;
+        final CommandContext<S, R> original = parse.getContext().build(command);
+        List<CommandContext<S, R>> contexts = Collections.singletonList(original);
+        ArrayList<CommandContext<S, R>> next = null;
 
         while (contexts != null) {
             final int size = contexts.size();
             for (int i = 0; i < size; i++) {
-                final CommandContext<S> context = contexts.get(i);
-                final CommandContext<S> child = context.getChild();
+                final CommandContext<S, R> context = contexts.get(i);
+                final CommandContext<S, R> child = context.getChild();
                 if (child != null) {
                     forked |= context.isForked();
                     if (child.hasNodes()) {
                         foundCommand = true;
-                        final RedirectModifier<S> modifier = context.getRedirectModifier();
+                        final RedirectModifier<S, R> modifier = context.getRedirectModifier();
                         if (modifier == null) {
                             if (next == null) {
                                 next = new ArrayList<>(1);
@@ -249,7 +262,7 @@ public class CommandDispatcher<S> {
                                     }
                                 }
                             } catch (final CommandSyntaxException ex) {
-                                consumer.onCommandComplete(context, false, 0);
+                                consumer.onCommandComplete(context, false, defaultValue);
                                 if (!forked) {
                                     throw ex;
                                 }
@@ -259,12 +272,12 @@ public class CommandDispatcher<S> {
                 } else if (context.getCommand() != null) {
                     foundCommand = true;
                     try {
-                        final int value = context.getCommand().run(context);
-                        result += value;
+                        final R value = context.getCommand().run(context);
+                        result = resultCombiner.apply(result, value);
                         consumer.onCommandComplete(context, true, value);
                         successfulForks++;
                     } catch (final CommandSyntaxException ex) {
-                        consumer.onCommandComplete(context, false, 0);
+                        consumer.onCommandComplete(context, false, defaultValue);
                         if (!forked) {
                             throw ex;
                         }
@@ -277,11 +290,11 @@ public class CommandDispatcher<S> {
         }
 
         if (!foundCommand) {
-            consumer.onCommandComplete(original, false, 0);
+            consumer.onCommandComplete(original, false, defaultValue);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
 
-        return forked ? successfulForks : result;
+        return forked ? successfulForksFunction.apply(successfulForks) : result;
     }
 
     /**
@@ -311,7 +324,7 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(String, Object)
      */
-    public ParseResults<S> parse(final String command, final S source) {
+    public ParseResults<S, R> parse(final String command, final S source) {
         return parse(new StringReader(command), source);
     }
 
@@ -342,22 +355,22 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(String, Object)
      */
-    public ParseResults<S> parse(final StringReader command, final S source) {
-        final CommandContextBuilder<S> context = new CommandContextBuilder<>(this, source, root, command.getCursor());
+    public ParseResults<S, R> parse(final StringReader command, final S source) {
+        final CommandContextBuilder<S, R> context = new CommandContextBuilder<>(this, source, root, command.getCursor());
         return parseNodes(root, command, context);
     }
 
-    private ParseResults<S> parseNodes(final CommandNode<S> node, final StringReader originalReader, final CommandContextBuilder<S> contextSoFar) {
+    private ParseResults<S, R> parseNodes(final CommandNode<S, R> node, final StringReader originalReader, final CommandContextBuilder<S, R> contextSoFar) {
         final S source = contextSoFar.getSource();
-        Map<CommandNode<S>, CommandSyntaxException> errors = null;
-        List<ParseResults<S>> potentials = null;
+        Map<CommandNode<S, R>, CommandSyntaxException> errors = null;
+        List<ParseResults<S, R>> potentials = null;
         final int cursor = originalReader.getCursor();
 
-        for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
+        for (final CommandNode<S, R> child : node.getRelevantNodes(originalReader)) {
             if (!child.canUse(source)) {
                 continue;
             }
-            final CommandContextBuilder<S> context = contextSoFar.copy();
+            final CommandContextBuilder<S, R> context = contextSoFar.copy();
             final StringReader reader = new StringReader(originalReader);
             try {
                 try {
@@ -383,12 +396,12 @@ public class CommandDispatcher<S> {
             if (reader.canRead(child.getRedirect() == null ? 2 : 1)) {
                 reader.skip();
                 if (child.getRedirect() != null) {
-                    final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
-                    final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
+                    final CommandContextBuilder<S, R> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
+                    final ParseResults<S, R> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
-                    final ParseResults<S> parse = parseNodes(child, reader, context);
+                    final ParseResults<S, R> parse = parseNodes(child, reader, context);
                     if (potentials == null) {
                         potentials = new ArrayList<>(1);
                     }
@@ -447,13 +460,13 @@ public class CommandDispatcher<S> {
      * @param restricted if true, commands that the {@code source} cannot access will not be mentioned
      * @return array of full usage strings under the target node
      */
-    public String[] getAllUsage(final CommandNode<S> node, final S source, final boolean restricted) {
+    public String[] getAllUsage(final CommandNode<S, R> node, final S source, final boolean restricted) {
         final ArrayList<String> result = new ArrayList<>();
         getAllUsage(node, source, result, "", restricted);
         return result.toArray(new String[result.size()]);
     }
 
-    private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
+    private void getAllUsage(final CommandNode<S, R> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
         if (restricted && !node.canUse(source)) {
             return;
         }
@@ -466,7 +479,7 @@ public class CommandDispatcher<S> {
             final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
             result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
         } else if (!node.getChildren().isEmpty()) {
-            for (final CommandNode<S> child : node.getChildren()) {
+            for (final CommandNode<S, R> child : node.getChildren()) {
                 getAllUsage(child, source, result, prefix.isEmpty() ? child.getUsageText() : prefix + ARGUMENT_SEPARATOR + child.getUsageText(), restricted);
             }
         }
@@ -493,11 +506,11 @@ public class CommandDispatcher<S> {
      * @param source a custom "source" object, usually representing the originator of this command
      * @return array of full usage strings under the target node
      */
-    public Map<CommandNode<S>, String> getSmartUsage(final CommandNode<S> node, final S source) {
-        final Map<CommandNode<S>, String> result = new LinkedHashMap<>();
+    public Map<CommandNode<S, R>, String> getSmartUsage(final CommandNode<S, R> node, final S source) {
+        final Map<CommandNode<S, R>, String> result = new LinkedHashMap<>();
 
         final boolean optional = node.getCommand() != null;
-        for (final CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode<S, R> child : node.getChildren()) {
             final String usage = getSmartUsage(child, source, optional, false);
             if (usage != null) {
                 result.put(child, usage);
@@ -506,7 +519,7 @@ public class CommandDispatcher<S> {
         return result;
     }
 
-    private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final boolean deep) {
+    private String getSmartUsage(final CommandNode<S, R> node, final S source, final boolean optional, final boolean deep) {
         if (!node.canUse(source)) {
             return null;
         }
@@ -521,7 +534,7 @@ public class CommandDispatcher<S> {
                 final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
                 return self + ARGUMENT_SEPARATOR + redirect;
             } else {
-                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+                final Collection<CommandNode<S, R>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
                 if (children.size() == 1) {
                     final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
                     if (usage != null) {
@@ -529,7 +542,7 @@ public class CommandDispatcher<S> {
                     }
                 } else if (children.size() > 1) {
                     final Set<String> childUsage = new LinkedHashSet<>();
-                    for (final CommandNode<S> child : children) {
+                    for (final CommandNode<S, R> child : children) {
                         final String usage = getSmartUsage(child, source, childOptional, true);
                         if (usage != null) {
                             childUsage.add(usage);
@@ -541,7 +554,7 @@ public class CommandDispatcher<S> {
                     } else if (childUsage.size() > 1) {
                         final StringBuilder builder = new StringBuilder(open);
                         int count = 0;
-                        for (final CommandNode<S> child : children) {
+                        for (final CommandNode<S, R> child : children) {
                             if (count > 0) {
                                 builder.append(USAGE_OR);
                             }
@@ -575,22 +588,22 @@ public class CommandDispatcher<S> {
      * @param parse the result of a {@link #parse(StringReader, Object)}
      * @return a future that will eventually resolve into a {@link Suggestions} object
      */
-    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse) {
+    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S, R> parse) {
         return getCompletionSuggestions(parse, parse.getReader().getTotalLength());
     }
 
-    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
-        final CommandContextBuilder<S> context = parse.getContext();
+    public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S, R> parse, int cursor) {
+        final CommandContextBuilder<S, R> context = parse.getContext();
 
-        final SuggestionContext<S> nodeBeforeCursor = context.findSuggestionContext(cursor);
-        final CommandNode<S> parent = nodeBeforeCursor.parent;
+        final SuggestionContext<S, R> nodeBeforeCursor = context.findSuggestionContext(cursor);
+        final CommandNode<S, R> parent = nodeBeforeCursor.parent;
         final int start = Math.min(nodeBeforeCursor.startPos, cursor);
 
         final String fullInput = parse.getReader().getString();
         final String truncatedInput = fullInput.substring(0, cursor);
         @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
-        for (final CommandNode<S> node : parent.getChildren()) {
+        for (final CommandNode<S, R> node : parent.getChildren()) {
             CompletableFuture<Suggestions> future = Suggestions.empty();
             try {
                 future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, start));
@@ -616,11 +629,11 @@ public class CommandDispatcher<S> {
      *
      * <p>This is often useful as a target of a {@link com.mojang.brigadier.builder.ArgumentBuilder#redirect(CommandNode)},
      * {@link #getAllUsage(CommandNode, Object, boolean)} or {@link #getSmartUsage(CommandNode, Object)}.
-     * You may also use it to clone the command tree via {@link #CommandDispatcher(RootCommandNode)}.</p>
+     * You may also use it to clone the command tree via {@link #CommandDispatcher(RootCommandNode, Object, BinaryOperator, IntFunction)} )}.</p>
      *
      * @return root of the command tree
      */
-    public RootCommandNode<S> getRoot() {
+    public RootCommandNode<S, R> getRoot() {
         return root;
     }
 
@@ -638,14 +651,14 @@ public class CommandDispatcher<S> {
      * @param target the target node you are finding a path for
      * @return a path to the resulting node, or an empty list if it was not found
      */
-    public Collection<String> getPath(final CommandNode<S> target) {
-        final List<List<CommandNode<S>>> nodes = new ArrayList<>();
+    public Collection<String> getPath(final CommandNode<S, R> target) {
+        final List<List<CommandNode<S, R>>> nodes = new ArrayList<>();
         addPaths(root, nodes, new ArrayList<>());
 
-        for (final List<CommandNode<S>> list : nodes) {
+        for (final List<CommandNode<S, R>> list : nodes) {
             if (list.get(list.size() - 1) == target) {
                 final List<String> result = new ArrayList<>(list.size());
-                for (final CommandNode<S> node : list) {
+                for (final CommandNode<S, R> node : list) {
                     if (node != root) {
                         result.add(node.getName());
                     }
@@ -668,8 +681,8 @@ public class CommandDispatcher<S> {
      * @param path a generated path to a node
      * @return the node at the given path, or null if not found
      */
-    public CommandNode<S> findNode(final Collection<String> path) {
-        CommandNode<S> node = root;
+    public CommandNode<S, R> findNode(final Collection<String> path) {
+        CommandNode<S, R> node = root;
         for (final String name : path) {
             node = node.getChild(name);
             if (node == null) {
@@ -689,16 +702,16 @@ public class CommandDispatcher<S> {
      *
      * @param consumer a callback to be notified of potential ambiguities
      */
-    public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
+    public void findAmbiguities(final AmbiguityConsumer<S, R> consumer) {
         root.findAmbiguities(consumer);
     }
 
-    private void addPaths(final CommandNode<S> node, final List<List<CommandNode<S>>> result, final List<CommandNode<S>> parents) {
-        final List<CommandNode<S>> current = new ArrayList<>(parents);
+    private void addPaths(final CommandNode<S, R> node, final List<List<CommandNode<S, R>>> result, final List<CommandNode<S, R>> parents) {
+        final List<CommandNode<S, R>> current = new ArrayList<>(parents);
         current.add(node);
         result.add(current);
 
-        for (final CommandNode<S> child : node.getChildren()) {
+        for (final CommandNode<S, R> child : node.getChildren()) {
             addPaths(child, result, current);
         }
     }

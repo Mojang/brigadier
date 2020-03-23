@@ -7,18 +7,18 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import java.util.Objects;
 
-public class ParsedCommandNode<S> {
+public class ParsedCommandNode<S, R> {
 
-    private final CommandNode<S> node;
+    private final CommandNode<S, R> node;
 
     private final StringRange range;
 
-    public ParsedCommandNode(CommandNode<S> node, StringRange range) {
+    public ParsedCommandNode(CommandNode<S, R> node, StringRange range) {
         this.node = node;
         this.range = range;
     }
 
-    public CommandNode<S> getNode() {
+    public CommandNode<S, R> getNode() {
         return node;
     }
 
@@ -35,7 +35,7 @@ public class ParsedCommandNode<S> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParsedCommandNode<?> that = (ParsedCommandNode<?>) o;
+        ParsedCommandNode<?, ?> that = (ParsedCommandNode<?, ?>) o;
         return Objects.equals(node, that.node) &&
                 Objects.equals(range, that.range);
     }

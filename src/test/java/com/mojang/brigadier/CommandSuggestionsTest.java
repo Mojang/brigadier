@@ -16,23 +16,24 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
 
+import static com.mojang.brigadier.Helpers.argument;
+import static com.mojang.brigadier.Helpers.create;
+import static com.mojang.brigadier.Helpers.literal;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
-import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandSuggestionsTest {
-    private CommandDispatcher<Object> subject;
+    private CommandDispatcher<Object, Integer> subject;
     @Mock
     private Object source;
 
     @Before
     public void setUp() throws Exception {
-        subject = new CommandDispatcher<>();
+        subject = create();
     }
 
     private void testSuggestions(final String contents, final int cursor, final StringRange range, final String... suggestions) {
@@ -150,7 +151,7 @@ public class CommandSuggestionsTest {
                 .then(literal("baz"))
         );
 
-        final ParseResults<Object> parse = subject.parse("parent b", source);
+        final ParseResults<Object, Integer> parse = subject.parse("parent b", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(7, 8)));
@@ -166,7 +167,7 @@ public class CommandSuggestionsTest {
                 .then(literal("baz"))
         );
 
-        final ParseResults<Object> parse = subject.parse(inputWithOffset("junk parent b", 5), source);
+        final ParseResults<Object, Integer> parse = subject.parse(inputWithOffset("junk parent b", 5), source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(12, 13)));
@@ -175,10 +176,10 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_redirect() throws Exception {
-        final LiteralCommandNode<Object> actual = subject.register(literal("actual").then(literal("sub")));
+        final LiteralCommandNode<Object, Integer> actual = subject.register(literal("actual").then(literal("sub")));
         subject.register(literal("redirect").redirect(actual));
 
-        final ParseResults<Object> parse = subject.parse("redirect ", source);
+        final ParseResults<Object, Integer> parse = subject.parse("redirect ", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(9)));
@@ -187,10 +188,10 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_redirectPartial() throws Exception {
-        final LiteralCommandNode<Object> actual = subject.register(literal("actual").then(literal("sub")));
+        final LiteralCommandNode<Object, Integer> actual = subject.register(literal("actual").then(literal("sub")));
         subject.register(literal("redirect").redirect(actual));
 
-        final ParseResults<Object> parse = subject.parse("redirect s", source);
+        final ParseResults<Object, Integer> parse = subject.parse("redirect s", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(9, 10)));
@@ -199,13 +200,13 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_movingCursor_redirect() throws Exception {
-        final LiteralCommandNode<Object> actualOne = subject.register(literal("actual_one")
-            .then(literal("faz"))
-            .then(literal("fbz"))
-            .then(literal("gaz"))
+        final LiteralCommandNode<Object, Integer> actualOne = subject.register(literal("actual_one")
+                .then(literal("faz"))
+                .then(literal("fbz"))
+                .then(literal("gaz"))
         );
 
-        final LiteralCommandNode<Object> actualTwo = subject.register(literal("actual_two"));
+        final LiteralCommandNode<Object, Integer> actualTwo = subject.register(literal("actual_two"));
 
         subject.register(literal("redirect_one").redirect(actualOne));
         subject.register(literal("redirect_two").redirect(actualOne));
@@ -223,10 +224,10 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_redirectPartial_withInputOffset() throws Exception {
-        final LiteralCommandNode<Object> actual = subject.register(literal("actual").then(literal("sub")));
+        final LiteralCommandNode<Object, Integer> actual = subject.register(literal("actual").then(literal("sub")));
         subject.register(literal("redirect").redirect(actual));
 
-        final ParseResults<Object> parse = subject.parse(inputWithOffset("/redirect s", 1), source);
+        final ParseResults<Object, Integer> parse = subject.parse(inputWithOffset("/redirect s", 1), source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.between(10, 11)));
@@ -235,7 +236,7 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_redirect_lots() throws Exception {
-        final LiteralCommandNode<Object> loop = subject.register(literal("redirect"));
+        final LiteralCommandNode<Object, Integer> loop = subject.register(literal("redirect"));
         subject.register(
             literal("redirect")
                 .then(
@@ -255,7 +256,7 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_execute_simulation() throws Exception {
-        final LiteralCommandNode<Object> execute = subject.register(literal("execute"));
+        final LiteralCommandNode<Object, Integer> execute = subject.register(literal("execute"));
         subject.register(
             literal("execute")
                 .then(
@@ -278,7 +279,7 @@ public class CommandSuggestionsTest {
                 )
         );
 
-        final ParseResults<Object> parse = subject.parse("execute as Dinnerbone as", source);
+        final ParseResults<Object, Integer> parse = subject.parse("execute as Dinnerbone as", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.isEmpty(), is(true));
@@ -286,7 +287,7 @@ public class CommandSuggestionsTest {
 
     @Test
     public void getCompletionSuggestions_execute_simulation_partial() throws Exception {
-        final LiteralCommandNode<Object> execute = subject.register(literal("execute"));
+        final LiteralCommandNode<Object, Integer> execute = subject.register(literal("execute"));
         subject.register(
             literal("execute")
                 .then(
@@ -307,7 +308,7 @@ public class CommandSuggestionsTest {
                 )
         );
 
-        final ParseResults<Object> parse = subject.parse("execute as bar as ", source);
+        final ParseResults<Object, Integer> parse = subject.parse("execute as bar as ", source);
         final Suggestions result = subject.getCompletionSuggestions(parse).join();
 
         assertThat(result.getRange(), equalTo(StringRange.at(18)));

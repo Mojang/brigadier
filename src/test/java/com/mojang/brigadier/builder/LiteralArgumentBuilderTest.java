@@ -16,10 +16,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class LiteralArgumentBuilderTest {
-    private LiteralArgumentBuilder<Object> builder;
+    private LiteralArgumentBuilder<Object, Integer> builder;
     @Mock
     private
-    Command<Object> command;
+    Command<Object, Integer> command;
 
     @Before
     public void setUp() throws Exception {
@@ -28,14 +28,14 @@ public class LiteralArgumentBuilderTest {
 
     @Test
     public void testBuild() throws Exception {
-        final LiteralCommandNode<Object> node = builder.build();
+        final LiteralCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getLiteral(), is("foo"));
     }
 
     @Test
     public void testBuildWithExecutor() throws Exception {
-        final LiteralCommandNode<Object> node = builder.executes(command).build();
+        final LiteralCommandNode<Object, Integer> node = builder.executes(command).build();
 
         assertThat(node.getLiteral(), is("foo"));
         assertThat(node.getCommand(), is(command));
@@ -45,7 +45,7 @@ public class LiteralArgumentBuilderTest {
     public void testBuildWithChildren() throws Exception {
         builder.then(argument("bar", integer()));
         builder.then(argument("baz", integer()));
-        final LiteralCommandNode<Object> node = builder.build();
+        final LiteralCommandNode<Object, Integer> node = builder.build();
 
         assertThat(node.getChildren(), hasSize(2));
     }

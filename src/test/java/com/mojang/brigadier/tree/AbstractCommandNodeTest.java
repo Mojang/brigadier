@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.Helpers.literal;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -19,11 +19,11 @@ public abstract class AbstractCommandNodeTest {
     @Mock
     private Command command;
 
-    protected abstract CommandNode<Object> getCommandNode();
+    protected abstract CommandNode<Object, Integer> getCommandNode();
 
     @Test
     public void testAddChild() throws Exception {
-        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object, Integer> node = getCommandNode();
 
         node.addChild(literal("child1").build());
         node.addChild(literal("child2").build());
@@ -34,7 +34,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildMergesGrandchildren() throws Exception {
-        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object, Integer> node = getCommandNode();
 
         node.addChild(literal("child").then(
             literal("grandchild1")
@@ -50,7 +50,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildPreservesCommand() throws Exception {
-        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object, Integer> node = getCommandNode();
 
         node.addChild(literal("child").executes(command).build());
         node.addChild(literal("child").build());
@@ -60,7 +60,7 @@ public abstract class AbstractCommandNodeTest {
 
     @Test
     public void testAddChildOverwritesCommand() throws Exception {
-        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object, Integer> node = getCommandNode();
 
         node.addChild(literal("child").build());
         node.addChild(literal("child").executes(command).build());

@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
-public class RootCommandNode<S> extends CommandNode<S> {
+public class RootCommandNode<S, R> extends CommandNode<S, R> {
     public RootCommandNode() {
         super(null, c -> true, null, s -> Collections.singleton(s.getSource()), false);
     }
@@ -31,11 +31,11 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
+    public void parse(final StringReader reader, final CommandContextBuilder<S, R> contextBuilder) throws CommandSyntaxException {
     }
 
     @Override
-    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+    public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S, R> context, final SuggestionsBuilder builder) {
         return Suggestions.empty();
     }
 
@@ -52,7 +52,7 @@ public class RootCommandNode<S> extends CommandNode<S> {
     }
 
     @Override
-    public ArgumentBuilder<S, ?> createBuilder() {
+    public ArgumentBuilder<S, R, ?> createBuilder() {
         throw new IllegalStateException("Cannot convert root into a builder");
     }
 

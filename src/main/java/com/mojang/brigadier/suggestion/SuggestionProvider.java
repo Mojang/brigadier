@@ -9,6 +9,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.concurrent.CompletableFuture;
 
 @FunctionalInterface
-public interface SuggestionProvider<S> {
-    CompletableFuture<Suggestions> getSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) throws CommandSyntaxException;
+public interface SuggestionProvider<S, R> {
+    CompletableFuture<Suggestions> getSuggestions(final CommandContext<S, R> context, final SuggestionsBuilder builder) throws CommandSyntaxException;
 }

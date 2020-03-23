@@ -33,7 +33,7 @@ public class IntegerArgumentType implements ArgumentType<Integer> {
         return new IntegerArgumentType(min, max);
     }
 
-    public static int getInteger(final CommandContext<?> context, final String name) {
+    public static int getInteger(final CommandContext<?, ?> context, final String name) {
         return context.getArgument(name, int.class);
     }
 

@@ -33,7 +33,7 @@ public class LongArgumentType implements ArgumentType<Long> {
         return new LongArgumentType(min, max);
     }
 
-    public static long getLong(final CommandContext<?> context, final String name) {
+    public static long getLong(final CommandContext<?, ?> context, final String name) {
         return context.getArgument(name, long.class);
     }
 

@@ -9,6 +9,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 
 @FunctionalInterface
-public interface RedirectModifier<S> {
-    Collection<S> apply(CommandContext<S> context) throws CommandSyntaxException;
+public interface RedirectModifier<S, R> {
+    Collection<S> apply(CommandContext<S, R> context) throws CommandSyntaxException;
 }

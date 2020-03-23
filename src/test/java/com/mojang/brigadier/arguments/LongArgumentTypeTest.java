@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 public class LongArgumentTypeTest {
     private LongArgumentType type;
     @Mock
-    private CommandContextBuilder<Object> context;
+    private CommandContextBuilder<Object, Integer> context;
 
     @Before
     public void setUp() throws Exception {

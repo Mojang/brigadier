@@ -6,7 +6,6 @@ package com.mojang.brigadier.tree;
 import com.google.common.collect.Lists;
 import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -18,7 +17,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.Helpers.create;
+import static com.mojang.brigadier.Helpers.literal;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -26,18 +26,18 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
-    private LiteralCommandNode<Object> node;
-    private CommandContextBuilder<Object> contextBuilder;
+    private LiteralCommandNode<Object, Integer> node;
+    private CommandContextBuilder<Object, Integer> contextBuilder;
 
     @Override
-    protected CommandNode<Object> getCommandNode() {
+    protected CommandNode<Object, Integer> getCommandNode() {
         return node;
     }
 
     @Before
     public void setUp() throws Exception {
         node = literal("foo").build();
-        contextBuilder = new CommandContextBuilder<>(new CommandDispatcher<>(), new Object(), new RootCommandNode<>(), 0);
+        contextBuilder = new CommandContextBuilder<>(create(), new Object(), new RootCommandNode<>(), 0);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        @SuppressWarnings("unchecked") final Command<Object> command = mock(Command.class);
+        @SuppressWarnings("unchecked") final Command<Object, Integer> command = mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(
@@ -128,7 +128,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testCreateBuilder() throws Exception {
-        final LiteralArgumentBuilder<Object> builder = node.createBuilder();
+        final LiteralArgumentBuilder<Object, Integer> builder = node.createBuilder();
         assertThat(builder.getLiteral(), is(node.getLiteral()));
         assertThat(builder.getRequirement(), is(node.getRequirement()));
         assertThat(builder.getCommand(), is(node.getCommand()));

@@ -15,15 +15,16 @@ import org.openjdk.jmh.annotations.State;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
+import static com.mojang.brigadier.Helpers.create;
+import static com.mojang.brigadier.Helpers.literal;
 
 @State(Scope.Benchmark)
 public class ParsingBenchmarks {
-    private CommandDispatcher<Object> subject;
+    private CommandDispatcher<Object, Integer> subject;
 
     @Setup
     public void setup() {
-        subject = new CommandDispatcher<>();
+        subject = create();
         subject.register(
             literal("a")
                 .then(
@@ -68,7 +69,7 @@ public class ParsingBenchmarks {
                 .executes(c -> 0)
                 .then(literal("1").then(literal("i").executes(c -> 0)))
         );
-        final LiteralCommandNode<Object> h = subject.register(
+        final LiteralCommandNode<Object, Integer> h = subject.register(
             literal("h")
                 .executes(c -> 0)
                 .then(literal("1").then(literal("i").executes(c -> 0)))

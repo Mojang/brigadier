@@ -23,7 +23,7 @@ import static org.junit.Assert.fail;
 public class DoubleArgumentTypeTest {
     private DoubleArgumentType type;
     @Mock
-    private CommandContextBuilder<Object> context;
+    private CommandContextBuilder<Object, Integer> context;
 
     @Before
     public void setUp() throws Exception {
