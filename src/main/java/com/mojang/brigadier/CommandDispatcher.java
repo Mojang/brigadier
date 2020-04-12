@@ -98,6 +98,15 @@ public class CommandDispatcher<S> {
         return build;
     }
 
+	/**
+	* Utility method from unregister a command
+	*
+	* @param command node from register function
+	*/
+	public void unregister(final LiteralCommandNode<S> node) {
+		this.root.removeChild(node);
+	}
+
     /**
      * Sets a callback to be informed of the result of every command.
      *

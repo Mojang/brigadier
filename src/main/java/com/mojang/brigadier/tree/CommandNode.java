@@ -92,6 +92,14 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
+	public void removeChild(final CommandNode<S> node) {
+		String name = node.getName();
+
+		this.children.remove(name);
+		this.literals.remove(name);
+		this.arguments.remove(name);
+	}
+
     public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
         Set<String> matches = new HashSet<>();
 
