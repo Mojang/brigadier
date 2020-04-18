@@ -152,10 +152,12 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
-    public DynamicCommandExceptionType readerExpectedSymbol() { return READER_EXPECTED_SYMBOL; }
+    public DynamicCommandExceptionType readerExpectedSymbol() {
+        return READER_EXPECTED_SYMBOL; }
 
     @Override
-    public DynamicCommandExceptionType readerNoSuchElement() { return READER_NO_SUCH_ELEMENT; }
+    public DynamicCommandExceptionType readerNoSuchElement() {
+        return READER_NO_SUCH_ELEMENT; }
 
     @Override
     public SimpleCommandExceptionType dispatcherUnknownCommand() {
