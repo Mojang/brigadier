@@ -34,6 +34,7 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(new LiteralMessage("Expected float"));
     private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(new LiteralMessage("Expected bool"));
     private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(symbol -> new LiteralMessage("Expected '" + symbol + "'"));
+    private static final DynamicCommandExceptionType READER_NO_SUCH_ELEMENT = new DynamicCommandExceptionType(value -> new LiteralMessage("No such element '" + value + "' in list"));
 
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(new LiteralMessage("Unknown command"));
     private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(new LiteralMessage("Incorrect argument for command"));
@@ -151,9 +152,10 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     }
 
     @Override
-    public DynamicCommandExceptionType readerExpectedSymbol() {
-        return READER_EXPECTED_SYMBOL;
-    }
+    public DynamicCommandExceptionType readerExpectedSymbol() { return READER_EXPECTED_SYMBOL; }
+
+    @Override
+    public DynamicCommandExceptionType readerNoSuchElement() { return READER_NO_SUCH_ELEMENT; }
 
     @Override
     public SimpleCommandExceptionType dispatcherUnknownCommand() {
