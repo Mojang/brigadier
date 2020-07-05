@@ -15,3 +15,15 @@ jdk:
 
 script:
   - ./gradlew check --info -S --parallel
+
+defore_deploy:
+  - ./gradlew javadoc
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  keep_history: true
+  on:
+    branch: master
+  github_token: $GITHUB_TOKEN
+  local_dir: build/docs/javadoc
