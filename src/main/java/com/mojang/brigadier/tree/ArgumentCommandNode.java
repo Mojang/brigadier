@@ -58,14 +58,15 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
         T result = type.parse(reader);
+
         if (result == null) {
-            // The context-unaware method was not implemented, call the context-aware method
             result = type.parse(reader, contextBuilder.getSource());
         }
+
         if (result == null) {
-            // Throw an error to avoid magic NullPointerExceptions in the user's code
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().createWithContext(reader, "Argument Type " + type.getClass().getName() + " does not implement a 'parse' method!");
         }
+
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);
