@@ -14,7 +14,13 @@ import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 
 public interface ArgumentType<T> {
-    T parse(StringReader reader) throws CommandSyntaxException;
+    default T parse(StringReader reader) throws CommandSyntaxException {
+        return null;
+    }
+
+    default <S> T parse(StringReader reader, S context) throws CommandSyntaxException {
+        return null;
+    }
 
     default <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         return Suggestions.empty();
