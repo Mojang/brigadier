@@ -54,7 +54,6 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
         return customSuggestions;
     }
 
-    // ArgumentCommandNode.java
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
