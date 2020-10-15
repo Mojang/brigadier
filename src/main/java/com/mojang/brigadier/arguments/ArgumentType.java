@@ -18,7 +18,7 @@ public interface ArgumentType<T> {
         return null;
     }
 
-    default <S> T parse(StringReader reader, S context) throws CommandSyntaxException {
+    default <S> T parse(StringReader reader, S source) throws CommandSyntaxException {
         return null;
     }
 
