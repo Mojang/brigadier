@@ -16,7 +16,7 @@ jdk:
 script:
   - ./gradlew check --info -S --parallel
 
-defore_deploy:
+before_deploy:
   - ./gradlew javadoc
 
 deploy:
