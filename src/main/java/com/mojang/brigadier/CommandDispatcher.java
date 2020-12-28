@@ -599,16 +599,15 @@ public class CommandDispatcher<S> {
             futures[i++] = future;
         }
 
-        final CompletableFuture<Suggestions> result = new CompletableFuture<>();
-        CompletableFuture.allOf(futures).thenRun(() -> {
+        return CompletableFuture.allOf(futures).handle((voidResult, exception) -> {
             final List<Suggestions> suggestions = new ArrayList<>();
             for (final CompletableFuture<Suggestions> future : futures) {
-                suggestions.add(future.join());
+                if (!future.isCompletedExceptionally()) {
+                    suggestions.add(future.join());
+                }
             }
-            result.complete(Suggestions.merge(fullInput, suggestions));
+            return Suggestions.merge(fullInput, suggestions);
         });
-
-        return result;
     }
 
     /**

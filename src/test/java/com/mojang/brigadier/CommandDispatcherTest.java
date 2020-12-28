@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandDispatcherTest {
@@ -400,4 +406,24 @@ public class CommandDispatcherTest {
     public void testFindNodeDoesntExist() {
         assertThat(subject.findNode(Lists.newArrayList("foo", "bar")), is(nullValue()));
     }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCompletionWithErroredFutureReturnsCompletedFuture() {
+        final LiteralCommandNode<Object> bar = literal("bar").build();
+        final LiteralCommandNode<Object> baz = mock(LiteralCommandNode.class);
+        when(baz.getLiteral()).thenReturn("baz");
+        when(baz.listSuggestions(any(), any())).thenAnswer(x -> {
+            final CompletableFuture<Suggestions> future = new CompletableFuture<>();
+            future.completeExceptionally(new IllegalArgumentException());
+            return future;
+        });
+        subject.register(literal("foo").then(bar).then(baz));
+
+        final ParseResults<Object> parseResults = subject.parse("foo b", source);
+        final Suggestions suggestions = subject.getCompletionSuggestions(parseResults).join();
+        final Collection<String> suggestionCollection = suggestions.getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+        assertThat(Lists.newArrayList("bar"), is(suggestionCollection));
+    }
+
 }
