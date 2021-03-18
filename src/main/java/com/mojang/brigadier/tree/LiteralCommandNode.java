@@ -21,10 +21,12 @@ import java.util.function.Predicate;
 
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
+    private final String literalLowerCase;
 
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
+        this.literalLowerCase = literal.toLowerCase();
     }
 
     public String getLiteral() {
@@ -66,7 +68,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
 
     @Override
     public CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        if (literal.toLowerCase().startsWith(builder.getRemaining().toLowerCase())) {
+        if (literalLowerCase.startsWith(builder.getRemainingLowerCase())) {
             return builder.suggest(literal).buildFuture();
         } else {
             return Suggestions.empty();
