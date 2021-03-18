@@ -22,12 +22,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
-    private Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
-    private Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
+    private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
+    private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
+    private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
@@ -88,8 +87,6 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
                 arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
             }
         }
-
-        children = children.entrySet().stream().sorted(Map.Entry.comparingByValue()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 
     public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
