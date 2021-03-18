@@ -12,14 +12,22 @@ import java.util.concurrent.CompletableFuture;
 
 public class SuggestionsBuilder {
     private final String input;
+    private final String inputLowerCase;
     private final int start;
     private final String remaining;
+    private final String remainingLowerCase;
     private final List<Suggestion> result = new ArrayList<>();
 
-    public SuggestionsBuilder(final String input, final int start) {
+    public SuggestionsBuilder(final String input, final String inputLowerCase, final int start) {
         this.input = input;
+        this.inputLowerCase = inputLowerCase;
         this.start = start;
         this.remaining = input.substring(start);
+        this.remainingLowerCase = inputLowerCase.substring(start);
+    }
+
+    public SuggestionsBuilder(final String input, final int start) {
+        this(input, input.toLowerCase(), start);
     }
 
     public String getInput() {
@@ -32,6 +40,10 @@ public class SuggestionsBuilder {
 
     public String getRemaining() {
         return remaining;
+    }
+
+    public String getRemainingLowerCase() {
+        return remainingLowerCase;
     }
 
     public Suggestions build() {
@@ -74,10 +86,10 @@ public class SuggestionsBuilder {
     }
 
     public SuggestionsBuilder createOffset(final int start) {
-        return new SuggestionsBuilder(input, start);
+        return new SuggestionsBuilder(input, inputLowerCase, start);
     }
 
     public SuggestionsBuilder restart() {
-        return new SuggestionsBuilder(input, start);
+        return createOffset(start);
     }
 }
