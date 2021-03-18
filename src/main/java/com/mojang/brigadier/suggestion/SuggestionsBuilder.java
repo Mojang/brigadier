@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.StringRange;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class SuggestionsBuilder {
@@ -27,7 +28,7 @@ public class SuggestionsBuilder {
     }
 
     public SuggestionsBuilder(final String input, final int start) {
-        this(input, input.toLowerCase(), start);
+        this(input, input.toLowerCase(Locale.ROOT), start);
     }
 
     public String getInput() {

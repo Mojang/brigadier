@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -588,7 +589,7 @@ public class CommandDispatcher<S> {
 
         final String fullInput = parse.getReader().getString();
         final String truncatedInput = fullInput.substring(0, cursor);
-        final String truncatedInputLowerCase = truncatedInput.toLowerCase();
+        final String truncatedInputLowerCase = truncatedInput.toLowerCase(Locale.ROOT);
         @SuppressWarnings("unchecked") final CompletableFuture<Suggestions>[] futures = new CompletableFuture[parent.getChildren().size()];
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
