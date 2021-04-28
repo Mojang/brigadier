@@ -200,8 +200,37 @@ public class StringReader implements ImmutableStringReader {
         while (canRead()) {
             final char c = read();
             if (escaped) {
-                if (c == terminator || c == SYNTAX_ESCAPE) {
-                    result.append(c);
+                Character mogrified = null;
+                if (c == terminator) {
+                    mogrified = terminator;
+                } else {
+                    // Adapted from section 9 of ECMA-404:
+                    switch (c) {
+                        case SYNTAX_ESCAPE:
+                            mogrified = SYNTAX_ESCAPE;
+                            break;
+                        case '/':
+                            mogrified = '/';
+                            break;
+                        case 'b':
+                            mogrified = '\b';
+                            break;
+                        case 'f':
+                            mogrified = '\f';
+                            break;
+                        case 'n':
+                            mogrified = '\n';
+                            break;
+                        case 'r':
+                            mogrified = '\r';
+                            break;
+                        case 't':
+                            mogrified = '\t';
+                            break;
+                    }
+                }
+                if(mogrified != null) {
+                    result.append(mogrified);
                     escaped = false;
                 } else {
                     setCursor(getCursor() - 1);
