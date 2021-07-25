@@ -76,6 +76,11 @@ public class StringReader implements ImmutableStringReader {
         return string.charAt(cursor + offset);
     }
 
+    @Override
+    public boolean isAt(char c) {
+        return canRead() && peek() == c;
+    }
+
     public char read() {
         return string.charAt(cursor++);
     }
@@ -249,7 +254,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public void expect(final char c) throws CommandSyntaxException {
-        if (!canRead() || peek() != c) {
+        if (!isAt(c)) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, String.valueOf(c));
         }
         skip();

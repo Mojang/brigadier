@@ -23,4 +23,6 @@ public interface ImmutableStringReader {
     char peek();
 
     char peek(int offset);
+
+    boolean isAt(char c);
 }

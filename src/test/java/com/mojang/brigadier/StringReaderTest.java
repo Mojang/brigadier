@@ -585,4 +585,15 @@ public class StringReaderTest {
             assertThat(ex.getCursor(), is(0));
         }
     }
+
+    @Test
+    public void isAt() {
+        final StringReader reader = new StringReader("abc");
+        assertThat(reader.isAt('a'), is(true));
+        assertThat(reader.isAt('x'), is(false));
+        reader.setCursor(2);
+        assertThat(reader.isAt('c'), is(true));
+        reader.skip();
+        assertThat(reader.isAt('c'), is(false));
+    }
 }
