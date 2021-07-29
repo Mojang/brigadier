@@ -589,11 +589,11 @@ public class StringReaderTest {
     @Test
     public void isAt() {
         final StringReader reader = new StringReader("abc");
-        assertThat(reader.isAt('a'), is(true));
-        assertThat(reader.isAt('x'), is(false));
+        assertThat(reader.isNext('a'), is(true));
+        assertThat(reader.isNext('x'), is(false));
         reader.setCursor(2);
-        assertThat(reader.isAt('c'), is(true));
+        assertThat(reader.isNext('c'), is(true));
         reader.skip();
-        assertThat(reader.isAt('c'), is(false));
+        assertThat(reader.isNext('c'), is(false));
     }
 }

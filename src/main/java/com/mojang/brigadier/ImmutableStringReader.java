@@ -24,5 +24,5 @@ public interface ImmutableStringReader {
 
     char peek(int offset);
 
-    boolean isAt(char c);
+    boolean isNext(char c);
 }

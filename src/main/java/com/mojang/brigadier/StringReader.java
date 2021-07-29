@@ -77,7 +77,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     @Override
-    public boolean isAt(char c) {
+    public boolean isNext(char c) {
         return canRead() && peek() == c;
     }
 
@@ -254,7 +254,7 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public void expect(final char c) throws CommandSyntaxException {
-        if (!isAt(c)) {
+        if (!isNext(c)) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().createWithContext(this, String.valueOf(c));
         }
         skip();
