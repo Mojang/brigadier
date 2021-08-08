@@ -5,6 +5,8 @@ package com.mojang.brigadier;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import java.util.function.Predicate;
+
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_DOUBLE_QUOTE = '"';
@@ -81,6 +83,11 @@ public class StringReader implements ImmutableStringReader {
         return canRead() && peek() == c;
     }
 
+    @Override
+    public boolean isNext(Predicate<Character> predicate) {
+        return canRead() && predicate.test(peek());
+    }
+
     public char read() {
         return string.charAt(cursor++);
     }
@@ -98,14 +105,14 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public void skipWhitespace() {
-        while (canRead() && Character.isWhitespace(peek())) {
+        while (isNext(Character::isWhitespace)) {
             skip();
         }
     }
 
     public int readInt() throws CommandSyntaxException {
         final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
+        while (isNext(StringReader::isAllowedNumber)) {
             skip();
         }
         final String number = string.substring(start, cursor);
@@ -122,7 +129,7 @@ public class StringReader implements ImmutableStringReader {
 
     public long readLong() throws CommandSyntaxException {
         final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
+        while (isNext(StringReader::isAllowedNumber)) {
             skip();
         }
         final String number = string.substring(start, cursor);
@@ -139,7 +146,7 @@ public class StringReader implements ImmutableStringReader {
 
     public double readDouble() throws CommandSyntaxException {
         final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
+        while (isNext(StringReader::isAllowedNumber)) {
             skip();
         }
         final String number = string.substring(start, cursor);
@@ -156,7 +163,7 @@ public class StringReader implements ImmutableStringReader {
 
     public float readFloat() throws CommandSyntaxException {
         final int start = cursor;
-        while (canRead() && isAllowedNumber(peek())) {
+        while (isNext(StringReader::isAllowedNumber)) {
             skip();
         }
         final String number = string.substring(start, cursor);
@@ -181,7 +188,7 @@ public class StringReader implements ImmutableStringReader {
 
     public String readUnquotedString() {
         final int start = cursor;
-        while (canRead() && isAllowedInUnquotedString(peek())) {
+        while (isNext(StringReader::isAllowedInUnquotedString)) {
             skip();
         }
         return string.substring(start, cursor);

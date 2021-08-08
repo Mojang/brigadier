@@ -6,6 +6,8 @@ package com.mojang.brigadier;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import org.junit.Test;
 
+import java.util.function.Predicate;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -587,7 +589,7 @@ public class StringReaderTest {
     }
 
     @Test
-    public void isAt() {
+    public void isNext() {
         final StringReader reader = new StringReader("abc");
         assertThat(reader.isNext('a'), is(true));
         assertThat(reader.isNext('x'), is(false));
@@ -595,5 +597,16 @@ public class StringReaderTest {
         assertThat(reader.isNext('c'), is(true));
         reader.skip();
         assertThat(reader.isNext('c'), is(false));
+    }
+
+    @Test
+    public void isNext_predicate() {
+        final StringReader reader = new StringReader("abc");
+        final Predicate<Character> predicate = c -> (c == 'a' || c == 'b');
+        assertThat(reader.isNext(predicate), is(true));
+        reader.setCursor(1);
+        assertThat(reader.isNext(predicate), is(true));
+        reader.setCursor(2);
+        assertThat(reader.isNext(predicate), is(false));
     }
 }

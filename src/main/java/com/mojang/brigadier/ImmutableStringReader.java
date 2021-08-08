@@ -3,6 +3,8 @@
 
 package com.mojang.brigadier;
 
+import java.util.function.Predicate;
+
 public interface ImmutableStringReader {
     String getString();
 
@@ -25,4 +27,6 @@ public interface ImmutableStringReader {
     char peek(int offset);
 
     boolean isNext(char c);
+
+    boolean isNext(Predicate<Character> predicate);
 }
