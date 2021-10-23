@@ -34,10 +34,10 @@ public class BoolArgumentType implements ArgumentType<Boolean> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        if ("true".startsWith(builder.getRemaining().toLowerCase())) {
+        if ("true".startsWith(builder.getRemainingLowerCase())) {
             builder.suggest("true");
         }
-        if ("false".startsWith(builder.getRemaining().toLowerCase())) {
+        if ("false".startsWith(builder.getRemainingLowerCase())) {
             builder.suggest("false");
         }
         return builder.buildFuture();
