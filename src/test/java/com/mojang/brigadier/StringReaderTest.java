@@ -240,6 +240,7 @@ public class StringReaderTest {
     public void readQuotedString_noOpen() throws Exception {
         try {
             new StringReader("hello world\"").readQuotedString();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedStartOfQuote()));
             assertThat(ex.getCursor(), is(0));
@@ -250,6 +251,7 @@ public class StringReaderTest {
     public void readQuotedString_noClose() throws Exception {
         try {
             new StringReader("\"hello world").readQuotedString();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedEndOfQuote()));
             assertThat(ex.getCursor(), is(12));
@@ -260,6 +262,7 @@ public class StringReaderTest {
     public void readQuotedString_invalidEscape() throws Exception {
         try {
             new StringReader("\"hello\\nworld\"").readQuotedString();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape()));
             assertThat(ex.getCursor(), is(7));
@@ -270,6 +273,7 @@ public class StringReaderTest {
     public void readQuotedString_invalidQuoteEscape() throws Exception {
         try {
             new StringReader("'hello\\\"\'world").readQuotedString();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape()));
             assertThat(ex.getCursor(), is(7));
@@ -320,6 +324,7 @@ public class StringReaderTest {
     public void readInt_invalid() throws Exception {
         try {
             new StringReader("12.34").readInt();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidInt()));
             assertThat(ex.getCursor(), is(0));
@@ -330,6 +335,7 @@ public class StringReaderTest {
     public void readInt_none() throws Exception {
         try {
             new StringReader("").readInt();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedInt()));
             assertThat(ex.getCursor(), is(0));
@@ -372,6 +378,7 @@ public class StringReaderTest {
     public void readLong_invalid() throws Exception {
         try {
             new StringReader("12.34").readLong();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidLong()));
             assertThat(ex.getCursor(), is(0));
@@ -382,6 +389,7 @@ public class StringReaderTest {
     public void readLong_none() throws Exception {
         try {
             new StringReader("").readLong();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedLong()));
             assertThat(ex.getCursor(), is(0));
@@ -432,6 +440,7 @@ public class StringReaderTest {
     public void readDouble_invalid() throws Exception {
         try {
             new StringReader("12.34.56").readDouble();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidDouble()));
             assertThat(ex.getCursor(), is(0));
@@ -442,6 +451,7 @@ public class StringReaderTest {
     public void readDouble_none() throws Exception {
         try {
             new StringReader("").readDouble();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble()));
             assertThat(ex.getCursor(), is(0));
@@ -492,6 +502,7 @@ public class StringReaderTest {
     public void readFloat_invalid() throws Exception {
         try {
             new StringReader("12.34.56").readFloat();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat()));
             assertThat(ex.getCursor(), is(0));
@@ -502,6 +513,7 @@ public class StringReaderTest {
     public void readFloat_none() throws Exception {
         try {
             new StringReader("").readFloat();
+            fail();
         } catch (final CommandSyntaxException ex) {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat()));
             assertThat(ex.getCursor(), is(0));
