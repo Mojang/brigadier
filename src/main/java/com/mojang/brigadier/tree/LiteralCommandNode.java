@@ -55,7 +55,7 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         final int start = reader.getCursor();
         if (reader.canRead(literal.length())) {
             final int end = start + literal.length();
-            if (reader.getString().toLowerCase(Locale.ROOT).substring(start, end).equals(literal)) {
+            if (reader.getString().toLowerCase(Locale.ROOT).substring(start, end).equals(literalLowerCase)) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;
