@@ -100,12 +100,21 @@ public class CommandDispatcher<S> {
     }
 
 	/**
-	* Utility method from unregister a command
+	* This method unregisteres a previously declared command
 	*
-	* @param command node from register function
+	* @param The name of the command to remove
+	*/
+	public void unregister(final String name) {
+		this.root.removeChild(name);
+	}
+
+	/**
+	* This method unregisteres a previously declared command
+	*
+	* @param An previously added node
 	*/
 	public void unregister(final LiteralCommandNode<S> node) {
-		this.root.removeChild(node);
+		this.unregister(node.getName());
 	}
 
     /**

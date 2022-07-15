@@ -89,9 +89,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         }
     }
 
-	public void removeChild(final CommandNode<S> node) {
-		String name = node.getName();
-
+	public void removeChild(String name) {
 		this.children.remove(name);
 		this.literals.remove(name);
 		this.arguments.remove(name);
