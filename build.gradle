@@ -1,6 +1,4 @@
 import groovy.io.FileType
-import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider
-import com.amazonaws.services.s3.AmazonS3Client
 
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
@@ -14,10 +12,6 @@ buildscript {
         maven {
             url "https://libraries.minecraft.net"
         }
-    }
-
-    dependencies {
-        classpath 'com.amazonaws:aws-java-sdk:1.11.33'
     }
 }
 
@@ -86,17 +80,11 @@ publishing {
 
 task report {
     doLast {
-        println "##teamcity[buildNumber '${project.version}']"
+        println "##vso[build.updatebuildnumber]${project.version}"
     }
 }
 
 def publishDir = file("$buildDir/repo")
-
-
-def uploadFile(s3, bucket, path, filename) {
-    println "Uploading $filename to $bucket as $path"
-    s3.putObject(bucket, path, filename)
-}
 
 clean.doLast {
     delete publishDir
@@ -114,14 +102,13 @@ if (version.endsWith("SNAPSHOT")) {
     }
 
     publish.doLast {
-        def AWSRoleARN = (System.getenv("AWS_ROLE_ARN") != null && System.getenv("AWS_ROLE_ARN") != "" ? System.getenv("AWS_ROLE_ARN") : null)
-        if (AWSRoleARN == null) throw new GradleException("AWS Role has not been configured, use the `AWS_ROLE_ARN` environment variable")
-        def auth = new STSAssumeRoleSessionCredentialsProvider.Builder(AWSRoleARN, "JavaBrigadierPublish").build()
-        def s3 = new AmazonS3Client(auth)
         publishDir.eachFileRecurse {
-            if (!it.name.contains(".xml") && !it.name.contains(".md5") && it.isFile()) {
-                def relPath = publishDir.toPath().relativize(it.toPath()).toFile().toString().replaceAll('\\\\', '/')
-                uploadFile(s3, "minecraft-libraries", relPath, it)
+            if (!it.isFile()) {
+                return
+            }
+            // Remove junk files
+            if (it.name.contains(".xml") || it.name.contains(".md5")) {
+                it.delete()
             }
         }
     }

@@ -1,0 +1,51 @@
+name: $(Rev:r)
+
+trigger:
+  branches:
+    include:
+    - '*'
+    exclude:
+    - master
+
+pr:
+  branches:
+    include:
+    - '*'
+
+jobs:
+- job: 'Build'
+  displayName: 'Build for testing'
+
+  pool: 'MC-Build-1ES-Azure-Pipeline-Linux'
+  container: adoptopenjdk/openjdk8:latest
+
+  workspace:
+    clean: all
+
+  steps:
+  - task: Gradle@2
+    displayName: Build and Test
+    inputs:
+      workingDirectory: ''
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      options: '-PbuildNumber=0'
+      javaHomeOption: 'JDKVersion'
+      jdkUserInputPath: '/usr/java/openjdk-8'
+      testResultsFiles: '**/TEST-*.xml'
+      tasks: 'build test publish'
+
+  # This is a workaround for ComponentGovernanceComponentDetection@0 not recognizing the generated `.pom` file(s)
+  - task: Bash@3
+    displayName: Copy pom for component governance
+    inputs:
+      targetType: 'inline'
+      script: |
+        pompath=`find build/repo -name *.pom`
+        cp "${pompath}" build/pom.xml
+
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
