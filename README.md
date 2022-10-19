@@ -52,6 +52,8 @@ At the heart of Brigadier, you need a `CommandDispatcher<S>`, where `<S>` is any
 
 A command dispatcher holds a "command tree", which is a series of `CommandNode`s that represent the various possible syntax options that form a valid command.
 
+Javadoc of Brigadier API is available on [GitHub Pages](https://mojang.github.io/brigadier/).
+
 ## Registering a new command
 Before we can start parsing and dispatching commands, we need to build up our command tree. Every registration is an append operation,
 so you can freely extend existing commands in a project without needing access to the source code that created them.
