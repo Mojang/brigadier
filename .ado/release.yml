@@ -9,7 +9,8 @@ pr: none
 
 variables:
   rConnection: 'mc-java-sc'
-  storageAccount: 'pistonprod'
+  storageAccount: 'librariesminecraftnet'
+  storageAccountContainer: 'librariesminecraftnet'
   keyVault: 'mc-java-vault'
 
 jobs:
@@ -73,7 +74,7 @@ jobs:
     inputs:
       azureSubscription: '$(rConnection)'
       KeyVaultName: '$(keyVault)'
-      SecretsFilter: 'aws-access-key-id, aws-secret-access-key, pistonprod-access-key'
+      SecretsFilter: 'aws-access-key-id, aws-secret-access-key, access-key-prod-librariesminecraftnet'
       RunAsPreJob: false
 
   - task: S3Upload@1
@@ -92,4 +93,4 @@ jobs:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: |
-        az storage blob upload-batch -s '$(Pipeline.Workspace)/repo' -d libraries --account-name $(storageAccount) --account-key $(pistonprod-access-key)
+        az storage blob upload-batch -s '$(Pipeline.Workspace)/repo' -d $(storageAccountContainer) --account-name $(storageAccount) --account-key $(access-key-prod-librariesminecraftnet)
