@@ -218,6 +218,7 @@ public class CommandDispatcher<S> {
         }
 
         Object result = new EmptyCommandResult();
+        int successfulForks = 0;
         boolean forked = false;
         boolean foundCommand = false;
         final String command = parse.getReader().getString();
@@ -265,6 +266,7 @@ public class CommandDispatcher<S> {
                         final Object value = context.getCommand().run(context);
                         consumer.onCommandComplete(context, true, value);
                         result = CommandResult.combine(result, value);
+                        successfulForks++;
                     } catch (final CommandSyntaxException ex) {
                         consumer.onCommandComplete(context, false, new EmptyCommandResult());
                         if (!forked) {
@@ -283,7 +285,7 @@ public class CommandDispatcher<S> {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
 
-        return result;
+        return forked ? successfulForks : result;
     }
 
     /**
