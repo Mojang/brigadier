@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
-    private Command<S> command;
+    private Command<S, ?> command;
     private Predicate<S> requirement = s -> true;
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
@@ -43,12 +43,12 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
         return arguments.getChildren();
     }
 
-    public T executes(final Command<S> command) {
+    public <R> T executes(final Command<S, R> command) {
         this.command = command;
         return getThis();
     }
 
-    public Command<S> getCommand() {
+    public Command<S, ?> getCommand() {
         return command;
     }
 

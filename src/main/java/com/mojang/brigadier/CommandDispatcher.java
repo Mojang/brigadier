@@ -62,7 +62,7 @@ public class CommandDispatcher<S> {
             return input != null && (input.getCommand() != null || input.getChildren().stream().anyMatch(hasCommand));
         }
     };
-    private ResultConsumer<S> consumer = (c, s, r) -> {
+    private ResultConsumer<S, Object> consumer = (c, s, r) -> {
     };
 
     /**
@@ -104,7 +104,7 @@ public class CommandDispatcher<S> {
      *
      * @param consumer the new result consumer to be called
      */
-    public void setConsumer(final ResultConsumer<S> consumer) {
+    public void setConsumer(final ResultConsumer<S, Object> consumer) {
         this.consumer = consumer;
     }
 
@@ -250,7 +250,7 @@ public class CommandDispatcher<S> {
                                     }
                                 }
                             } catch (final CommandSyntaxException ex) {
-                                consumer.onCommandComplete(context, false, 0);
+                                consumer.onCommandComplete(context, false, null);
                                 if (!forked) {
                                     throw ex;
                                 }
@@ -260,8 +260,7 @@ public class CommandDispatcher<S> {
                 } else if (context.getCommand() != null) {
                     foundCommand = true;
                     try {
-                        final int value = context.getCommand().run(context);
-                        result += value;
+                        final Object value = context.getCommand().run(context);
                         consumer.onCommandComplete(context, true, value);
                         successfulForks++;
                     } catch (final CommandSyntaxException ex) {
