@@ -57,7 +57,7 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        @SuppressWarnings("unchecked") final Command<Object> command = (Command<Object>) mock(Command.class);
+        @SuppressWarnings("unchecked") final Command<Object, Integer> command = (Command<Object, Integer>) mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(

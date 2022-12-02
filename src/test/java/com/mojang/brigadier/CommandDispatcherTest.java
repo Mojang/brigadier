@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class CommandDispatcherTest {
     private CommandDispatcher<Object> subject;
     @Mock
-    private Command<Object> command;
+    private Command<Object, Integer> command;
     @Mock
     private Object source;
 
@@ -167,7 +167,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteSubcommand() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         subject.register(literal("foo").then(
@@ -205,7 +205,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteAmbiguiousParentSubcommand() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         subject.register(
@@ -231,7 +231,7 @@ public class CommandDispatcherTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteAmbiguiousParentSubcommandViaRedirect() throws Exception {
-        final Command<Object> subCommand = mock(Command.class);
+        final Command<Object, Integer> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
         final LiteralCommandNode<Object> real = subject.register(
@@ -343,7 +343,7 @@ public class CommandDispatcherTest {
 
     @Test
     public void testExecute_invalidOther() throws Exception {
-        final Command<Object> wrongCommand = mock(Command.class);
+        final Command<Object, Integer> wrongCommand = mock(Command.class);
         subject.register(literal("w").executes(wrongCommand));
         subject.register(literal("world").executes(command));
 

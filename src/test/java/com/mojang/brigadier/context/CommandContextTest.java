@@ -65,8 +65,8 @@ public class CommandContextTest {
     @Test
     public void testEquals() throws Exception {
         final Object otherSource = new Object();
-        final Command<Object> command = mock(Command.class);
-        final Command<Object> otherCommand = mock(Command.class);
+        final Command<Object, Integer> command = mock(Command.class);
+        final Command<Object, Integer> otherCommand = mock(Command.class);
         final CommandNode<Object> rootNode = mock(CommandNode.class);
         final CommandNode<Object> otherRootNode = mock(CommandNode.class);
         final CommandNode<Object> node = mock(CommandNode.class);
