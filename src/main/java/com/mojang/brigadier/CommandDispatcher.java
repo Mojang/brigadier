@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation and Serena Lynas. All rights reserved.
 // Licensed under the MIT license.
 
 package com.mojang.brigadier;
@@ -8,6 +8,9 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.results.CommandResult;
+import com.mojang.brigadier.results.EmptyCommandResult;
+import com.mojang.brigadier.results.ListCommandResult;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -138,7 +141,7 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(StringReader, Object)
      */
-    public int execute(final String input, final S source) throws CommandSyntaxException {
+    public Object execute(final String input, final S source) throws CommandSyntaxException {
         return execute(new StringReader(input), source);
     }
 
@@ -172,7 +175,7 @@ public class CommandDispatcher<S> {
      * @see #execute(ParseResults)
      * @see #execute(String, Object)
      */
-    public int execute(final StringReader input, final S source) throws CommandSyntaxException {
+    public Object execute(final StringReader input, final S source) throws CommandSyntaxException {
         final ParseResults<S> parse = parse(input, source);
         return execute(parse);
     }
@@ -203,7 +206,7 @@ public class CommandDispatcher<S> {
      * @see #execute(String, Object)
      * @see #execute(StringReader, Object)
      */
-    public int execute(final ParseResults<S> parse) throws CommandSyntaxException {
+    public Object execute(final ParseResults<S> parse) throws CommandSyntaxException {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -214,8 +217,7 @@ public class CommandDispatcher<S> {
             }
         }
 
-        int result = 0;
-        int successfulForks = 0;
+        Object result = new EmptyCommandResult();
         boolean forked = false;
         boolean foundCommand = false;
         final String command = parse.getReader().getString();
@@ -250,7 +252,7 @@ public class CommandDispatcher<S> {
                                     }
                                 }
                             } catch (final CommandSyntaxException ex) {
-                                consumer.onCommandComplete(context, false, null);
+                                consumer.onCommandComplete(context, false, new EmptyCommandResult());
                                 if (!forked) {
                                     throw ex;
                                 }
@@ -262,9 +264,9 @@ public class CommandDispatcher<S> {
                     try {
                         final Object value = context.getCommand().run(context);
                         consumer.onCommandComplete(context, true, value);
-                        successfulForks++;
+                        result = CommandResult.combine(result, value);
                     } catch (final CommandSyntaxException ex) {
-                        consumer.onCommandComplete(context, false, 0);
+                        consumer.onCommandComplete(context, false, new EmptyCommandResult());
                         if (!forked) {
                             throw ex;
                         }
@@ -277,11 +279,11 @@ public class CommandDispatcher<S> {
         }
 
         if (!foundCommand) {
-            consumer.onCommandComplete(original, false, 0);
+            consumer.onCommandComplete(original, false, new EmptyCommandResult());
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().createWithContext(parse.getReader());
         }
 
-        return forked ? successfulForks : result;
+        return result;
     }
 
     /**
