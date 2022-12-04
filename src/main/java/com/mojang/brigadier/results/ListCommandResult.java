@@ -21,4 +21,11 @@ public class ListCommandResult implements CommandResult {
 
         return this;
     }
+
+    public static ListCommandResult from(Object a, Object b) {
+        ListCommandResult list = new ListCommandResult();
+        list = list.combine(a);
+        list = list.combine(b);
+        return list;
+    }
 }
