@@ -10,7 +10,6 @@ import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.results.CommandResult;
 import com.mojang.brigadier.results.EmptyCommandResult;
-import com.mojang.brigadier.results.ListCommandResult;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -133,12 +132,14 @@ public class CommandDispatcher<S> {
      *
      * @param input a command string to parse &amp; execute
      * @param source a custom "source" object, usually representing the originator of this command
-     * @return a numeric result from a "command" that was performed
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
      * @throws CommandSyntaxException if the command failed to parse or execute
      * @throws RuntimeException if the command failed to execute and was not handled gracefully
      * @see #parse(String, Object)
      * @see #parse(StringReader, Object)
      * @see #execute(ParseResults)
+     * @see #execute(ParseResults, Object)
      * @see #execute(StringReader, Object)
      */
     public Object execute(final String input, final S source) throws CommandSyntaxException {
@@ -167,7 +168,46 @@ public class CommandDispatcher<S> {
      *
      * @param input a command string to parse &amp; execute
      * @param source a custom "source" object, usually representing the originator of this command
-     * @return a numeric result from a "command" that was performed
+     * @param baseCommandResult the basic command result to combine the other results into.
+     * Defaults to an EmptyCommandResult.
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
+     * @throws CommandSyntaxException if the command failed to parse or execute
+     * @throws RuntimeException if the command failed to execute and was not handled gracefully
+     * @see #parse(String, Object)
+     * @see #parse(StringReader, Object)
+     * @see #execute(ParseResults)
+     * @see #execute(ParseResults, Object)
+     * @see #execute(StringReader, Object)
+     */
+    public Object execute(final String input, final S source, final Object baseCommandResult) throws CommandSyntaxException {
+        return execute(new StringReader(input), source, baseCommandResult);
+    }
+
+    /**
+     * Parses and executes a given command.
+     *
+     * <p>This is a shortcut to first {@link #parse(StringReader, Object)} and then {@link #execute(ParseResults)}.</p>
+     *
+     * <p>It is recommended to parse and execute as separate steps, as parsing is often the most expensive step, and easiest to cache.</p>
+     *
+     * <p>If this command returns a value, then it successfully executed something. If it could not parse the command, or the execution was a failure,
+     * then an exception will be thrown. Most exceptions will be of type {@link CommandSyntaxException}, but it is possible that a {@link RuntimeException}
+     * may bubble up from the result of a command. The meaning behind the returned result is arbitrary, and will depend
+     * entirely on what command was performed.</p>
+     *
+     * <p>If the command passes through a node that is {@link CommandNode#isFork()} then it will be 'forked'.
+     * A forked command will not bubble up any {@link CommandSyntaxException}s, and the 'result' returned will turn into
+     * 'amount of successful commands executes'.</p>
+     *
+     * <p>After each and any command is ran, a registered callback given to {@link #setConsumer(ResultConsumer)}
+     * will be notified of the result and success of the command. You can use that method to gather more meaningful
+     * results than this method will return, especially when a command forks.</p>
+     *
+     * @param input a command string to parse &amp; execute
+     * @param source a custom "source" object, usually representing the originator of this command
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
      * @throws CommandSyntaxException if the command failed to parse or execute
      * @throws RuntimeException if the command failed to execute and was not handled gracefully
      * @see #parse(String, Object)
@@ -178,6 +218,44 @@ public class CommandDispatcher<S> {
     public Object execute(final StringReader input, final S source) throws CommandSyntaxException {
         final ParseResults<S> parse = parse(input, source);
         return execute(parse);
+    }
+
+    /**
+     * Parses and executes a given command.
+     *
+     * <p>This is a shortcut to first {@link #parse(StringReader, Object)} and then {@link #execute(ParseResults)}.</p>
+     *
+     * <p>It is recommended to parse and execute as separate steps, as parsing is often the most expensive step, and easiest to cache.</p>
+     *
+     * <p>If this command returns a value, then it successfully executed something. If it could not parse the command, or the execution was a failure,
+     * then an exception will be thrown. Most exceptions will be of type {@link CommandSyntaxException}, but it is possible that a {@link RuntimeException}
+     * may bubble up from the result of a command. The meaning behind the returned result is arbitrary, and will depend
+     * entirely on what command was performed.</p>
+     *
+     * <p>If the command passes through a node that is {@link CommandNode#isFork()} then it will be 'forked'.
+     * A forked command will not bubble up any {@link CommandSyntaxException}s, and the 'result' returned will turn into
+     * 'amount of successful commands executes'.</p>
+     *
+     * <p>After each and any command is ran, a registered callback given to {@link #setConsumer(ResultConsumer)}
+     * will be notified of the result and success of the command. You can use that method to gather more meaningful
+     * results than this method will return, especially when a command forks.</p>
+     *
+     * @param input a command string to parse &amp; execute
+     * @param source a custom "source" object, usually representing the originator of this command
+     * @param baseCommandResult the basic command result to combine the other results into.
+     * Defaults to an EmptyCommandResult.
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
+     * @throws CommandSyntaxException if the command failed to parse or execute
+     * @throws RuntimeException if the command failed to execute and was not handled gracefully
+     * @see #parse(String, Object)
+     * @see #parse(StringReader, Object)
+     * @see #execute(ParseResults)
+     * @see #execute(String, Object)
+     */
+    public Object execute(final StringReader input, final S source, final Object baseCommandResult) throws CommandSyntaxException {
+        final ParseResults<S> parse = parse(input, source);
+        return execute(parse, baseCommandResult);
     }
 
     /**
@@ -198,7 +276,42 @@ public class CommandDispatcher<S> {
      * results than this method will return, especially when a command forks.</p>
      *
      * @param parse the result of a successful {@link #parse(StringReader, Object)}
-     * @return a numeric result from a "command" that was performed.
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
+     * @throws CommandSyntaxException if the command failed to parse or execute
+     * @throws RuntimeException if the command failed to execute and was not handled gracefully
+     * @see #parse(String, Object)
+     * @see #parse(StringReader, Object)
+     * @see #execute(String, Object)
+     * @see #execute(StringReader, Object)
+     * @see #execute(ParseResults, Object)
+     */
+    public Object execute(final ParseResults<S> parse) throws CommandSyntaxException {
+        return execute(parse, new EmptyCommandResult());
+    }
+
+    /**
+     * Executes a given pre-parsed command.
+     *
+     * <p>If this command returns a value, then it successfully executed something. If the execution was a failure,
+     * then an exception will be thrown.
+     * Most exceptions will be of type {@link CommandSyntaxException}, but it is possible that a {@link RuntimeException}
+     * may bubble up from the result of a command. The meaning behind the returned result is arbitrary, and will depend
+     * entirely on what command was performed.</p>
+     *
+     * <p>If the command passes through a node that is {@link CommandNode#isFork()} then it will be 'forked'.
+     * A forked command will not bubble up any {@link CommandSyntaxException}s, and the 'result' returned will turn into
+     * 'amount of successful commands executes'.</p>
+     *
+     * <p>After each and any command is ran, a registered callback given to {@link #setConsumer(ResultConsumer)}
+     * will be notified of the result and success of the command. You can use that method to gather more meaningful
+     * results than this method will return, especially when a command forks.</p>
+     *
+     * @param parse the result of a successful {@link #parse(StringReader, Object)}
+     * @param baseCommandResult the basic command result to combine the other results into.
+     * Defaults to an EmptyCommandResult.
+     * @return if the command is forked, the amount of successful executes; otherwise, the result
+     * from the command that was run, or EmptyCommandResult if the command failed
      * @throws CommandSyntaxException if the command failed to parse or execute
      * @throws RuntimeException if the command failed to execute and was not handled gracefully
      * @see #parse(String, Object)
@@ -206,7 +319,7 @@ public class CommandDispatcher<S> {
      * @see #execute(String, Object)
      * @see #execute(StringReader, Object)
      */
-    public Object execute(final ParseResults<S> parse) throws CommandSyntaxException {
+    public Object execute(final ParseResults<S> parse, final Object baseCommandResult) throws CommandSyntaxException {
         if (parse.getReader().canRead()) {
             if (parse.getExceptions().size() == 1) {
                 throw parse.getExceptions().values().iterator().next();
@@ -217,7 +330,7 @@ public class CommandDispatcher<S> {
             }
         }
 
-        Object result = new EmptyCommandResult();
+        Object result = baseCommandResult;
         int successfulForks = 0;
         boolean forked = false;
         boolean foundCommand = false;
@@ -314,6 +427,7 @@ public class CommandDispatcher<S> {
      * @see #parse(StringReader, Object)
      * @see #execute(ParseResults)
      * @see #execute(String, Object)
+     * @see #execute(ParseResults, Object)
      */
     public ParseResults<S> parse(final String command, final S source) {
         return parse(new StringReader(command), source);
