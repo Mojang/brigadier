@@ -13,7 +13,7 @@ public class EmptyCommandResult implements CommandResult {
      * the empty result.
      */
     @Override
-    public Object combine(Object other) {
+    public Object combine(final Object other) {
         return other;
     }
 }

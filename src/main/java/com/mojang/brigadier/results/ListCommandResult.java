@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListCommandResult implements CommandResult {
-    private List<Object> results = new ArrayList<>();
+    private final List<Object> results = new ArrayList<>();
 
     public List<Object> getResults() {
         return results;
     }
 
     @Override
-    public ListCommandResult combine(Object other) {
+    public ListCommandResult combine(final Object other) {
         if (!(other instanceof EmptyCommandResult)) {
             results.add(other);
         }
@@ -22,7 +22,7 @@ public class ListCommandResult implements CommandResult {
         return this;
     }
 
-    public static ListCommandResult from(Object a, Object b) {
+    public static ListCommandResult from(final Object a, final Object b) {
         ListCommandResult list = new ListCommandResult();
         list = list.combine(a);
         list = list.combine(b);

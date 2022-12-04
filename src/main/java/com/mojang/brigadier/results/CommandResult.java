@@ -17,7 +17,7 @@ public interface CommandResult {
      * with.
      * @return The combined result
      */
-    default Object combine(Object other) {
+    default Object combine(final Object other) {
         return ListCommandResult.from(this, other);
     }
 
@@ -41,7 +41,7 @@ public interface CommandResult {
      * @param target the object which the source will be combined into
      * @param source the object to combine into the target
      */
-    static Object combine(Object target, Object source) {
+    static Object combine(final Object target, final Object source) {
         if (target instanceof CommandResult) {
             return ((CommandResult)target).combine(source);
         } else if (source instanceof EmptyCommandResult) {
