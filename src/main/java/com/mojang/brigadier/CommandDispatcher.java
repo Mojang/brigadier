@@ -231,7 +231,6 @@ public class CommandDispatcher<S> {
                 if (child != null) {
                     forked |= context.isForked();
                     if (child.hasNodes()) {
-                        foundCommand = true;
                         final RedirectModifier<S> modifier = context.getRedirectModifier();
                         if (modifier == null) {
                             if (next == null) {
