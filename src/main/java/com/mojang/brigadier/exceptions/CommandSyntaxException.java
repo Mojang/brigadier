@@ -16,7 +16,7 @@ public class CommandSyntaxException extends Exception {
     private final int cursor;
 
     public CommandSyntaxException(final CommandExceptionType type, final Message message) {
-        super(message.getString(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
+        super(null, null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
         this.message = message;
         this.input = null;
@@ -24,7 +24,7 @@ public class CommandSyntaxException extends Exception {
     }
 
     public CommandSyntaxException(final CommandExceptionType type, final Message message, final String input, final int cursor) {
-        super(message.getString(), null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
+        super(null, null, ENABLE_COMMAND_STACK_TRACES, ENABLE_COMMAND_STACK_TRACES);
         this.type = type;
         this.message = message;
         this.input = input;
