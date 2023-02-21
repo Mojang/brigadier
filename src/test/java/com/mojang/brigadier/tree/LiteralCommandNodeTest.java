@@ -48,6 +48,18 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
     }
 
     @Test
+    public void testCaseInsensitiveParse() throws Exception {
+        try {
+            node.caseInsensitive(true);
+            final StringReader reader = new StringReader("FoO bar");
+            node.parse(reader, contextBuilder);
+            assertThat(reader.getRemaining(), equalTo(" bar"));
+        } finally {
+            node.caseInsensitive(false);
+        }
+    }
+
+    @Test
     public void testParseExact() throws Exception {
         final StringReader reader = new StringReader("foo");
         node.parse(reader, contextBuilder);

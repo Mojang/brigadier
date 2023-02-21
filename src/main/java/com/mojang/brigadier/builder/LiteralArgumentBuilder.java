@@ -9,6 +9,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
     private final String literal;
 
+    private boolean isCaseInsensitive = false;
+
     protected LiteralArgumentBuilder(final String literal) {
         this.literal = literal;
     }
@@ -26,9 +28,16 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
         return literal;
     }
 
+    public boolean isCaseInsensitive() { return isCaseInsensitive; }
+
+    public LiteralArgumentBuilder<S> caseInsensitive(boolean isCaseInsensitive) {
+        this.isCaseInsensitive = isCaseInsensitive;
+        return getThis();
+    }
+
     @Override
     public LiteralCommandNode<S> build() {
-        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork());
+        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), isCaseInsensitive());
 
         for (final CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
