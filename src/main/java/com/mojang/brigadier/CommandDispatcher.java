@@ -247,6 +247,8 @@ public class CommandDispatcher<S> {
                                     for (final S source : results) {
                                         next.add(child.copyFor(source));
                                     }
+                                } else {
+                                    foundCommand = true;
                                 }
                             } catch (final CommandSyntaxException ex) {
                                 consumer.onCommandComplete(context, false, 0);
