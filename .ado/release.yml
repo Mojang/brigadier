@@ -74,7 +74,7 @@ jobs:
     inputs:
       azureSubscription: '$(rConnection)'
       KeyVaultName: '$(keyVault)'
-      SecretsFilter: 'aws-access-key-id, aws-secret-access-key, access-key-prod-librariesminecraftnet'
+      SecretsFilter: 'access-key-prod-librariesminecraftnet'
       RunAsPreJob: false
 
   - task: AzureCLI@2
