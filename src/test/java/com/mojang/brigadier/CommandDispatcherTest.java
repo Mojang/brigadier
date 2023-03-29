@@ -4,6 +4,8 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -63,8 +65,25 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testCreateAndExecuteCaseInsensitiveCommand() throws Exception {
+        subject.register(literal("Foo").then(argument("bar", integer()).executes(command)).caseInsensitive(true));
+
+        assertThat(subject.execute("foo 123", source), is(42));
+        verify(command).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void testCreateAndExecuteOffsetCommand() throws Exception {
         subject.register(literal("foo").executes(command));
+
+        assertThat(subject.execute(inputWithOffset("/foo", 1), source), is(42));
+        verify(command).run(any(CommandContext.class));
+    }
+
+    @Test
+    public void testCreateAndExecuteCaseInsensitiveOffsetCommand() throws Exception {
+        subject.register(literal("Foo").executes(command).caseInsensitive(true));
 
         assertThat(subject.execute(inputWithOffset("/foo", 1), source), is(42));
         verify(command).run(any(CommandContext.class));

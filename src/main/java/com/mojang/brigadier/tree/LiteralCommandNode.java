@@ -23,11 +23,14 @@ import java.util.function.Predicate;
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
     private final String literalLowerCase;
+    private boolean isCaseInsensitive = false;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks,
+                              final boolean isCaseInsensitive) {
         super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
         this.literalLowerCase = literal.toLowerCase(Locale.ROOT);
+        this.isCaseInsensitive = isCaseInsensitive;
     }
 
     public String getLiteral() {
@@ -37,6 +40,12 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     @Override
     public String getName() {
         return literal;
+    }
+
+    public boolean isCaseInsensitive() { return isCaseInsensitive; }
+
+    public void caseInsensitive(boolean isCaseInsensitive) {
+        this.isCaseInsensitive = isCaseInsensitive;
     }
 
     @Override
@@ -55,7 +64,17 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         final int start = reader.getCursor();
         if (reader.canRead(literal.length())) {
             final int end = start + literal.length();
-            if (reader.getString().substring(start, end).equals(literal)) {
+
+            boolean foundMatch = false;
+            String subString = reader.getString().substring(start, end);
+
+            if (isCaseInsensitive) {
+                foundMatch = subString.equalsIgnoreCase(literal);
+            } else {
+                foundMatch = subString.equals(literal);
+            }
+
+            if (foundMatch) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;
