@@ -4,6 +4,7 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -254,6 +255,47 @@ public class CommandDispatcherTest {
         assertThat(subject.execute("redirect 1 2", source), is(100));
         verify(subCommand).run(any(CommandContext.class));
         verify(command, never()).run(any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testPreferExecuteLiteralOverArguments() throws Exception {
+        final Command<Object> literalCommand = mock(Command.class);
+        when(literalCommand.run(any())).thenReturn(100);
+
+        subject.register(
+            literal("test")
+                .then(
+                    argument("incorrect", StringArgumentType.word())
+                        .executes(command)
+                )
+                .then(
+                    literal("hello")
+                        .executes(literalCommand)
+                )
+        );
+
+        assertThat(subject.execute("test hello", source), is(100));
+        verify(literalCommand).run(any(CommandContext.class));
+        verify(command, never()).run(any());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testExecuteAmbiguousArgumentIfImpermissibleLiteral() throws Exception {
+        subject.register(literal("foo")
+            .then(
+                literal("bar")
+                    .requires(source -> false)
+            )
+            .then(
+                argument("argument", StringArgumentType.word())
+                    .executes(command)
+            )
+        );
+
+        assertThat(subject.execute("foo bar", source), is(42));
+        verify(command).run(any(CommandContext.class));
     }
 
     @SuppressWarnings("unchecked")

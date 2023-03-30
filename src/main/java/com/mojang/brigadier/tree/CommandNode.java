@@ -14,6 +14,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -160,7 +161,15 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
             input.setCursor(cursor);
             final LiteralCommandNode<S> literal = literals.get(text);
             if (literal != null) {
-                return Collections.singleton(literal);
+                final int argumentsCount = arguments.size();
+                if (argumentsCount == 0) {
+                    return Collections.singletonList(literal);
+                } else {
+                    final Collection<CommandNode<S>> nodes = new ArrayList<>(argumentsCount + 1);
+                    nodes.add(literal); // literals have priority over arguments
+                    nodes.addAll(arguments.values());
+                    return nodes;
+                }
             } else {
                 return arguments.values();
             }
