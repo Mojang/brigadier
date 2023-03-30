@@ -100,7 +100,7 @@ public class LiteralCommandNodeTest extends AbstractCommandNodeTest {
 
     @Test
     public void testEquals() throws Exception {
-        @SuppressWarnings("unchecked") final Command<Object> command = mock(Command.class);
+        @SuppressWarnings("unchecked") final Command<Object, Integer> command = mock(Command.class);
 
         new EqualsTester()
             .addEqualityGroup(

@@ -19,7 +19,7 @@ public class LiteralArgumentBuilderTest {
     private LiteralArgumentBuilder<Object> builder;
     @Mock
     private
-    Command<Object> command;
+    Command<Object, Integer> command;
 
     @Before
     public void setUp() throws Exception {

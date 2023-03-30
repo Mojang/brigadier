@@ -28,7 +28,7 @@ public class CommandContext<S> {
 
     private final S source;
     private final String input;
-    private final Command<S> command;
+    private final Command<S, ?> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
     private final CommandNode<S> rootNode;
     private final List<ParsedCommandNode<S>> nodes;
@@ -37,7 +37,7 @@ public class CommandContext<S> {
     private final RedirectModifier<S> modifier;
     private final boolean forks;
 
-    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
+    public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S, ?> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
         this.source = source;
         this.input = input;
         this.arguments = arguments;
@@ -69,7 +69,7 @@ public class CommandContext<S> {
         return result;
     }
 
-    public Command<S> getCommand() {
+    public Command<S, ?> getCommand() {
         return command;
     }
 

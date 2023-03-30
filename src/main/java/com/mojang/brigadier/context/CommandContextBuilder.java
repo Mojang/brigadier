@@ -19,7 +19,7 @@ public class CommandContextBuilder<S> {
     private final List<ParsedCommandNode<S>> nodes = new ArrayList<>();
     private final CommandDispatcher<S> dispatcher;
     private S source;
-    private Command<S> command;
+    private Command<S, ?> command;
     private CommandContextBuilder<S> child;
     private StringRange range;
     private RedirectModifier<S> modifier = null;
@@ -54,7 +54,7 @@ public class CommandContextBuilder<S> {
         return arguments;
     }
 
-    public CommandContextBuilder<S> withCommand(final Command<S> command) {
+    public CommandContextBuilder<S> withCommand(final Command<S, ?> command) {
         this.command = command;
         return this;
     }
@@ -95,7 +95,7 @@ public class CommandContextBuilder<S> {
         return result;
     }
 
-    public Command<S> getCommand() {
+    public Command<S, ?> getCommand() {
         return command;
     }
 

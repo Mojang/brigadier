@@ -7,8 +7,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 @FunctionalInterface
-public interface Command<S> {
+public interface Command<S, R> {
     int SINGLE_SUCCESS = 1;
 
-    int run(CommandContext<S> context) throws CommandSyntaxException;
+    R run(CommandContext<S> context) throws CommandSyntaxException;
 }

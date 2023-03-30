@@ -30,7 +30,7 @@ public class CommandDispatcherUsagesTest {
     @Mock
     private Object source;
     @Mock
-    private Command<Object> command;
+    private Command<Object, Integer> command;
 
     @Before
     public void setUp() throws Exception {

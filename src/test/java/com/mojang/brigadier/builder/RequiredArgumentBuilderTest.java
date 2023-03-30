@@ -25,7 +25,7 @@ public class RequiredArgumentBuilderTest {
     private RequiredArgumentBuilder<Object, Integer> builder;
     @Mock
     private
-    Command<Object> command;
+    Command<Object, Integer> command;
 
     @Before
     public void setUp() throws Exception {
