@@ -208,7 +208,7 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExecuteAmbiguiousParentSubcommand() throws Exception {
+    public void testExecuteAmbiguousParentSubcommand() throws Exception {
         final Command<Object> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
@@ -234,7 +234,7 @@ public class CommandDispatcherTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testExecuteAmbiguiousParentSubcommandViaRedirect() throws Exception {
+    public void testExecuteAmbiguousParentSubcommandViaRedirect() throws Exception {
         final Command<Object> subCommand = mock(Command.class);
         when(subCommand.run(any())).thenReturn(100);
 
