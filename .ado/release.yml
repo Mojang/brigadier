@@ -1,0 +1,87 @@
+name: $(Rev:r)
+
+trigger:
+  branches:
+    include:
+    - master
+
+pr: none
+
+variables:
+  rConnection: 'mc-java-sc'
+  storageAccount: 'librariesminecraftnet'
+  storageAccountContainer: 'librariesminecraftnet'
+  keyVault: 'mc-java-vault'
+
+jobs:
+- job: 'Build'
+  displayName: 'Build for release'
+
+  pool: 'MC-Build-1ES-Azure-Pipeline-Linux'
+  container: adoptopenjdk/openjdk8:latest
+
+  workspace:
+    clean: all
+
+  steps:
+  - task: Gradle@2
+    displayName: Build and Test
+    inputs:
+      workingDirectory: ''
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      options: '-PbuildNumber=$(Build.BuildNumber)'
+      javaHomeOption: 'JDKVersion'
+      jdkUserInputPath: '/usr/java/openjdk-8'
+      testResultsFiles: '**/TEST-*.xml'
+      tasks: 'build test publish report'
+
+  # This is a workaround for ComponentGovernanceComponentDetection@0 not recognizing the generated `.pom` file(s)
+  - task: Bash@3
+    displayName: Copy pom for component governance
+    inputs:
+      targetType: 'inline'
+      script: |
+        pompath=`find build/repo -name *.pom`
+        cp "${pompath}" build/pom.xml
+
+  - task: ComponentGovernanceComponentDetection@0
+    inputs:
+      scanType: 'Register'
+      verbosity: 'Verbose'
+      alertWarningLevel: 'High'
+
+  - publish: 'build/repo/'
+    artifact: repo
+
+- job: 'Publish'
+  displayName: 'Publish release'
+  dependsOn: Build
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+
+  pool: 'MC-Build-1ES-Azure-Pipeline-Linux'
+
+  workspace:
+    clean: all
+
+  steps:
+  - download: current
+    artifact: repo
+
+  - task: AzureKeyVault@1
+    displayName: 'Fetching secrets'
+    name: secrets
+    inputs:
+      azureSubscription: '$(rConnection)'
+      KeyVaultName: '$(keyVault)'
+      SecretsFilter: 'access-key-prod-librariesminecraftnet'
+      RunAsPreJob: false
+
+  - task: AzureCLI@2
+    displayName: Azure CLI
+    inputs:
+      azureSubscription: '$(rConnection)'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        az storage blob upload-batch -s '$(Pipeline.Workspace)/repo' -d $(storageAccountContainer) --account-name $(storageAccount) --account-key $(access-key-prod-librariesminecraftnet)

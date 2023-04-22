@@ -1,0 +1,22 @@
+name: pr-check
+
+on: [ pull_request ]
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    container:
+      image: adoptopenjdk/openjdk8:latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build test
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
