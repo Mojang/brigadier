@@ -133,6 +133,30 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readUnquotedString_strictCharset() throws Exception {
+        final StringReader reader = new StringReader("1+1=2 2+2=4");
+        assertThat(reader.readString(), equalTo("1+1"));
+        assertThat(reader.getRead(), equalTo("1+1"));
+        assertThat(reader.getRemaining(), equalTo("=2 2+2=4"));
+
+        // Should not be able to read further -- as invalid character is present
+        assertThat(reader.readString(), equalTo(""));
+    }
+
+    @Test
+    public void readUnquotedString_strictCharsetQuoted() throws Exception {
+        final StringReader reader = new StringReader("\"1+1=2\" \"2+2=4\"");
+        assertThat(reader.readString(), equalTo("1+1=2"));
+        assertThat(reader.getRead(), equalTo("\"1+1=2\""));
+        assertThat(reader.getRemaining(), equalTo(" \"2+2=4\""));
+
+        reader.skipWhitespace();
+
+        assertThat(reader.readString(), equalTo("2+2=4"));
+        assertThat(reader.getRead(), equalTo("\"1+1=2\" \"2+2=4\""));
+    }
+
+    @Test
     public void readUnquotedString_empty() throws Exception {
         final StringReader reader = new StringReader("");
         assertThat(reader.readUnquotedString(), equalTo(""));
@@ -144,6 +168,40 @@ public class StringReaderTest {
     public void readUnquotedString_empty_withRemaining() throws Exception {
         final StringReader reader = new StringReader(" hello world");
         assertThat(reader.readUnquotedString(), equalTo(""));
+        assertThat(reader.getRead(), equalTo(""));
+        assertThat(reader.getRemaining(), equalTo(" hello world"));
+    }
+
+    @Test
+    public void readUnquotedStringGreedy() throws Exception {
+        final StringReader reader = new StringReader("hello world");
+        assertThat(reader.readStringGreedy(), equalTo("hello"));
+        assertThat(reader.getRead(), equalTo("hello"));
+        assertThat(reader.getRemaining(), equalTo(" world"));
+    }
+
+    @Test
+    public void readUnquotedStringGreedy_strictCharset() throws Exception {
+        final StringReader reader = new StringReader("1+1=2 2+2=4");
+        assertThat(reader.readStringGreedy(), equalTo("1+1=2"));
+        assertThat(reader.getRead(), equalTo("1+1=2"));
+        assertThat(reader.getRemaining(), equalTo(" 2+2=4"));
+        reader.skipWhitespace();
+        assertThat(reader.readStringGreedy(), equalTo("2+2=4"));
+    }
+
+    @Test
+    public void readUnquotedStringGreedy_empty() throws Exception {
+        final StringReader reader = new StringReader("");
+        assertThat(reader.readUnquotedStringGreedy(), equalTo(""));
+        assertThat(reader.getRead(), equalTo(""));
+        assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readUnquotedStringGreedy_empty_withRemaining() throws Exception {
+        final StringReader reader = new StringReader(" hello world");
+        assertThat(reader.readUnquotedStringGreedy(), equalTo(""));
         assertThat(reader.getRead(), equalTo(""));
         assertThat(reader.getRemaining(), equalTo(" hello world"));
     }

@@ -11,22 +11,32 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class StringArgumentType implements ArgumentType<String> {
+    private final boolean greedyCharset;
     private final StringType type;
 
-    private StringArgumentType(final StringType type) {
+    private StringArgumentType(final StringType type, final boolean greedyCharset) {
         this.type = type;
+        this.greedyCharset = greedyCharset;
     }
 
     public static StringArgumentType word() {
-        return new StringArgumentType(StringType.SINGLE_WORD);
+        return word(false);
+    }
+
+    public static StringArgumentType word(boolean greedyCharset) {
+        return new StringArgumentType(StringType.SINGLE_WORD, greedyCharset);
     }
 
     public static StringArgumentType string() {
-        return new StringArgumentType(StringType.QUOTABLE_PHRASE);
+        return string(false);
+    }
+
+    public static StringArgumentType string(boolean greedyCharset) {
+        return new StringArgumentType(StringType.QUOTABLE_PHRASE, greedyCharset);
     }
 
     public static StringArgumentType greedyString() {
-        return new StringArgumentType(StringType.GREEDY_PHRASE);
+        return new StringArgumentType(StringType.GREEDY_PHRASE, false);
     }
 
     public static String getString(final CommandContext<?> context, final String name) {
@@ -37,6 +47,10 @@ public class StringArgumentType implements ArgumentType<String> {
         return type;
     }
 
+    public boolean hasGreedyCharset() {
+        return greedyCharset;
+    }
+
     @Override
     public String parse(final StringReader reader) throws CommandSyntaxException {
         if (type == StringType.GREEDY_PHRASE) {
@@ -44,9 +58,17 @@ public class StringArgumentType implements ArgumentType<String> {
             reader.setCursor(reader.getTotalLength());
             return text;
         } else if (type == StringType.SINGLE_WORD) {
-            return reader.readUnquotedString();
+            if (this.greedyCharset) {
+                return reader.readUnquotedStringGreedy();
+            } else {
+                return reader.readUnquotedString();
+            }
         } else {
-            return reader.readString();
+            if (this.greedyCharset) {
+                return reader.readStringGreedy();
+            } else {
+                return reader.readString();
+            }
         }
     }
 
