@@ -31,7 +31,7 @@ public class StringArgumentTypeTest {
     public void testParseWord_greedyCharset() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readUnquotedStringGreedy()).thenReturn("1+1=2");
-        assertThat(word(false).parse(reader), equalTo("1+1=2"));
+        assertThat(word(true).parse(reader), equalTo("1+1=2"));
         verify(reader).readUnquotedStringGreedy();
     }
 
@@ -39,7 +39,7 @@ public class StringArgumentTypeTest {
     public void testParseString_greedyCharset() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readStringGreedy()).thenReturn("1+1=2 2+2=4");
-        assertThat(string(false).parse(reader), equalTo("1+1=2 2+2=4"));
+        assertThat(string(true).parse(reader), equalTo("1+1=2 2+2=4"));
         verify(reader).readStringGreedy();
     }
 
