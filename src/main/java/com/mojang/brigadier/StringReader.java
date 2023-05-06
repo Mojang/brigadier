@@ -242,7 +242,7 @@ public class StringReader implements ImmutableStringReader {
         return readString(false);
     }
 
-    String readString(boolean asciiOnly) throws CommandSyntaxException {
+    private String readString(boolean asciiOnly) throws CommandSyntaxException {
         if (!canRead()) {
             return "";
         }
