@@ -493,25 +493,28 @@ public class CommandDispatcher<S> {
                 final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
                 return self + ARGUMENT_SEPARATOR + redirect;
             } else {
-                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+                final List<CommandNode<S>> children = new ArrayList<>();
+                for (final CommandNode<S> child : node.getChildren()) {
+                    if (child.canUse(source)) children.add(child);
+                }
                 if (children.size() == 1) {
-                    final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
+                    final String usage = getSmartUsage(children.get(0), source, childOptional, childOptional);
                     if (usage != null) return self + ARGUMENT_SEPARATOR + usage;
                 } else if (children.size() > 1) {
-                    final Set<String> childUsage = new LinkedHashSet<>();
+                    final List<String> childUsage = new ArrayList<>();
                     for (final CommandNode<S> child : children) {
                         final String usage = getSmartUsage(child, source, childOptional, true);
                         if (usage != null) childUsage.add(usage);
                     }
                     if (childUsage.size() == 1) {
-                        final String usage = childUsage.iterator().next();
+                        final String usage = childUsage.get(0);
                         return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
                     } else if (childUsage.size() > 1) {
                         final StringBuilder builder = new StringBuilder(open);
                         int count = 0;
-                        for (final CommandNode<S> child : children) {
+                        for (final String usage : childUsage) {
                             if (count > 0) builder.append(USAGE_OR);
-                            builder.append(child.getUsageText());
+                            builder.append(usage);
                             count++;
                         }
                         if (count > 0) {
@@ -522,7 +525,6 @@ public class CommandDispatcher<S> {
                 }
             }
         }
-
         return self;
     }
 
