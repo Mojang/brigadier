@@ -233,17 +233,13 @@ public class CommandDispatcher<S> {
                     if (child.hasNodes()) {
                         final RedirectModifier<S> modifier = context.getRedirectModifier();
                         if (modifier == null) {
-                            if (next == null) {
-                                next = new ArrayList<>(1);
-                            }
+                            if (next == null) next = new ArrayList<>(1);
                             next.add(child.copyFor(context.getSource()));
                         } else {
                             try {
                                 final Collection<S> results = modifier.apply(context);
                                 if (!results.isEmpty()) {
-                                    if (next == null) {
-                                        next = new ArrayList<>(results.size());
-                                    }
+                                    if (next == null) next = new ArrayList<>(results.size());
                                     for (final S source : results) {
                                         next.add(child.copyFor(source));
                                     }
@@ -252,9 +248,7 @@ public class CommandDispatcher<S> {
                                 }
                             } catch (final CommandSyntaxException ex) {
                                 consumer.onCommandComplete(context, false, 0);
-                                if (!forked) {
-                                    throw ex;
-                                }
+                                if (!forked) throw ex;
                             }
                         }
                     }
@@ -267,9 +261,7 @@ public class CommandDispatcher<S> {
                         successfulForks++;
                     } catch (final CommandSyntaxException ex) {
                         consumer.onCommandComplete(context, false, 0);
-                        if (!forked) {
-                            throw ex;
-                        }
+                        if (!forked) throw ex;
                     }
                 }
             }
@@ -373,9 +365,7 @@ public class CommandDispatcher<S> {
                     }
                 }
             } catch (final CommandSyntaxException ex) {
-                if (errors == null) {
-                    errors = new LinkedHashMap<>();
-                }
+                if (errors == null) errors = new LinkedHashMap<>();
                 errors.put(child, ex);
                 reader.setCursor(cursor);
                 continue;
@@ -391,15 +381,11 @@ public class CommandDispatcher<S> {
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
                     final ParseResults<S> parse = parseNodes(child, reader, context);
-                    if (potentials == null) {
-                        potentials = new ArrayList<>(1);
-                    }
+                    if (potentials == null) potentials = new ArrayList<>(1);
                     potentials.add(parse);
                 }
             } else {
-                if (potentials == null) {
-                    potentials = new ArrayList<>(1);
-                }
+                if (potentials == null) potentials = new ArrayList<>(1);
                 potentials.add(new ParseResults<>(context, reader, Collections.emptyMap()));
             }
         }
@@ -407,18 +393,10 @@ public class CommandDispatcher<S> {
         if (potentials != null) {
             if (potentials.size() > 1) {
                 potentials.sort((a, b) -> {
-                    if (!a.getReader().canRead() && b.getReader().canRead()) {
-                        return -1;
-                    }
-                    if (a.getReader().canRead() && !b.getReader().canRead()) {
-                        return 1;
-                    }
-                    if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) {
-                        return -1;
-                    }
-                    if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) {
-                        return 1;
-                    }
+                    if (!a.getReader().canRead() && b.getReader().canRead()) return -1;
+                    if (a.getReader().canRead() && !b.getReader().canRead()) return 1;
+                    if (a.getExceptions().isEmpty() && !b.getExceptions().isEmpty()) return -1;
+                    if (!a.getExceptions().isEmpty() && b.getExceptions().isEmpty()) return 1;
                     return 0;
                 });
             }
@@ -456,14 +434,8 @@ public class CommandDispatcher<S> {
     }
 
     private void getAllUsage(final CommandNode<S> node, final S source, final ArrayList<String> result, final String prefix, final boolean restricted) {
-        if (restricted && !node.canUse(source)) {
-            return;
-        }
-
-        if (node.getCommand() != null) {
-            result.add(prefix);
-        }
-
+        if (restricted && !node.canUse(source)) return;
+        if (node.getCommand() != null) result.add(prefix);
         if (node.getRedirect() != null) {
             final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
             result.add(prefix.isEmpty() ? node.getUsageText() + ARGUMENT_SEPARATOR + redirect : prefix + ARGUMENT_SEPARATOR + redirect);
@@ -509,9 +481,7 @@ public class CommandDispatcher<S> {
     }
 
     private String getSmartUsage(final CommandNode<S> node, final S source, final boolean optional, final boolean deep) {
-        if (!node.canUse(source)) {
-            return null;
-        }
+        if (!node.canUse(source)) return null;
 
         final String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
         final boolean childOptional = node.getCommand() != null;
@@ -523,31 +493,28 @@ public class CommandDispatcher<S> {
                 final String redirect = node.getRedirect() == root ? "..." : "-> " + node.getRedirect().getUsageText();
                 return self + ARGUMENT_SEPARATOR + redirect;
             } else {
-                final Collection<CommandNode<S>> children = node.getChildren().stream().filter(c -> c.canUse(source)).collect(Collectors.toList());
+                final List<CommandNode<S>> children = new ArrayList<>();
+                for (final CommandNode<S> child : node.getChildren()) {
+                    if (child.canUse(source)) children.add(child);
+                }
                 if (children.size() == 1) {
-                    final String usage = getSmartUsage(children.iterator().next(), source, childOptional, childOptional);
-                    if (usage != null) {
-                        return self + ARGUMENT_SEPARATOR + usage;
-                    }
+                    final String usage = getSmartUsage(children.get(0), source, childOptional, childOptional);
+                    if (usage != null) return self + ARGUMENT_SEPARATOR + usage;
                 } else if (children.size() > 1) {
-                    final Set<String> childUsage = new LinkedHashSet<>();
+                    final LinkedList<String> childUsage = new LinkedList<>();
                     for (final CommandNode<S> child : children) {
                         final String usage = getSmartUsage(child, source, childOptional, true);
-                        if (usage != null) {
-                            childUsage.add(usage);
-                        }
+                        if (usage != null) childUsage.add(usage);
                     }
                     if (childUsage.size() == 1) {
-                        final String usage = childUsage.iterator().next();
+                        final String usage = childUsage.get(0);
                         return self + ARGUMENT_SEPARATOR + (childOptional ? USAGE_OPTIONAL_OPEN + usage + USAGE_OPTIONAL_CLOSE : usage);
                     } else if (childUsage.size() > 1) {
                         final StringBuilder builder = new StringBuilder(open);
                         int count = 0;
-                        for (final CommandNode<S> child : children) {
-                            if (count > 0) {
-                                builder.append(USAGE_OR);
-                            }
-                            builder.append(child.getUsageText());
+                        for (final String usage : childUsage) {
+                            if (count > 0) builder.append(USAGE_OR);
+                            builder.append(usage);
                             count++;
                         }
                         if (count > 0) {
@@ -558,7 +525,6 @@ public class CommandDispatcher<S> {
                 }
             }
         }
-
         return self;
     }
 
