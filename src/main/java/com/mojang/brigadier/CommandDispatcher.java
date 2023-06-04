@@ -501,7 +501,7 @@ public class CommandDispatcher<S> {
                     final String usage = getSmartUsage(children.get(0), source, childOptional, childOptional);
                     if (usage != null) return self + ARGUMENT_SEPARATOR + usage;
                 } else if (children.size() > 1) {
-                    final List<String> childUsage = new ArrayList<>();
+                    final LinkedList<String> childUsage = new LinkedList<>();
                     for (final CommandNode<S> child : children) {
                         final String usage = getSmartUsage(child, source, childOptional, true);
                         if (usage != null) childUsage.add(usage);
