@@ -92,6 +92,28 @@ public class ParsingBenchmarks {
             literal("k")
                 .redirect(h)
         );
+        subject.register(
+            literal("l")
+                .then(
+                    literal("1")
+                        .then(
+                            literal("2")
+                                .then(
+                                    literal("3")
+                                        .then(
+                                            literal("4")
+                                                .then(
+                                                    literal("5")
+                                                        .then(
+                                                            literal("6")
+                                                                .then(
+                                                                    literal("7")
+                                                                        .then(
+                                                                            literal("8")
+                                                                                .then(
+                                                                                    literal("9")
+                                                                                        .executes(c -> 0))))))))))
+        );
     }
 
     @Benchmark
@@ -112,5 +134,10 @@ public class ParsingBenchmarks {
     @Benchmark
     public ParseResults<Object> parse_() {
         return subject.parse("c", new Object());
+    }
+
+    @Benchmark
+    public ParseResults<Object> parse_l123456789() {
+        return subject.parse("l 1 2 3 4 5 6 7 8 9", new Object());
     }
 }
