@@ -4,6 +4,7 @@
 package com.mojang.brigadier.benchmarks;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -18,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 @State(Scope.Benchmark)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
 public class ParsingBenchmarks {
     private CommandDispatcher<Object> subject;
 
@@ -92,30 +95,22 @@ public class ParsingBenchmarks {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void parse_a1i() {
-        subject.parse("a 1 i", new Object());
+    public ParseResults<Object> parse_a1i() {
+        return subject.parse("a 1 i", new Object());
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void parse_c() {
-        subject.parse("c", new Object());
+    public ParseResults<Object> parse_c() {
+        return subject.parse("c", new Object());
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void parse_k1i() {
-        subject.parse("k 1 i", new Object());
+    public ParseResults<Object> parse_k1i() {
+        return subject.parse("k 1 i", new Object());
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.NANOSECONDS)
-    public void parse_() {
-        subject.parse("c", new Object());
+    public ParseResults<Object> parse_() {
+        return subject.parse("c", new Object());
     }
 }
