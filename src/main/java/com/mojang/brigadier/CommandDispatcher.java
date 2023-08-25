@@ -361,8 +361,15 @@ public class CommandDispatcher<S> {
             if (!child.canUse(source)) {
                 continue;
             }
-            final CommandContextBuilder<S> context = unique ? contextSoFar : contextSoFar.copy();
-            final StringReader reader = unique ? originalReader : new StringReader(originalReader);
+            final CommandContextBuilder<S> context;
+            final StringReader reader;
+            if (unique) {
+                context = contextSoFar;
+                reader = originalReader;
+            } else {
+                context = contextSoFar.copy();
+                reader = new StringReader(originalReader);
+            }
             try {
                 try {
                     child.parse(reader, context);
