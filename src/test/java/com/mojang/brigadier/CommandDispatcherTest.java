@@ -601,16 +601,11 @@ public class CommandDispatcherTest {
 
         when(command.run(any())).thenReturn(3);
 
-        try {
-            subject.execute("redirect noop", source);
-            fail();
-        } catch (final CommandSyntaxException ex) {
-            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
-            assertThat(ex.getCursor(), is(13));
-        }
+
+        assertThat(subject.execute("redirect noop", source), is(0));
 
         verifyZeroInteractions(command);
-        verify(consumer, times(2)).onCommandComplete(any(), eq(false), eq(0));
+        verify(consumer).onCommandComplete(any(), eq(false), eq(0));
         verifyNoMoreInteractions(consumer);
     }
 
@@ -645,7 +640,7 @@ public class CommandDispatcherTest {
         verifyNoMoreInteractions(consumer);
     }
 
-    private static Matcher<CommandContext<Object>> contextSourceMatches(final Object source) {
+    public static Matcher<CommandContext<Object>> contextSourceMatches(final Object source) {
         return new CustomMatcher<CommandContext<Object>>("source " + source) {
             @Override
             public boolean matches(Object object) {
