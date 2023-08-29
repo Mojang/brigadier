@@ -230,31 +230,29 @@ public class CommandDispatcher<S> {
                 final CommandContext<S> child = context.getChild();
                 if (child != null) {
                     forked |= context.isForked();
-                    if (child.hasNodes()) {
-                        final RedirectModifier<S> modifier = context.getRedirectModifier();
-                        if (modifier == null) {
-                            if (next == null) {
-                                next = new ArrayList<>(1);
+                    final RedirectModifier<S> modifier = context.getRedirectModifier();
+                    if (modifier == null) {
+                        if (next == null) {
+                            next = new ArrayList<>(1);
+                        }
+                        next.add(child.copyFor(context.getSource()));
+                    } else {
+                        try {
+                            final Collection<S> results = modifier.apply(context);
+                            if (!results.isEmpty()) {
+                                if (next == null) {
+                                    next = new ArrayList<>(results.size());
+                                }
+                                for (final S source : results) {
+                                    next.add(child.copyFor(source));
+                                }
+                            } else {
+                                foundCommand = true;
                             }
-                            next.add(child.copyFor(context.getSource()));
-                        } else {
-                            try {
-                                final Collection<S> results = modifier.apply(context);
-                                if (!results.isEmpty()) {
-                                    if (next == null) {
-                                        next = new ArrayList<>(results.size());
-                                    }
-                                    for (final S source : results) {
-                                        next.add(child.copyFor(source));
-                                    }
-                                } else {
-                                    foundCommand = true;
-                                }
-                            } catch (final CommandSyntaxException ex) {
-                                consumer.onCommandComplete(context, false, 0);
-                                if (!forked) {
-                                    throw ex;
-                                }
+                        } catch (final CommandSyntaxException ex) {
+                            consumer.onCommandComplete(context, false, 0);
+                            if (!forked) {
+                                throw ex;
                             }
                         }
                     }
