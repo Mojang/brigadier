@@ -400,6 +400,15 @@ public class CommandDispatcherTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void parse_multipleSpaceSeparator() throws Exception {
+        subject.register(literal("foo").then(literal("bar").executes(command)));
+
+        assertThat(subject.execute("foo  bar", source), is(42));
+        verify(command).run(any(CommandContext.class));
+    }
+
     @Test
     public void testExecuteInvalidSubcommand() throws Exception {
         subject.register(literal("foo").then(
