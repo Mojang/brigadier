@@ -97,7 +97,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteUnknownCommand() throws Exception {
+    public void testExecuteUnknownCommand() {
         subject.register(literal("bar"));
         subject.register(literal("baz"));
 
@@ -111,7 +111,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteImpermissibleCommand() throws Exception {
+    public void testExecuteImpermissibleCommand() {
         subject.register(literal("foo").requires(s -> false));
 
         try {
@@ -124,7 +124,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteEmptyCommand() throws Exception {
+    public void testExecuteEmptyCommand() {
         subject.register(literal(""));
 
         try {
@@ -137,7 +137,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteUnknownSubcommand() throws Exception {
+    public void testExecuteUnknownSubcommand() {
         subject.register(literal("foo").executes(command));
 
         try {
@@ -150,7 +150,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteIncorrectLiteral() throws Exception {
+    public void testExecuteIncorrectLiteral() {
         subject.register(literal("foo").executes(command).then(literal("bar")));
 
         try {
@@ -163,7 +163,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteAmbiguousIncorrectArgument() throws Exception {
+    public void testExecuteAmbiguousIncorrectArgument() {
         subject.register(
             literal("foo").executes(command)
                 .then(literal("bar"))
@@ -197,9 +197,8 @@ public class CommandDispatcherTest {
         verify(subCommand).run(any(CommandContext.class));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testParseIncompleteLiteral() throws Exception {
+    public void testParseIncompleteLiteral() {
         subject.register(literal("foo").then(literal("bar").executes(command)));
 
         final ParseResults<Object> parse = subject.parse("foo ", source);
@@ -207,9 +206,8 @@ public class CommandDispatcherTest {
         assertThat(parse.getContext().getNodes().size(), is(1));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void testParseIncompleteArgument() throws Exception {
+    public void testParseIncompleteArgument() {
         subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
 
         final ParseResults<Object> parse = subject.parse("foo ", source);
@@ -390,9 +388,9 @@ public class CommandDispatcherTest {
             .then(literal("bar")
                 .then(argument("value", integer()).executes(context -> IntegerArgumentType.getInteger(context, "value"))))
             .then(literal("awa").executes(context -> 2)));
-        final LiteralCommandNode<Object> baz = subject.register(literal("baz").redirect(foo));
+        subject.register(literal("baz").redirect(foo));
         try {
-            int result = subject.execute("baz bar", source);
+            subject.execute("baz bar", source);
             fail("Should have thrown an exception");
         } catch (CommandSyntaxException e) {
             assertThat(e.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
@@ -400,23 +398,19 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testRedirectModifierEmptyResult() {
+    public void testRedirectModifierEmptyResult() throws CommandSyntaxException {
         final LiteralCommandNode<Object> foo = subject.register(literal("foo")
             .then(literal("bar")
                 .then(argument("value", integer()).executes(context -> IntegerArgumentType.getInteger(context, "value"))))
             .then(literal("awa").executes(context -> 2)));
         final RedirectModifier<Object> emptyModifier = context -> Collections.emptyList();
-        final LiteralCommandNode<Object> baz = subject.register(literal("baz").fork(foo, emptyModifier));
-        try {
-            int result = subject.execute("baz bar 100", source);
-            assertThat(result, is(0)); // No commands executed, so result is 0
-        } catch (CommandSyntaxException e) {
-            fail("Should not throw an exception");
-        }
+        subject.register(literal("baz").fork(foo, emptyModifier));
+        int result = subject.execute("baz bar 100", source);
+        assertThat(result, is(0)); // No commands executed, so result is 0
     }
 
     @Test
-    public void testExecuteOrphanedSubcommand() throws Exception {
+    public void testExecuteOrphanedSubcommand() {
         subject.register(literal("foo").then(
             argument("bar", integer())
         ).executes(command));
@@ -430,6 +424,7 @@ public class CommandDispatcherTest {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testExecute_invalidOther() throws Exception {
         final Command<Object> wrongCommand = mock(Command.class);
@@ -442,7 +437,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void parse_noSpaceSeparator() throws Exception {
+    public void parse_noSpaceSeparator() {
         subject.register(literal("foo").then(argument("bar", integer()).executes(command)));
 
         try {
@@ -455,7 +450,7 @@ public class CommandDispatcherTest {
     }
 
     @Test
-    public void testExecuteInvalidSubcommand() throws Exception {
+    public void testExecuteInvalidSubcommand() {
         subject.register(literal("foo").then(
             argument("bar", integer())
         ).executes(command));
