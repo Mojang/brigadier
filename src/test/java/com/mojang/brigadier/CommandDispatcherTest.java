@@ -5,10 +5,13 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
@@ -293,6 +296,31 @@ public class CommandDispatcherTest {
 
         assertThat(subject.execute(parse), is(42));
         verify(command).run(any(CommandContext.class));
+    }
+
+    @Test
+    public void testCorrectExecuteContextAfterRedirect() throws Exception {
+        final CommandDispatcher<Integer> subject = new CommandDispatcher<>();
+
+        final RootCommandNode<Integer> root = subject.getRoot();
+        final LiteralArgumentBuilder<Integer> add = literal("add");
+        final LiteralArgumentBuilder<Integer> blank = literal("blank");
+        final RequiredArgumentBuilder<Integer, Integer> addArg = argument("value", integer());
+        final LiteralArgumentBuilder<Integer> run = literal("run");
+
+        subject.register(add.then(addArg.redirect(root, c -> c.getSource() + getInteger(c, "value"))));
+        subject.register(blank.redirect(root));
+        subject.register(run.executes(CommandContext::getSource));
+
+        assertThat(subject.execute("run", 0), is(0));
+        assertThat(subject.execute("run", 1), is(1));
+
+        assertThat(subject.execute("add 5 run", 1), is(1 + 5));
+        assertThat(subject.execute("add 5 add 6 run", 2), is(2 + 5 + 6));
+        assertThat(subject.execute("add 5 blank run", 1), is(1 + 5));
+        assertThat(subject.execute("blank add 5 run", 1), is(1 + 5));
+        assertThat(subject.execute("add 5 blank add 6 run", 2), is(2 + 5 + 6));
+        assertThat(subject.execute("add 5 blank blank add 6 run", 2), is(2 + 5 + 6));
     }
 
     @SuppressWarnings("unchecked")
