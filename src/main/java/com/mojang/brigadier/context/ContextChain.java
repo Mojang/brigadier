@@ -15,6 +15,8 @@ public class ContextChain<S> {
     private final List<CommandContext<S>> modifiers;
     private final CommandContext<S> executable;
 
+    private ContextChain<S> nextStageCache = null;
+
     public ContextChain(final List<CommandContext<S>> modifiers, final CommandContext<S> executable) {
         if (executable.getCommand() == null) {
             throw new IllegalArgumentException("Last command in chain must be executable");
@@ -108,5 +110,33 @@ public class ContextChain<S> {
         }
 
         return result;
+    }
+
+    public Stage getStage() {
+        return modifiers.isEmpty() ? Stage.EXECUTE : Stage.MODIFY;
+    }
+
+    public CommandContext<S> getTopContext() {
+        if (modifiers.isEmpty()) {
+            return executable;
+        }
+        return modifiers.get(0);
+    }
+
+    public ContextChain<S> nextStage() {
+        final int modifierCount = modifiers.size();
+        if (modifierCount == 0) {
+            return null;
+        }
+
+        if (nextStageCache == null) {
+            nextStageCache = new ContextChain<>(modifiers.subList(1, modifierCount), executable);
+        }
+        return nextStageCache;
+    }
+
+    public enum Stage {
+        MODIFY,
+        EXECUTE,
     }
 }

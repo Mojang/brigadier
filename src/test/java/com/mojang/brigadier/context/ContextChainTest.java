@@ -10,8 +10,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Optional;
+
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
@@ -75,5 +79,59 @@ public class ContextChainTest {
 
         verify(consumer).onCommandComplete(argThat(CommandDispatcherTest.contextSourceMatches(redirectedSource)), eq(true), eq(4));
         verifyNoMoreInteractions(consumer);
+    }
+
+    @Test
+    public void testSingleStageExecution() {
+        final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
+        dispatcher.register(literal("foo").executes(context -> 1));
+        final Object source = new Object();
+
+        final ParseResults<Object> result = dispatcher.parse("foo", source);
+        final CommandContext<Object> topContext = result.getContext().build("foo");
+        final ContextChain<Object> chain = ContextChain.tryFlatten(topContext).orElseThrow(AssertionError::new);
+
+        assertThat(chain.getStage(), is(ContextChain.Stage.EXECUTE));
+        assertThat(chain.getTopContext(), is(topContext));
+        assertThat(chain.nextStage(), nullValue());
+    }
+
+    @Test
+    public void testMultiStageExecution() {
+        final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
+        dispatcher.register(literal("foo").executes(context -> 1));
+        dispatcher.register(literal("bar").redirect(dispatcher.getRoot()));
+        final Object source = new Object();
+
+        final ParseResults<Object> result = dispatcher.parse("bar bar foo", source);
+        final CommandContext<Object> topContext = result.getContext().build("bar bar foo");
+        final ContextChain<Object> stage0 = ContextChain.tryFlatten(topContext).orElseThrow(AssertionError::new);
+
+        assertThat(stage0.getStage(), is(ContextChain.Stage.MODIFY));
+        assertThat(stage0.getTopContext(), is(topContext));
+
+        final ContextChain<Object> stage1 = stage0.nextStage();
+        assertThat(stage1, notNullValue());
+        assertThat(stage1.getStage(), is(ContextChain.Stage.MODIFY));
+        assertThat(stage1.getTopContext(), is(topContext.getChild()));
+
+        final ContextChain<Object> stage2 = stage1.nextStage();
+        assertThat(stage2, notNullValue());
+        assertThat(stage2.getStage(), is(ContextChain.Stage.EXECUTE));
+        assertThat(stage2.getTopContext(), is(topContext.getChild().getChild()));
+
+        assertThat(stage2.nextStage(), nullValue());
+    }
+
+    @Test
+    public void testMissingExecute() {
+        final CommandDispatcher<Object> dispatcher = new CommandDispatcher<>();
+        dispatcher.register(literal("foo").executes(context -> 1));
+        dispatcher.register(literal("bar").redirect(dispatcher.getRoot()));
+
+        final Object source = new Object();
+        final ParseResults<Object> result = dispatcher.parse("bar bar", source);
+        final CommandContext<Object> topContext = result.getContext().build("bar bar");
+        assertThat(ContextChain.tryFlatten(topContext), is(Optional.empty()));
     }
 }
