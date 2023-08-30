@@ -331,6 +331,24 @@ public class CommandDispatcherTest {
         assertThat(subject.execute("add 5 blank blank add 6 run", 2), is(2 + 5 + 6));
     }
 
+    @Test
+    public void testSharedRedirectAndExecuteNodes() throws CommandSyntaxException {
+        final CommandDispatcher<Integer> subject = new CommandDispatcher<>();
+
+        final RootCommandNode<Integer> root = subject.getRoot();
+        final LiteralArgumentBuilder<Integer> add = literal("add");
+        final RequiredArgumentBuilder<Integer, Integer> addArg = argument("value", integer());
+
+        subject.register(add.then(
+            addArg
+                .redirect(root, c -> c.getSource() + getInteger(c, "value"))
+                .executes(CommandContext::getSource)
+        ));
+
+        assertThat(subject.execute("add 5", 1), is(1));
+        assertThat(subject.execute("add 5 add 6", 1), is(1 + 5));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testExecuteRedirected() throws Exception {
