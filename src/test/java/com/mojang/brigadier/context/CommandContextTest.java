@@ -52,6 +52,34 @@ public class CommandContextTest {
     }
 
     @Test
+    public void testCopyArgumentsFills() throws Exception {
+        final CommandContext<Object> originalContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
+        final CommandContext<Object> childContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).build("123");
+
+        final CommandContext<Object> copiedContext = childContext.copyWithArgumentsOf(originalContext);
+        assertThat(copiedContext.getArgument("foo", int.class), is(123));
+    }
+
+    @Test
+    public void testCopyArgumentsOverrides() throws Exception {
+        final CommandContext<Object> originalContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
+        final CommandContext<Object> childContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).withArgument("foo", new ParsedArgument<>(0, 1, "123")).build("123");
+
+        final CommandContext<Object> copiedContext = childContext.copyWithArgumentsOf(originalContext);
+        assertThat(copiedContext.getArgument("foo", String.class), is("123"));
+    }
+
+    @Test
+    public void testCopyArgumentsMerges() throws Exception {
+        final CommandContext<Object> originalContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
+        final CommandContext<Object> childContext = new CommandContextBuilder<>(dispatcher, source, rootNode, 0).withArgument("bar", new ParsedArgument<>(0, 1, "123")).build("123");
+
+        final CommandContext<Object> copiedContext = childContext.copyWithArgumentsOf(originalContext);
+        assertThat(copiedContext.getArgument("foo", int.class), is(123));
+        assertThat(copiedContext.getArgument("bar", String.class), is("123"));
+    }
+
+    @Test
     public void testSource() throws Exception {
         assertThat(builder.build("").getSource(), is(source));
     }

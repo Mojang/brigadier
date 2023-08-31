@@ -57,6 +57,13 @@ public class CommandContext<S> {
         return new CommandContext<>(source, input, arguments, command, rootNode, nodes, range, child, modifier, forks);
     }
 
+    public CommandContext<S> copyWithArgumentsOf(CommandContext<S> context) {
+        Map<String, ParsedArgument<S, ?>> newArguments = new HashMap<>();
+        newArguments.putAll(context.arguments);
+        newArguments.putAll(this.arguments);
+        return new CommandContext<>(source, input, newArguments, command, rootNode, nodes, range, child, modifier, forks);
+    }
+
     public CommandContext<S> getChild() {
         return child;
     }

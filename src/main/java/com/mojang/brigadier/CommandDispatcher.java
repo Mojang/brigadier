@@ -236,7 +236,7 @@ public class CommandDispatcher<S> {
                             if (next == null) {
                                 next = new ArrayList<>(1);
                             }
-                            next.add(child.copyFor(context.getSource()));
+                            next.add(child.copyFor(context.getSource()).copyWithArgumentsOf(context));
                         } else {
                             try {
                                 final Collection<S> results = modifier.apply(context);
@@ -245,7 +245,7 @@ public class CommandDispatcher<S> {
                                         next = new ArrayList<>(results.size());
                                     }
                                     for (final S source : results) {
-                                        next.add(child.copyFor(source));
+                                        next.add(child.copyFor(source).copyWithArgumentsOf(context));
                                     }
                                 } else {
                                     foundCommand = true;
