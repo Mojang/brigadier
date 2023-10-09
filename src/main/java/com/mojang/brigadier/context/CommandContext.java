@@ -28,13 +28,30 @@ public class CommandContext<S> {
 
     private final S source;
     private final String input;
+    /**
+     * Executable part of command. Will be run only when context is last in chain.
+     */
     private final Command<S> command;
     private final Map<String, ParsedArgument<S, ?>> arguments;
     private final CommandNode<S> rootNode;
     private final List<ParsedCommandNode<S>> nodes;
     private final StringRange range;
     private final CommandContext<S> child;
+    /**
+     * Modifier of source. Will be run only when context has children (i.e. is not last in chain).
+     */
     private final RedirectModifier<S> modifier;
+    /**
+     * Special modifier for running this context and children.
+     * Only relevant if it's not last in chain.
+     * <br/>
+     *
+     * Effects:
+     * <ul>
+     *     <li>Exceptions from {@link #command} or {@link #modifier} will be ignored</li>
+     *     <li>Result of command will be number of elements run by element in chain (instead of sum of {@link #command} results</li>
+     * </ul>
+     */
     private final boolean forks;
 
     public CommandContext(final S source, final String input, final Map<String, ParsedArgument<S, ?>> arguments, final Command<S> command, final CommandNode<S> rootNode, final List<ParsedCommandNode<S>> nodes, final StringRange range, final CommandContext<S> child, final RedirectModifier<S> modifier, boolean forks) {
