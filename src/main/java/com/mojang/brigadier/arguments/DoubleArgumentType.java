@@ -11,7 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class DoubleArgumentType implements ArgumentType<Double> {
-    private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "-.5", "-1234.56");
+    private static final Collection<String> EXAMPLES = Arrays.asList("0", "1.2", ".5", "-1", "+1", "-.5", "-1234.56",
+            "1e123", "1E123", "1.2e3", "1.2e-3", "-123.456e-7");
 
     private final double minimum;
     private final double maximum;
