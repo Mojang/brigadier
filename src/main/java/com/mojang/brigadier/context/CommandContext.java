@@ -10,6 +10,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class CommandContext<S> {
 
@@ -94,12 +95,55 @@ public class CommandContext<S> {
         return source;
     }
 
+    public boolean hasArgument(final String name) {
+        return arguments.containsKey(name);
+    }
+
+    public <V> boolean hasArgumentOfType(final String name, final Class<V> clazz) {
+        final ParsedArgument<S, ?> argument = arguments.get(name);
+
+        return argument != null &&
+                PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(argument.getResult().getClass());
+    }
+
     @SuppressWarnings("unchecked")
     public <V> V getArgument(final String name, final Class<V> clazz) {
         final ParsedArgument<S, ?> argument = arguments.get(name);
 
         if (argument == null) {
             throw new IllegalArgumentException("No such argument '" + name + "' exists on this command");
+        }
+
+        final Object result = argument.getResult();
+        if (PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
+            return (V) result;
+        } else {
+            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <V> V getArgumentOrDefault(final String name, final Class<V> clazz, final V defaultValue) {
+        final ParsedArgument<S, ?> argument = arguments.get(name);
+
+        if (argument == null) {
+            return defaultValue;
+        }
+
+        final Object result = argument.getResult();
+        if (PRIMITIVE_TO_WRAPPER.getOrDefault(clazz, clazz).isAssignableFrom(result.getClass())) {
+            return (V) result;
+        } else {
+            throw new IllegalArgumentException("Argument '" + name + "' is defined as " + result.getClass().getSimpleName() + ", not " + clazz);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <V> V getArgumentOrCompute(final String name, final Class<V> clazz, final Supplier<V> defaultSupplier) {
+        final ParsedArgument<S, ?> argument = arguments.get(name);
+
+        if (argument == null) {
+            return defaultSupplier.get();
         }
 
         final Object result = argument.getResult();
