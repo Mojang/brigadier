@@ -4,6 +4,7 @@
 package com.mojang.brigadier.builder;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.SingleRedirectModifier;
 import com.mojang.brigadier.tree.CommandNode;
@@ -20,6 +21,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
+    private Message description;
 
     protected abstract T getThis();
 
@@ -50,6 +52,15 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     public Command<S> getCommand() {
         return command;
+    }
+
+    public T describe(final Message description) {
+        this.description = description;
+        return getThis();
+    }
+
+    public Message getDescription() {
+        return description;
     }
 
     public T requires(final Predicate<S> requirement) {
