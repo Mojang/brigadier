@@ -28,6 +28,22 @@ public class StringArgumentTypeTest {
     private CommandContextBuilder<Object> context;
 
     @Test
+    public void testParseWord_greedyCharset() throws Exception {
+        final StringReader reader = mock(StringReader.class);
+        when(reader.readUnquotedStringGreedy()).thenReturn("1+1=2");
+        assertThat(word(true).parse(reader), equalTo("1+1=2"));
+        verify(reader).readUnquotedStringGreedy();
+    }
+
+    @Test
+    public void testParseString_greedyCharset() throws Exception {
+        final StringReader reader = mock(StringReader.class);
+        when(reader.readStringGreedy()).thenReturn("1+1=2 2+2=4");
+        assertThat(string(true).parse(reader), equalTo("1+1=2 2+2=4"));
+        verify(reader).readStringGreedy();
+    }
+
+    @Test
     public void testParseWord() throws Exception {
         final StringReader reader = mock(StringReader.class);
         when(reader.readUnquotedString()).thenReturn("hello");
