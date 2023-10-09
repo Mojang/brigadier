@@ -25,7 +25,11 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literalLowerCase;
 
     public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
-        super(command, requirement, redirect, modifier, forks);
+        this(literal, command, requirement, redirect, modifier, forks, null, false);
+    }
+    
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final CommandNode<S> defaultArgument, final boolean isDefaultNode) {
+        super(command, requirement, redirect, modifier, forks, defaultArgument, isDefaultNode);
         this.literal = literal;
         this.literalLowerCase = literal.toLowerCase(Locale.ROOT);
     }
@@ -63,6 +67,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
                     reader.setCursor(start);
                 }
             }
+        } else if (!reader.canRead() && isDefaultNode()) {
+            return start;
         }
         return -1;
     }

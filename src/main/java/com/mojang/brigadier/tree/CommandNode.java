@@ -28,14 +28,18 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
+    private final CommandNode<S> defaultNode;
+    private final boolean isDefaultNode;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
 
-    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final CommandNode<S> defaultNode, final boolean isDefaultNode) {
         this.command = command;
         this.requirement = requirement;
+        this.defaultNode = defaultNode;
+        this.isDefaultNode = isDefaultNode;
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
@@ -59,6 +63,14 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public RedirectModifier<S> getRedirectModifier() {
         return modifier;
+    }
+
+    public CommandNode<S> getDefaultNode() {
+        return defaultNode;
+    }
+
+    public boolean isDefaultNode() {
+        return isDefaultNode;
     }
 
     public boolean canUse(final S source) {
@@ -121,12 +133,12 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         if (this == o) return true;
         if (!(o instanceof CommandNode)) return false;
 
-        final CommandNode<S> that = (CommandNode<S>) o;
+        final CommandNode<?> that = (CommandNode<?>) o;
 
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
 
-        return true;
+        return isDefaultNode == that.isDefaultNode;
     }
 
     @Override
@@ -151,7 +163,9 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     protected abstract String getSortedKey();
 
     public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
-        if (literals.size() > 0) {
+        if(!input.canRead() && defaultNode != null) {
+            return Collections.singleton(defaultNode);
+        } else if (literals.size() > 0) {
             final int cursor = input.getCursor();
             while (input.canRead() && input.peek() != ' ') {
                 input.skip();

@@ -27,16 +27,26 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     private final String name;
     private final ArgumentType<T> type;
     private final SuggestionProvider<S> customSuggestions;
-
+    private final T defaultValue;
+    
     public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final SuggestionProvider<S> customSuggestions) {
-        super(command, requirement, redirect, modifier, forks);
+        this(name, type, command, requirement, redirect, modifier, forks, null, false, null, customSuggestions);
+    }
+    
+    public ArgumentCommandNode(final String name, final ArgumentType<T> type, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final CommandNode<S> defaultNode, final boolean isDefaultNode, final T defaultValue, final SuggestionProvider<S> customSuggestions) {
+        super(command, requirement, redirect, modifier, forks, defaultNode, isDefaultNode);
         this.name = name;
         this.type = type;
         this.customSuggestions = customSuggestions;
+        this.defaultValue = defaultValue;
     }
 
     public ArgumentType<T> getType() {
         return type;
+    }
+
+    public T getDefaultValue() {
+        return defaultValue;
     }
 
     @Override
@@ -56,7 +66,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
         final int start = reader.getCursor();
-        final T result = type.parse(reader);
+        final T result = reader.canRead() || !isDefaultNode() ? type.parse(reader) : defaultValue;
         final ParsedArgument<S, T> parsed = new ParsedArgument<>(start, reader.getCursor(), result);
 
         contextBuilder.withArgument(name, parsed);
@@ -104,6 +114,7 @@ public class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
         if (!name.equals(that.name)) return false;
         if (!type.equals(that.type)) return false;
+        if (defaultValue != null ? !defaultValue.equals(that.defaultValue) : that.defaultValue != null) return false;
         return super.equals(o);
     }
 

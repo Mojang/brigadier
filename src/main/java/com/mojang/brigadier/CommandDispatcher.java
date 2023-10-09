@@ -96,6 +96,8 @@ public class CommandDispatcher<S> {
      * @return the node added to this tree
      */
     public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
+        if(command.isDefaultNode()) throw new IllegalArgumentException("Cannot add a default node to root");
+
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
         return build;
@@ -324,7 +326,7 @@ public class CommandDispatcher<S> {
             }
 
             context.withCommand(child.getCommand());
-            if (reader.canRead(child.getRedirect() == null ? 2 : 1)) {
+            if (reader.canRead(child.getRedirect() == null ? 2 : 1) || child.getDefaultNode() != null) {
                 reader.skip();
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
@@ -402,7 +404,7 @@ public class CommandDispatcher<S> {
             return;
         }
 
-        if (node.getCommand() != null) {
+        if (isNodeExecutable(node)) {
             result.add(prefix);
         }
 
@@ -456,7 +458,7 @@ public class CommandDispatcher<S> {
         }
 
         final String self = optional ? USAGE_OPTIONAL_OPEN + node.getUsageText() + USAGE_OPTIONAL_CLOSE : node.getUsageText();
-        final boolean childOptional = node.getCommand() != null;
+        final boolean childOptional = isNodeExecutable(node);
         final String open = childOptional ? USAGE_OPTIONAL_OPEN : USAGE_REQUIRED_OPEN;
         final String close = childOptional ? USAGE_OPTIONAL_CLOSE : USAGE_REQUIRED_CLOSE;
 
@@ -502,6 +504,13 @@ public class CommandDispatcher<S> {
         }
 
         return self;
+    }
+
+    private boolean isNodeExecutable(CommandNode<S> node) {
+        while (node.getCommand() == null && node.getDefaultNode() != null)
+            node = node.getDefaultNode();
+
+        return node.getCommand() != null;
     }
 
     /**

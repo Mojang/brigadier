@@ -5,8 +5,6 @@ package com.mojang.brigadier;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,9 +12,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.defaultLiteral;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyArray;
@@ -100,14 +99,28 @@ public class CommandDispatcherUsagesTest {
             literal("k")
                 .redirect(get("h"))
         );
+        //default node tests
+        subject.register(
+            literal("l")
+                //basic
+                .then(defaultLiteral("1").executes(command))
+                //two choices
+                .then(literal("2")
+                    .then(defaultLiteral("i").executes(command))
+                    .then(literal("ii").executes(command)))
+                //chained
+                .then(literal("3").then(defaultLiteral("i").then(defaultLiteral("ii").executes(command))))
+                //unexecutable default node
+                .then(literal("4").then(defaultLiteral("i").then(literal("ii").executes(command))))
+        );
     }
 
     private CommandNode<Object> get(final String command) {
-        return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
+        return Iterables.getLast(subject.parse(command, source).getContext().getNodes().stream().filter(n -> !n.getRange().isEmpty()).collect(Collectors.toList())).getNode();
     }
 
     private CommandNode<Object> get(final StringReader command) {
-        return Iterables.getLast(subject.parse(command, source).getContext().getNodes()).getNode();
+        return Iterables.getLast(subject.parse(command, source).getContext().getNodes().stream().filter(n -> !n.getRange().isEmpty()).collect(Collectors.toList())).getNode();
     }
 
     @Test
@@ -151,6 +164,15 @@ public class CommandDispatcherUsagesTest {
             "i 2",
             "j ...",
             "k -> h",
+            "l",
+            "l 1",
+            "l 2",
+            "l 2 i",
+            "l 2 ii",
+            "l 3",
+            "l 3 i",
+            "l 3 i ii",
+            "l 4 i ii",
         }));
     }
 
@@ -168,6 +190,7 @@ public class CommandDispatcherUsagesTest {
             .put(get("i"), "i [1|2]")
             .put(get("j"), "j ...")
             .put(get("k"), "k -> h")
+            .put(get("l"), "l [1|2|3|4]")
             .build()
         ));
     }
@@ -193,6 +216,18 @@ public class CommandDispatcherUsagesTest {
             .put(get("h 1"), "[1] i")
             .put(get("h 2"), "[2] i ii")
             .put(get("h 3"), "[3]")
+            .build()
+        ));
+    }
+
+    @Test
+    public void testSmartUsage_l() throws Exception {
+        final Map<CommandNode<Object>, String> results = subject.getSmartUsage(get("l"), source);
+        assertThat(results, equalTo(ImmutableMap.builder()
+            .put(get("l 1"), "1")
+            .put(get("l 2"), "2 [i|ii]")
+            .put(get("l 3"), "3 [i]")
+            .put(get("l 4"), "4 i ii")
             .build()
         ));
     }

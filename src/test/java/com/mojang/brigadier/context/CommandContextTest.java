@@ -7,7 +7,6 @@ import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

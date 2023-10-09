@@ -23,7 +23,7 @@ public class LiteralArgumentBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        builder = new LiteralArgumentBuilder<>("foo");
+        builder = new LiteralArgumentBuilder<>("foo", false);
     }
 
     @Test
@@ -31,6 +31,7 @@ public class LiteralArgumentBuilderTest {
         final LiteralCommandNode<Object> node = builder.build();
 
         assertThat(node.getLiteral(), is("foo"));
+        assertThat(node.isDefaultNode(), is(false));
     }
 
     @Test

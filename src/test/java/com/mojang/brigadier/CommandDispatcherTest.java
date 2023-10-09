@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.defaultLiteral;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.equalTo;
@@ -67,6 +68,11 @@ public class CommandDispatcherTest {
         return result;
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterDefaultNode() throws Exception {
+        subject.register(defaultLiteral("foo"));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateAndExecuteCommand() throws Exception {
@@ -82,6 +88,15 @@ public class CommandDispatcherTest {
         subject.register(literal("foo").executes(command));
 
         assertThat(subject.execute(inputWithOffset("/foo", 1), source), is(42));
+        verify(command).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateAndExecuteDefaultCommand() throws Exception {
+        subject.register(literal("foo").then(defaultLiteral("bar").executes(command)));
+
+        assertThat(subject.execute("foo", source), is(42));
         verify(command).run(any(CommandContext.class));
     }
 

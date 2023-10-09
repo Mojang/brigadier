@@ -12,14 +12,21 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     private final String name;
     private final ArgumentType<T> type;
     private SuggestionProvider<S> suggestionsProvider = null;
+    private final T defaultValue;
 
-    private RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
+    private RequiredArgumentBuilder(final String name, final ArgumentType<T> type, final boolean isDefaultNode, final T defaultValue) {
+        super(isDefaultNode);
         this.name = name;
         this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     public static <S, T> RequiredArgumentBuilder<S, T> argument(final String name, final ArgumentType<T> type) {
-        return new RequiredArgumentBuilder<>(name, type);
+        return new RequiredArgumentBuilder<>(name, type, false, null);
+    }
+
+    public static <S, T> RequiredArgumentBuilder<S, T> defaultArgument(final String name, final ArgumentType<T> type, final T defaultValue) {
+        return new RequiredArgumentBuilder<>(name, type, true, defaultValue);
     }
 
     public RequiredArgumentBuilder<S, T> suggests(final SuggestionProvider<S> provider) {
@@ -40,12 +47,16 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
         return type;
     }
 
+    public T getDefaultValue() {
+        return defaultValue;
+    }
+
     public String getName() {
         return name;
     }
 
     public ArgumentCommandNode<S, T> build() {
-        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), getSuggestionsProvider());
+        final ArgumentCommandNode<S, T> result = new ArgumentCommandNode<>(getName(), getType(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), getDefaultNode(), isDefaultNode(), getDefaultValue(), getSuggestionsProvider());
 
         for (final CommandNode<S> argument : getArguments()) {
             result.addChild(argument);

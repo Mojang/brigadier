@@ -15,32 +15,49 @@ import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
+    private CommandNode<S> defaultNode;
+    private final boolean isDefaultNode;
     private Command<S> command;
     private Predicate<S> requirement = s -> true;
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
 
+    protected ArgumentBuilder(final boolean isDefaultNode) {
+        this.isDefaultNode = isDefaultNode;
+    }
+
     protected abstract T getThis();
 
     public T then(final ArgumentBuilder<S, ?> argument) {
-        if (target != null) {
-            throw new IllegalStateException("Cannot add children to a redirected node");
-        }
-        arguments.addChild(argument.build());
-        return getThis();
+        return then(argument.build());
     }
 
     public T then(final CommandNode<S> argument) {
         if (target != null) {
             throw new IllegalStateException("Cannot add children to a redirected node");
         }
+
+        if(argument.isDefaultNode())
+            if (defaultNode != null)
+                throw new IllegalStateException("Cannot add multiple default nodes as child of one node");
+            else
+                defaultNode = argument;
+
         arguments.addChild(argument);
         return getThis();
     }
 
     public Collection<CommandNode<S>> getArguments() {
         return arguments.getChildren();
+    }
+
+    public CommandNode<S> getDefaultNode() {
+        return defaultNode;
+    }
+
+    public boolean isDefaultNode() {
+        return isDefaultNode;
     }
 
     public T executes(final Command<S> command) {

@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public abstract class AbstractCommandNodeTest {
+public abstract class CommandNodeTest {
     @Mock
     private Command command;
 

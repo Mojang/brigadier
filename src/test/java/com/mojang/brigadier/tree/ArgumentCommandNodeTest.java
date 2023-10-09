@@ -16,11 +16,12 @@ import org.junit.Test;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
+import static com.mojang.brigadier.builder.RequiredArgumentBuilder.defaultArgument;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
+public class ArgumentCommandNodeTest extends CommandNodeTest {
     private ArgumentCommandNode<Object, Integer> node;
     private CommandContextBuilder<Object> contextBuilder;
 
@@ -42,6 +43,16 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
 
         assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
         assertThat(contextBuilder.getArguments().get("foo").getResult(), is(123));
+    }
+
+    @Test
+    public void testParseDefaultNode() throws Exception {
+        final StringReader reader = new StringReader("");
+        final ArgumentCommandNode<Object, Integer> node = defaultArgument("foo", integer(), 42).build();
+        node.parse(reader, contextBuilder);
+
+        assertThat(contextBuilder.getArguments().containsKey("foo"), is(true));
+        assertThat(contextBuilder.getArguments().get("foo").getResult(), is(42));
     }
 
     @Test
