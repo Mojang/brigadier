@@ -233,7 +233,7 @@ public class StringReader implements ImmutableStringReader {
 
     public boolean readBoolean() throws CommandSyntaxException {
         final int start = cursor;
-        final String value = readString();
+        final String value = readUnquotedString();
         if (value.isEmpty()) {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool().createWithContext(this);
         }
