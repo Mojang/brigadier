@@ -254,6 +254,26 @@ public class CommandSuggestionsTest {
     }
 
     @Test
+    public void getCompletionSuggestions_redirectPreservesArguments() throws Exception {
+        subject.register(literal("command")
+                .then(
+                        argument("first", integer())
+                                .then(
+                                        argument("second", integer())
+                                                .suggests((context, builder) -> {
+                                                    builder.suggest(String.valueOf(context.getLastChild().getArgument("first", int.class) + 1));
+                                                    return builder.buildFuture();
+                                                })
+                                )
+                ));
+        subject.register(literal("redirect").redirect(subject.getRoot()));
+
+        testSuggestions("command 1 ", 10, StringRange.at(10), "2");
+        testSuggestions("redirect command 1 ", 19, StringRange.at(19), "2");
+        testSuggestions("redirect redirect command 1 ", 28, StringRange.at(28), "2");
+    }
+
+    @Test
     public void getCompletionSuggestions_execute_simulation() throws Exception {
         final LiteralCommandNode<Object> execute = subject.register(literal("execute"));
         subject.register(

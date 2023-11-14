@@ -50,6 +50,11 @@ public class CommandContextBuilder<S> {
         return this;
     }
 
+    public CommandContextBuilder<S> withArguments(Map<String, ParsedArgument<S, ?>> arguments) {
+        this.arguments.putAll(arguments);
+        return this;
+    }
+
     public Map<String, ParsedArgument<S, ?>> getArguments() {
         return arguments;
     }
