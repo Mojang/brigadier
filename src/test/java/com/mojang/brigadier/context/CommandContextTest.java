@@ -14,6 +14,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -49,6 +52,16 @@ public class CommandContextTest {
     public void testGetArgument() throws Exception {
         final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
         assertThat(context.getArgument("foo", int.class), is(123));
+    }
+
+    @Test
+    public void testGetArguments() throws Exception {
+        Map<String, ParsedArgument<Object, ?>> arguments = new HashMap<>();
+        arguments.put("foo", new ParsedArgument<>(0, 1, 123));
+        arguments.put("bar", new ParsedArgument<>(0, 1, "123"));
+        final CommandContext<Object> context = builder.withArguments(arguments).build("123");
+        assertThat(context.getArgument("foo", int.class), is(123));
+        assertThat(context.getArgument("bar", String.class), is("123"));
     }
 
     @Test
