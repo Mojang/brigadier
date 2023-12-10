@@ -8,7 +8,9 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class StringReaderTest {
@@ -584,5 +586,25 @@ public class StringReaderTest {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool()));
             assertThat(ex.getCursor(), is(0));
         }
+    }
+
+    @Test
+    public void isAllowedInUnquotedStringInput2OutputTrue() {
+      assertTrue(StringReader.isAllowedInUnquotedString('2'));
+    }
+
+    @Test
+    public void isAllowedInUnquotedStringInputNotNullOutputFalse() {
+      assertFalse(StringReader.isAllowedInUnquotedString('\u0000'));
+    }
+
+    @Test
+    public void isAllowedInUnquotedStringInputNotNullOutputFalse2() {
+      assertFalse(StringReader.isAllowedInUnquotedString(':'));
+    }
+
+    @Test
+    public void isAllowedInUnquotedStringInputrOutputTrue() {
+      assertTrue(StringReader.isAllowedInUnquotedString('r'));
     }
 }
