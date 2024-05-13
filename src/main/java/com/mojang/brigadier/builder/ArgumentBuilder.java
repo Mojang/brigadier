@@ -11,12 +11,18 @@ import com.mojang.brigadier.tree.RootCommandNode;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
+    @SuppressWarnings("unchecked")
+    public static <S> Predicate<S> requiresNothing() {
+        return (Predicate<S>) RequiresNothing.INSTANCE;
+    }
+
     private final RootCommandNode<S> arguments = new RootCommandNode<>();
     private Command<S> command;
-    private Predicate<S> requirement = s -> true;
+    private Predicate<S> requirement = requiresNothing();
     private CommandNode<S> target;
     private RedirectModifier<S> modifier = null;
     private boolean forks;
@@ -53,7 +59,7 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public T requires(final Predicate<S> requirement) {
-        this.requirement = requirement;
+        this.requirement = Objects.requireNonNull(requirement, "requirement");
         return getThis();
     }
 
@@ -96,4 +102,13 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
     }
 
     public abstract CommandNode<S> build();
+
+    private static final class RequiresNothing implements Predicate<Object> {
+        private static final Predicate<Object> INSTANCE = new RequiresNothing();
+
+        @Override
+        public boolean test(final Object o) {
+            return true;
+        }
+    }
 }
