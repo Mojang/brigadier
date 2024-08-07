@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class LongArgumentType implements ArgumentType<Long> {
+    private static final LongArgumentType ALL = new LongArgumentType(Long.MIN_VALUE, Long.MAX_VALUE);
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "123", "-123");
 
     private final long minimum;
@@ -22,7 +23,7 @@ public class LongArgumentType implements ArgumentType<Long> {
     }
 
     public static LongArgumentType longArg() {
-        return longArg(Long.MIN_VALUE);
+        return ALL;
     }
 
     public static LongArgumentType longArg(final long min) {
