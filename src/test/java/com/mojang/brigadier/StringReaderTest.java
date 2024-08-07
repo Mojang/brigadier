@@ -133,6 +133,14 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readUnquotedStringCustomPredicate() throws Exception {
+        final StringReader reader = new StringReader("你好 世界");
+        assertThat(reader.readUnquotedString(c -> c >= '一' && c <= '龥'), equalTo("你好"));
+        assertThat(reader.getRead(), equalTo("你好"));
+        assertThat(reader.getRemaining(), equalTo(" 世界"));
+    }
+
+    @Test
     public void readUnquotedString_empty() throws Exception {
         final StringReader reader = new StringReader("");
         assertThat(reader.readUnquotedString(), equalTo(""));
@@ -298,6 +306,14 @@ public class StringReaderTest {
         assertThat(reader.readString(), equalTo("hello world"));
         assertThat(reader.getRead(), equalTo("\"hello world\""));
         assertThat(reader.getRemaining(), equalTo(""));
+    }
+
+    @Test
+    public void readString_customPredicate_noQuotes() throws Exception {
+        final StringReader reader = new StringReader("你好 世界");
+        assertThat(reader.readString(c -> c >= '一' && c <= '龥'), equalTo("你好"));
+        assertThat(reader.getRead(), equalTo("你好"));
+        assertThat(reader.getRemaining(), equalTo(" 世界"));
     }
 
     @Test
