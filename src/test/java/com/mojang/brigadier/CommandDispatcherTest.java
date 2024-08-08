@@ -10,6 +10,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import org.hamcrest.CustomMatcher;
@@ -407,6 +408,22 @@ public class CommandDispatcherTest {
         subject.register(literal("baz").fork(foo, emptyModifier));
         int result = subject.execute("baz bar 100", source);
         assertThat(result, is(0)); // No commands executed, so result is 0
+    }
+
+    @Test
+    public void testRedirectPreservesPreviousArguments() throws CommandSyntaxException {
+        final LiteralCommandNode<Object> ending = literal("ending")
+                .executes(context -> context.getArgument("number", int.class)).build();
+        final ArgumentCommandNode<Object, Integer> lowNumber = argument("number", integer(1, 10))
+                .then(ending).build();
+        final ArgumentCommandNode<Object, Integer> highNumber = argument("number", integer(11, 20))
+                .redirect(lowNumber).build();
+        subject.register(literal("base")
+                .then(literal("low").then(lowNumber))
+                .then(literal("high").then(highNumber)));
+
+        assertThat(subject.execute("base low 5 ending", source), is(5));
+        assertThat(subject.execute("base high 15 ending", source), is(15));
     }
 
     @Test

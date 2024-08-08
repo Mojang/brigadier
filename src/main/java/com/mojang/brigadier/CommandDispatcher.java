@@ -328,6 +328,7 @@ public class CommandDispatcher<S> {
                 reader.skip();
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
+                    childContext.withArguments(context.getArguments());
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
