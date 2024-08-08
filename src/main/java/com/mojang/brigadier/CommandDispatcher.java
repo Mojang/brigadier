@@ -296,13 +296,22 @@ public class CommandDispatcher<S> {
         Map<CommandNode<S>, CommandSyntaxException> errors = null;
         List<ParseResults<S>> potentials = null;
         final int cursor = originalReader.getCursor();
+        final Collection<? extends CommandNode<S>> relevantNodes = node.getRelevantNodes(originalReader);
+        final boolean unique = relevantNodes.size() == 1;
 
-        for (final CommandNode<S> child : node.getRelevantNodes(originalReader)) {
+        for (final CommandNode<S> child : relevantNodes) {
             if (!child.canUse(source)) {
                 continue;
             }
-            final CommandContextBuilder<S> context = contextSoFar.copy();
-            final StringReader reader = new StringReader(originalReader);
+            final CommandContextBuilder<S> context;
+            final StringReader reader;
+            if (unique) {
+                context = contextSoFar;
+                reader = originalReader;
+            } else {
+                context = contextSoFar.copy();
+                reader = new StringReader(originalReader);
+            }
             try {
                 try {
                     child.parse(reader, context);
@@ -333,16 +342,23 @@ public class CommandDispatcher<S> {
                     return new ParseResults<>(context, parse.getReader(), parse.getExceptions());
                 } else {
                     final ParseResults<S> parse = parseNodes(child, reader, context);
+                    if (unique) {
+                        return parse;
+                    }
                     if (potentials == null) {
-                        potentials = new ArrayList<>(1);
+                        potentials = new ArrayList<>(relevantNodes.size());
                     }
                     potentials.add(parse);
                 }
             } else {
-                if (potentials == null) {
-                    potentials = new ArrayList<>(1);
+                final ParseResults<S> parse = new ParseResults<>(context, reader, Collections.emptyMap());
+                if (unique) {
+                    return parse;
                 }
-                potentials.add(new ParseResults<>(context, reader, Collections.emptyMap()));
+                if (potentials == null) {
+                    potentials = new ArrayList<>(relevantNodes.size());
+                }
+                potentials.add(parse);
             }
         }
 
