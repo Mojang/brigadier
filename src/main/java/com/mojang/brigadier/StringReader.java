@@ -174,9 +174,24 @@ public class StringReader implements ImmutableStringReader {
             || c == '.' || c == '+';
     }
 
+    public static boolean isAllowedInUnquotedStringGreedy(final char c) {
+        return c != ' '
+                && c != SYNTAX_DOUBLE_QUOTE
+                && c != SYNTAX_SINGLE_QUOTE
+                && c != SYNTAX_ESCAPE;
+    }
+
     public String readUnquotedString() {
+        return readUnquotedString(true);
+    }
+
+    public String readUnquotedStringGreedy() {
+        return readUnquotedString(false);
+    }
+
+    private String readUnquotedString(boolean asciiOnly) {
         final int start = cursor;
-        while (canRead() && isAllowedInUnquotedString(peek())) {
+        while (canRead() && (asciiOnly ? isAllowedInUnquotedString(peek()) : isAllowedInUnquotedStringGreedy(peek()))) {
             skip();
         }
         return string.substring(start, cursor);
@@ -220,6 +235,14 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String readString() throws CommandSyntaxException {
+        return readString(true);
+    }
+
+    public String readStringGreedy() throws CommandSyntaxException {
+        return readString(false);
+    }
+
+    private String readString(boolean asciiOnly) throws CommandSyntaxException {
         if (!canRead()) {
             return "";
         }
@@ -228,7 +251,7 @@ public class StringReader implements ImmutableStringReader {
             skip();
             return readStringUntil(next);
         }
-        return readUnquotedString();
+        return readUnquotedString(asciiOnly);
     }
 
     public boolean readBoolean() throws CommandSyntaxException {
