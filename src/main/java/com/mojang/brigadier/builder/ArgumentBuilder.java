@@ -23,19 +23,25 @@ public abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
 
     protected abstract T getThis();
 
-    public T then(final ArgumentBuilder<S, ?> argument) {
+    @SafeVarargs
+    public final T then(final ArgumentBuilder<S, ?>... arguments) {
         if (target != null) {
             throw new IllegalStateException("Cannot add children to a redirected node");
         }
-        arguments.addChild(argument.build());
+        for (ArgumentBuilder<S, ?> argument : arguments) {
+            this.arguments.addChild(argument.build());
+        }
         return getThis();
     }
 
-    public T then(final CommandNode<S> argument) {
+    @SafeVarargs
+    public final T then(final CommandNode<S>... arguments) {
         if (target != null) {
             throw new IllegalStateException("Cannot add children to a redirected node");
         }
-        arguments.addChild(argument);
+        for (CommandNode<S> argument : arguments) {
+            this.arguments.addChild(argument);
+        }
         return getThis();
     }
 
