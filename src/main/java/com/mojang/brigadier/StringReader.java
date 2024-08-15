@@ -174,9 +174,21 @@ public class StringReader implements ImmutableStringReader {
             || c == '.' || c == '+';
     }
 
+    public static boolean isAllowedInUnquotedStringRelaxed(final char c) {
+        return c != ' ' && c != '\\' && !isQuotedStringStart(c);
+    }
+
     public String readUnquotedString() {
         final int start = cursor;
         while (canRead() && isAllowedInUnquotedString(peek())) {
+            skip();
+        }
+        return string.substring(start, cursor);
+    }
+
+    public String readUnquotedStringRelaxed() {
+        final int start = cursor;
+        while (canRead() && isAllowedInUnquotedStringRelaxed(peek())) {
             skip();
         }
         return string.substring(start, cursor);
@@ -228,7 +240,7 @@ public class StringReader implements ImmutableStringReader {
             skip();
             return readStringUntil(next);
         }
-        return readUnquotedString();
+        return readUnquotedStringRelaxed();
     }
 
     public boolean readBoolean() throws CommandSyntaxException {

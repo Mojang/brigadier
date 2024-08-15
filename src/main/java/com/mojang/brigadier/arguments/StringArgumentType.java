@@ -21,6 +21,10 @@ public class StringArgumentType implements ArgumentType<String> {
         return new StringArgumentType(StringType.SINGLE_WORD);
     }
 
+    public static StringArgumentType relaxedWord() {
+        return new StringArgumentType(StringType.SINGLE_WORD_RELAXED);
+    }
+
     public static StringArgumentType string() {
         return new StringArgumentType(StringType.QUOTABLE_PHRASE);
     }
@@ -39,20 +43,23 @@ public class StringArgumentType implements ArgumentType<String> {
 
     @Override
     public String parse(final StringReader reader) throws CommandSyntaxException {
-        if (type == StringType.GREEDY_PHRASE) {
-            final String text = reader.getRemaining();
-            reader.setCursor(reader.getTotalLength());
-            return text;
-        } else if (type == StringType.SINGLE_WORD) {
-            return reader.readUnquotedString();
-        } else {
-            return reader.readString();
+        switch (type) {
+            case SINGLE_WORD:
+                return reader.readUnquotedString();
+            case QUOTABLE_PHRASE:
+                return reader.readString();
+            case GREEDY_PHRASE:
+                final String text = reader.getRemaining();
+                reader.setCursor(reader.getTotalLength());
+                return text;
+            default:
+                return reader.readUnquotedStringRelaxed();
         }
     }
 
     @Override
     public String toString() {
-        return "string()";
+        return type.name;
     }
 
     @Override
@@ -62,7 +69,7 @@ public class StringArgumentType implements ArgumentType<String> {
 
     public static String escapeIfRequired(final String input) {
         for (final char c : input.toCharArray()) {
-            if (!StringReader.isAllowedInUnquotedString(c)) {
+            if (!StringReader.isAllowedInUnquotedStringRelaxed(c)) {
                 return escape(input);
             }
         }
@@ -85,14 +92,21 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     public enum StringType {
-        SINGLE_WORD("word", "words_with_underscores"),
-        QUOTABLE_PHRASE("\"quoted phrase\"", "word", "\"\""),
-        GREEDY_PHRASE("word", "words with spaces", "\"and symbols\""),;
+        SINGLE_WORD("word()", "word", "words_with_underscores"),
+        QUOTABLE_PHRASE("string()", "\"quoted phrase\"", "word", "wörd!", "\"\""),
+        GREEDY_PHRASE("greedyString()", "word", "words with spaces", "\"and symbols\""),
+        SINGLE_WORD_RELAXED("wordRelaxed()", "word", "wörd!");
 
+        private final String name;
         private final Collection<String> examples;
 
-        StringType(final String... examples) {
+        StringType(final String name, final String... examples) {
+            this.name = name;
             this.examples = Arrays.asList(examples);
+        }
+
+        public String getName() {
+            return name;
         }
 
         public Collection<String> getExamples() {

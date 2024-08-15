@@ -149,6 +149,14 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readUnquotedStringRelaxed() throws Exception {
+        final StringReader reader = new StringReader("héllö world");
+        assertThat(reader.readUnquotedStringRelaxed(), equalTo("héllö"));
+        assertThat(reader.getRead(), equalTo("héllö"));
+        assertThat(reader.getRemaining(), equalTo(" world"));
+    }
+
+    @Test
     public void readQuotedString() throws Exception {
         final StringReader reader = new StringReader("\"hello world\"");
         assertThat(reader.readQuotedString(), equalTo("hello world"));
@@ -278,25 +286,25 @@ public class StringReaderTest {
 
     @Test
     public void readString_noQuotes() throws Exception {
-        final StringReader reader = new StringReader("hello world");
-        assertThat(reader.readString(), equalTo("hello"));
-        assertThat(reader.getRead(), equalTo("hello"));
-        assertThat(reader.getRemaining(), equalTo(" world"));
+        final StringReader reader = new StringReader("héllo wörld");
+        assertThat(reader.readString(), equalTo("héllo"));
+        assertThat(reader.getRead(), equalTo("héllo"));
+        assertThat(reader.getRemaining(), equalTo(" wörld"));
     }
 
     @Test
     public void readString_singleQuotes() throws Exception {
-        final StringReader reader = new StringReader("'hello world'");
-        assertThat(reader.readString(), equalTo("hello world"));
-        assertThat(reader.getRead(), equalTo("'hello world'"));
+        final StringReader reader = new StringReader("'héllo wörld'");
+        assertThat(reader.readString(), equalTo("héllo wörld"));
+        assertThat(reader.getRead(), equalTo("'héllo wörld'"));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
     @Test
     public void readString_doubleQuotes() throws Exception {
-        final StringReader reader = new StringReader("\"hello world\"");
-        assertThat(reader.readString(), equalTo("hello world"));
-        assertThat(reader.getRead(), equalTo("\"hello world\""));
+        final StringReader reader = new StringReader("\"héllo wörld\"");
+        assertThat(reader.readString(), equalTo("héllo wörld"));
+        assertThat(reader.getRead(), equalTo("\"héllo wörld\""));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 

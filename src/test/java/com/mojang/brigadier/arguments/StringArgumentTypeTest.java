@@ -10,10 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.escapeIfRequired;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static com.mojang.brigadier.arguments.StringArgumentType.string;
-import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static com.mojang.brigadier.arguments.StringArgumentType.*;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.Matchers.is;
@@ -33,6 +30,14 @@ public class StringArgumentTypeTest {
         when(reader.readUnquotedString()).thenReturn("hello");
         assertThat(word().parse(reader), equalTo("hello"));
         verify(reader).readUnquotedString();
+    }
+
+    @Test
+    public void testParseRelaxedWord() throws Exception {
+        final StringReader reader = mock(StringReader.class);
+        when(reader.readUnquotedStringRelaxed()).thenReturn("héllo");
+        assertThat(relaxedWord().parse(reader), equalTo("héllo"));
+        verify(reader).readUnquotedStringRelaxed();
     }
 
     @Test
