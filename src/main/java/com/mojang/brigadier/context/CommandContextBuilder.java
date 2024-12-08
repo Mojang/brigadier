@@ -122,23 +122,23 @@ public class CommandContextBuilder<S> {
                     return child.findSuggestionContext(cursor);
                 } else if (!nodes.isEmpty()) {
                     final ParsedCommandNode<S> last = nodes.get(nodes.size() - 1);
-                    return new SuggestionContext<>(last.getNode(), last.getRange().getEnd() + 1);
+                    return new SuggestionContext<>(this, last.getNode(), last.getRange().getEnd() + 1);
                 } else {
-                    return new SuggestionContext<>(rootNode, range.getStart());
+                    return new SuggestionContext<>(this, rootNode, range.getStart());
                 }
             } else {
                 CommandNode<S> prev = rootNode;
                 for (final ParsedCommandNode<S> node : nodes) {
                     final StringRange nodeRange = node.getRange();
                     if (nodeRange.getStart() <= cursor && cursor <= nodeRange.getEnd()) {
-                        return new SuggestionContext<>(prev, nodeRange.getStart());
+                        return new SuggestionContext<>(this, prev, nodeRange.getStart());
                     }
                     prev = node.getNode();
                 }
                 if (prev == null) {
                     throw new IllegalStateException("Can't find node before cursor");
                 }
-                return new SuggestionContext<>(prev, range.getStart());
+                return new SuggestionContext<>(this, prev, range.getStart());
             }
         }
         throw new IllegalStateException("Can't find node before cursor");

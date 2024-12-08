@@ -538,7 +538,7 @@ public class CommandDispatcher<S> {
         for (final CommandNode<S> node : parent.getChildren()) {
             CompletableFuture<Suggestions> future = Suggestions.empty();
             try {
-                future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, truncatedInputLowerCase, start));
+                future = node.listSuggestions(nodeBeforeCursor.context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, truncatedInputLowerCase, start));
             } catch (final CommandSyntaxException ignored) {
             }
             futures[i++] = future;
