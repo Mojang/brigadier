@@ -4,8 +4,10 @@
 package com.mojang.brigadier;
 
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.Before;
@@ -251,6 +253,28 @@ public class CommandSuggestionsTest {
 
         assertThat(result.getRange(), equalTo(StringRange.at(33)));
         assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(33), "loop"))));
+    }
+
+    @Test
+    public void getCompletionSuggestions_redirect_contextualArgument() {
+        final LiteralCommandNode<Object> actual = subject.register(
+            literal("actual")
+                .then(argument("arg_one", word())
+                    .then(argument("arg_two", word())
+                        .suggests((context, builder) -> {
+                            final String argOne = StringArgumentType.getString(context, "arg_one");
+                            builder.suggest("contextual_" + argOne);
+                            return builder.buildFuture();
+                        })
+                    )
+                )
+        );
+        subject.register(literal("redirect").redirect(actual));
+
+        final Suggestions result = subject.getCompletionSuggestions(subject.parse("redirect first ", source)).join();
+
+        assertThat(result.getRange(), equalTo(StringRange.at(15)));
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(15), "contextual_first"))));
     }
 
     @Test
