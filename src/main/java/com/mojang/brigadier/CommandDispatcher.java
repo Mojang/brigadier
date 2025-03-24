@@ -525,6 +525,7 @@ public class CommandDispatcher<S> {
 
     public CompletableFuture<Suggestions> getCompletionSuggestions(final ParseResults<S> parse, int cursor) {
         final CommandContextBuilder<S> context = parse.getContext();
+        S source = context.getSource();
 
         final SuggestionContext<S> nodeBeforeCursor = context.findSuggestionContext(cursor);
         final CommandNode<S> parent = nodeBeforeCursor.parent;
@@ -537,9 +538,11 @@ public class CommandDispatcher<S> {
         int i = 0;
         for (final CommandNode<S> node : parent.getChildren()) {
             CompletableFuture<Suggestions> future = Suggestions.empty();
-            try {
-                future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, truncatedInputLowerCase, start));
-            } catch (final CommandSyntaxException ignored) {
+            if (node.canUse(source)) {
+                try {
+                    future = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, truncatedInputLowerCase, start));
+                } catch (final CommandSyntaxException ignored) {
+                }
             }
             futures[i++] = future;
         }
