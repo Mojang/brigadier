@@ -313,4 +313,22 @@ public class CommandSuggestionsTest {
         assertThat(result.getRange(), equalTo(StringRange.at(18)));
         assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(18), "bar"), new Suggestion(StringRange.at(18), "baz"))));
     }
+
+    @Test
+    public void getCompletionSuggestions_unmetRequirement() throws Exception {
+        subject.register(
+            literal("parent")
+                .then(
+                    literal("invalid").requires(o -> false)
+                )
+                .then(
+                    literal("valid")
+                )
+        );
+
+        final ParseResults<Object> parse = subject.parse("parent ", source);
+        final Suggestions result = subject.getCompletionSuggestions(parse).join();
+
+        assertThat(result.getList(), equalTo(Lists.newArrayList(new Suggestion(StringRange.at(7), "valid"))));
+    }
 }
