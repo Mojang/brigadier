@@ -133,6 +133,30 @@ public class StringReaderTest {
     }
 
     @Test
+    public void readUnquotedString_strictCharset() throws Exception {
+        final StringReader reader = new StringReader("1+1=2 2+2=4");
+        assertThat(reader.readString(), equalTo("1+1"));
+        assertThat(reader.getRead(), equalTo("1+1"));
+        assertThat(reader.getRemaining(), equalTo("=2 2+2=4"));
+
+        // Should not be able to read further -- as invalid character is present
+        assertThat(reader.readString(), equalTo(""));
+    }
+
+    @Test
+    public void readUnquotedString_strictCharsetQuoted() throws Exception {
+        final StringReader reader = new StringReader("\"1+1=2\" \"2+2=4\"");
+        assertThat(reader.readString(), equalTo("1+1=2"));
+        assertThat(reader.getRead(), equalTo("\"1+1=2\""));
+        assertThat(reader.getRemaining(), equalTo(" \"2+2=4\""));
+
+        reader.skipWhitespace();
+
+        assertThat(reader.readString(), equalTo("2+2=4"));
+        assertThat(reader.getRead(), equalTo("\"1+1=2\" \"2+2=4\""));
+    }
+
+    @Test
     public void readUnquotedString_empty() throws Exception {
         final StringReader reader = new StringReader("");
         assertThat(reader.readUnquotedString(), equalTo(""));
