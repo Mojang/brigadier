@@ -21,7 +21,7 @@ public class LiteralArgumentType implements ArgumentType<String> {
         return INSTANCE;
     }
 
-    public static String getString(final CommandContext<?> context, final String name) {
+    public static String getLiteral(final CommandContext<?> context, final String name) {
         return context.getArgument(name, String.class);
     }
 
