@@ -583,7 +583,7 @@ public class CommandDispatcher<S> {
      * @param target the target node you are finding a path for
      * @return a path to the resulting node, or an empty list if it was not found
      */
-    public Collection<String> getPath(final CommandNode<S> target) {
+    public List<String> getPath(final CommandNode<S> target) {
         final List<List<CommandNode<S>>> nodes = new ArrayList<>();
         addPaths(root, nodes, new ArrayList<>());
 
