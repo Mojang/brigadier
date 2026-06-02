@@ -72,7 +72,12 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
         final CommandNode<S> child = children.get(node.getName());
         if (child != null) {
-            // We've found something to merge onto
+            // We've found something to merge onto. Only the command and grandchildren are carried over;
+            // redirect/modifier/fork are final and cannot be merged in place, so refuse to merge when either
+            // side declares them rather than silently dropping that forwarding behavior.
+            if (isForwarding(node) || isForwarding(child)) {
+                throw new IllegalArgumentException("Cannot merge a node '" + node.getName() + "' that redirects or forks, as its redirect/modifier/fork would be lost");
+            }
             if (node.getCommand() != null) {
                 child.command = node.getCommand();
             }
@@ -87,6 +92,10 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
                 arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
             }
         }
+    }
+
+    private boolean isForwarding(final CommandNode<S> node) {
+        return node.getRedirect() != null || node.getRedirectModifier() != null || node.isFork();
     }
 
     public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
