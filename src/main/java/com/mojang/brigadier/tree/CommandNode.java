@@ -152,21 +152,32 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
         if (literals.size() > 0) {
-            final int cursor = input.getCursor();
-            while (input.canRead() && input.peek() != ' ') {
-                input.skip();
-            }
-            final String text = input.getString().substring(cursor, input.getCursor());
-            input.setCursor(cursor);
-            final LiteralCommandNode<S> literal = literals.get(text);
+            final LiteralCommandNode<S> literal = getMatchingLiteral(input);
             if (literal != null) {
                 return Collections.singleton(literal);
-            } else {
-                return arguments.values();
             }
-        } else {
-            return arguments.values();
         }
+        return arguments.values();
+    }
+
+    public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input, final S source) {
+        if (literals.size() > 0) {
+            final LiteralCommandNode<S> literal = getMatchingLiteral(input);
+            if (literal != null && literal.canUse(source)) {
+                return Collections.singleton(literal);
+            }
+        }
+        return arguments.values();
+    }
+
+    private LiteralCommandNode<S> getMatchingLiteral(final StringReader input) {
+        final int cursor = input.getCursor();
+        while (input.canRead() && input.peek() != ' ') {
+            input.skip();
+        }
+        final String text = input.getString().substring(cursor, input.getCursor());
+        input.setCursor(cursor);
+        return literals.get(text);
     }
 
     @Override

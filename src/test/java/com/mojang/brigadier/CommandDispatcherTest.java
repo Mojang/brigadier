@@ -25,6 +25,7 @@ import java.util.Collections;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.getInteger;
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.equalTo;
@@ -121,6 +122,37 @@ public class CommandDispatcherTest {
             assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand()));
             assertThat(ex.getCursor(), is(0));
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testImpermissibleLiteralFallsBackToArgument() throws Exception {
+        final Command<Object> argCommand = mock(Command.class);
+        when(argCommand.run(any())).thenReturn(100);
+        subject.register(literal("foo")
+                .then(literal("bar").requires(s -> false).executes(command))
+                .then(argument("value", word()).executes(argCommand)));
+
+        // The source cannot use the "bar" literal, so "foo bar" must fall back to the <value> argument
+        // instead of failing because the impermissible literal shadowed it.
+        assertThat(subject.execute("foo bar", source), is(100));
+        verify(argCommand).run(any(CommandContext.class));
+        verify(command, never()).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testUsableLiteralTakesPriorityOverArgument() throws Exception {
+        final Command<Object> argCommand = mock(Command.class);
+        when(argCommand.run(any())).thenReturn(100);
+        subject.register(literal("foo")
+                .then(literal("bar").executes(command))
+                .then(argument("value", word()).executes(argCommand)));
+
+        // "bar" matches a usable literal, which must keep priority over the overlapping <value> argument.
+        assertThat(subject.execute("foo bar", source), is(42));
+        verify(command).run(any(CommandContext.class));
+        verify(argCommand, never()).run(any(CommandContext.class));
     }
 
     @Test
