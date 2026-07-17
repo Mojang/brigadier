@@ -325,7 +325,9 @@ public class CommandDispatcher<S> {
 
             context.withCommand(child.getCommand());
             if (reader.canRead(child.getRedirect() == null ? 2 : 1)) {
-                reader.skip();
+                do {
+                    reader.skip();
+                } while (reader.canRead() && reader.peek() == ARGUMENT_SEPARATOR_CHAR);
                 if (child.getRedirect() != null) {
                     final CommandContextBuilder<S> childContext = new CommandContextBuilder<>(this, source, child.getRedirect(), reader.getCursor());
                     final ParseResults<S> parse = parseNodes(child.getRedirect(), reader, childContext);
