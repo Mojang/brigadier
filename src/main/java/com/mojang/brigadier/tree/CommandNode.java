@@ -5,6 +5,7 @@ package com.mojang.brigadier.tree;
 
 import com.mojang.brigadier.AmbiguityConsumer;
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -32,17 +33,27 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
+    private Message description;
 
     protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+        this(command, requirement, redirect, modifier, forks, null);
+    }
+
+    protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks, final Message description) {
         this.command = command;
         this.requirement = requirement;
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
+        this.description = description;
     }
 
     public Command<S> getCommand() {
         return command;
+    }
+
+    public Message getDescription() {
+        return description;
     }
 
     public Collection<CommandNode<S>> getChildren() {

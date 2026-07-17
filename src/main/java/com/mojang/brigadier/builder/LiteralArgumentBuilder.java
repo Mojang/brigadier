@@ -28,7 +28,7 @@ public class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
 
     @Override
     public LiteralCommandNode<S> build() {
-        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork());
+        final LiteralCommandNode<S> result = new LiteralCommandNode<>(getLiteral(), getCommand(), getRequirement(), getRedirect(), getRedirectModifier(), isFork(), getDescription());
 
         for (final CommandNode<S> argument : getArguments()) {
             result.addChild(argument);
