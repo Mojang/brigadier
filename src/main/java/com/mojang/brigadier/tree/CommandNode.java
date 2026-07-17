@@ -25,13 +25,13 @@ import java.util.function.Predicate;
 
 public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     private final Map<String, CommandNode<S>> children = new LinkedHashMap<>();
-    private final Map<String, LiteralCommandNode<S>> literals = new LinkedHashMap<>();
     private final Map<String, ArgumentCommandNode<S, ?>> arguments = new LinkedHashMap<>();
     private final Predicate<S> requirement;
     private final CommandNode<S> redirect;
     private final RedirectModifier<S> modifier;
     private final boolean forks;
     private Command<S> command;
+    private boolean hasLiterals = false;
 
     protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
@@ -82,7 +82,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         } else {
             children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
-                literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                hasLiterals = true;
             } else if (node instanceof ArgumentCommandNode) {
                 arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
             }
@@ -151,16 +151,16 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
     protected abstract String getSortedKey();
 
     public Collection<? extends CommandNode<S>> getRelevantNodes(final StringReader input) {
-        if (literals.size() > 0) {
+        if (hasLiterals) {
             final int cursor = input.getCursor();
             while (input.canRead() && input.peek() != ' ') {
                 input.skip();
             }
             final String text = input.getString().substring(cursor, input.getCursor());
             input.setCursor(cursor);
-            final LiteralCommandNode<S> literal = literals.get(text);
-            if (literal != null) {
-                return Collections.singleton(literal);
+            final CommandNode<S> node = children.get(text);
+            if (node instanceof LiteralCommandNode<?>) {
+                return Collections.singleton(node);
             } else {
                 return arguments.values();
             }
