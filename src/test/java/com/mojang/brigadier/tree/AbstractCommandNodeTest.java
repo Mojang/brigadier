@@ -13,6 +13,7 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractCommandNodeTest {
@@ -66,5 +67,45 @@ public abstract class AbstractCommandNodeTest {
         node.addChild(literal("child").executes(command).build());
 
         assertThat(node.getChildren().iterator().next().getCommand(), is(command));
+    }
+
+    @Test
+    public void testAddChildAllowsNonMergingRedirect() throws Exception {
+        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object> target = literal("target").build();
+
+        node.addChild(literal("child").redirect(target).build());
+
+        assertThat(node.getChildren(), hasSize(1));
+    }
+
+    @Test
+    public void testAddChildRefusesToMergeRedirect() throws Exception {
+        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object> target = literal("target").build();
+
+        node.addChild(literal("child").build());
+
+        try {
+            // Merging a redirect onto an existing child would silently drop the redirect.
+            node.addChild(literal("child").redirect(target).build());
+            fail();
+        } catch (final IllegalArgumentException expected) {
+        }
+    }
+
+    @Test
+    public void testAddChildRefusesToMergeOntoRedirect() throws Exception {
+        final CommandNode<Object> node = getCommandNode();
+        final CommandNode<Object> target = literal("target").build();
+
+        node.addChild(literal("child").redirect(target).build());
+
+        try {
+            // Merging onto a redirect leaf would carry grandchildren onto a forwarding node.
+            node.addChild(literal("child").build());
+            fail();
+        } catch (final IllegalArgumentException expected) {
+        }
     }
 }
