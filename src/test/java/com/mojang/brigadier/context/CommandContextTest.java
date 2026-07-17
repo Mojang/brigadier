@@ -7,7 +7,6 @@ import com.google.common.testing.EqualsTester;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.RootCommandNode;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +45,34 @@ public class CommandContextTest {
     }
 
     @Test
+    public void testHasArgument() throws Exception {
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
+        assertThat(context.hasArgument("foo"), is(true));
+        assertThat(context.hasArgument("bar"), is(false));
+    }
+
+    @Test
+    public void testHasArgumentOfType() throws Exception {
+        final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
+        assertThat(context.hasArgumentOfType("foo", Integer.class), is(true));
+        assertThat(context.hasArgumentOfType("foo", String.class), is(false));
+        assertThat(context.hasArgumentOfType("bar", Object.class), is(false));
+    }
+
+    @Test
     public void testGetArgument() throws Exception {
         final CommandContext<Object> context = builder.withArgument("foo", new ParsedArgument<>(0, 1, 123)).build("123");
         assertThat(context.getArgument("foo", int.class), is(123));
+    }
+
+    @Test
+    public void testGetArgumentOrDefault() throws Exception {
+        assertThat(builder.build("").getArgumentOrDefault("foo", String.class, "bar"), is("bar"));
+    }
+
+    @Test
+    public void testGetArgumentOrCompute() throws Exception {
+        assertThat(builder.build("").getArgumentOrCompute("foo", String.class, () -> "bar"), is("bar"));
     }
 
     @Test
