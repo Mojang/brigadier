@@ -5,7 +5,9 @@ on: [ pull_request ]
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - 1ES.Pool=MC-Runner-1ES-Linux
     container:
       image: adoptopenjdk/openjdk8:latest
 
