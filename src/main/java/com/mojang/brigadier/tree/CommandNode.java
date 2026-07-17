@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
@@ -35,7 +36,7 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
     protected CommandNode(final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
         this.command = command;
-        this.requirement = requirement;
+        this.requirement = Objects.requireNonNull(requirement, "requirement");
         this.redirect = redirect;
         this.modifier = modifier;
         this.forks = forks;
