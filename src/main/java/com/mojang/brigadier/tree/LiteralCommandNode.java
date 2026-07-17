@@ -23,11 +23,14 @@ import java.util.function.Predicate;
 public class LiteralCommandNode<S> extends CommandNode<S> {
     private final String literal;
     private final String literalLowerCase;
+    private boolean ignoreCase;
 
-    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks) {
+    public LiteralCommandNode(final String literal, final Command<S> command, final Predicate<S> requirement, final CommandNode<S> redirect, final RedirectModifier<S> modifier, final boolean forks,
+                              final boolean ignoreCase) {
         super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
         this.literalLowerCase = literal.toLowerCase(Locale.ROOT);
+        this.ignoreCase = ignoreCase;
     }
 
     public String getLiteral() {
@@ -38,6 +41,8 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
     public String getName() {
         return literal;
     }
+
+    public boolean ignoreCase() { return ignoreCase; }
 
     @Override
     public void parse(final StringReader reader, final CommandContextBuilder<S> contextBuilder) throws CommandSyntaxException {
@@ -55,7 +60,17 @@ public class LiteralCommandNode<S> extends CommandNode<S> {
         final int start = reader.getCursor();
         if (reader.canRead(literal.length())) {
             final int end = start + literal.length();
-            if (reader.getString().substring(start, end).equals(literal)) {
+
+            boolean foundMatch = false;
+            String subString = reader.getString().substring(start, end);
+
+            if (ignoreCase) {
+                foundMatch = subString.equalsIgnoreCase(literal);
+            } else {
+                foundMatch = subString.equals(literal);
+            }
+
+            if (foundMatch) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == ' ') {
                     return end;

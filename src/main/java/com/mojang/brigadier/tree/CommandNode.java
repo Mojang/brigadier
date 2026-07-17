@@ -8,6 +8,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -82,7 +83,13 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         } else {
             children.put(node.getName(), node);
             if (node instanceof LiteralCommandNode) {
-                literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                LiteralCommandNode literalNode = (LiteralCommandNode)node;
+
+                if (literalNode.isCaseInsensitive()) {
+                    literals.put(node.getName().toLowerCase(), (LiteralCommandNode<S>) node);
+                } else {
+                    literals.put(node.getName(), (LiteralCommandNode<S>) node);
+                }
             } else if (node instanceof ArgumentCommandNode) {
                 arguments.put(node.getName(), (ArgumentCommandNode<S, ?>) node);
             }
@@ -158,7 +165,13 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
             }
             final String text = input.getString().substring(cursor, input.getCursor());
             input.setCursor(cursor);
-            final LiteralCommandNode<S> literal = literals.get(text);
+
+            boolean caseInsensitive = false;
+            if (this instanceof LiteralCommandNode) {
+                caseInsensitive = ((LiteralCommandNode)this).isCaseInsensitive();
+            }
+
+            final LiteralCommandNode<S> literal = literals.get(caseInsensitive ? text.toLowerCase() : text);
             if (literal != null) {
                 return Collections.singleton(literal);
             } else {
