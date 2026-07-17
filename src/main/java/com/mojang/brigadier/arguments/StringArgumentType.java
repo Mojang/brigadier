@@ -11,6 +11,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class StringArgumentType implements ArgumentType<String> {
+    private static final StringArgumentType WORD_ARGUMENT = new StringArgumentType(StringType.SINGLE_WORD);
+    private static final StringArgumentType QUOTED_ARGUMENT = new StringArgumentType(StringType.QUOTABLE_PHRASE);
+    private static final StringArgumentType GREEDY_ARGUMENT = new StringArgumentType(StringType.GREEDY_PHRASE);
+
     private final StringType type;
 
     private StringArgumentType(final StringType type) {
@@ -18,15 +22,15 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     public static StringArgumentType word() {
-        return new StringArgumentType(StringType.SINGLE_WORD);
+        return WORD_ARGUMENT;
     }
 
     public static StringArgumentType string() {
-        return new StringArgumentType(StringType.QUOTABLE_PHRASE);
+        return QUOTED_ARGUMENT;
     }
 
     public static StringArgumentType greedyString() {
-        return new StringArgumentType(StringType.GREEDY_PHRASE);
+        return GREEDY_ARGUMENT;
     }
 
     public static String getString(final CommandContext<?> context, final String name) {
