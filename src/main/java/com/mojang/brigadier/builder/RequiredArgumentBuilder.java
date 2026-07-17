@@ -13,7 +13,7 @@ public class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     private final ArgumentType<T> type;
     private SuggestionProvider<S> suggestionsProvider = null;
 
-    private RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
+    protected RequiredArgumentBuilder(final String name, final ArgumentType<T> type) {
         this.name = name;
         this.type = type;
     }
