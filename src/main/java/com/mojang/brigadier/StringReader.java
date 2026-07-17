@@ -5,6 +5,8 @@ package com.mojang.brigadier;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import java.util.function.Predicate;
+
 public class StringReader implements ImmutableStringReader {
     private static final char SYNTAX_ESCAPE = '\\';
     private static final char SYNTAX_DOUBLE_QUOTE = '"';
@@ -175,8 +177,12 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String readUnquotedString() {
+        return readUnquotedString(StringReader::isAllowedInUnquotedString);
+    }
+
+    public String readUnquotedString(Predicate<Character> allowPredicate) {
         final int start = cursor;
-        while (canRead() && isAllowedInUnquotedString(peek())) {
+        while (canRead() && allowPredicate.test(peek())) {
             skip();
         }
         return string.substring(start, cursor);
@@ -220,6 +226,10 @@ public class StringReader implements ImmutableStringReader {
     }
 
     public String readString() throws CommandSyntaxException {
+        return readString(StringReader::isAllowedInUnquotedString);
+    }
+
+    public String readString(Predicate<Character> allowPredicate) throws CommandSyntaxException {
         if (!canRead()) {
             return "";
         }
@@ -228,7 +238,7 @@ public class StringReader implements ImmutableStringReader {
             skip();
             return readStringUntil(next);
         }
-        return readUnquotedString();
+        return readUnquotedString(allowPredicate);
     }
 
     public boolean readBoolean() throws CommandSyntaxException {
