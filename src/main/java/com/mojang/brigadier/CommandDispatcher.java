@@ -101,6 +101,24 @@ public class CommandDispatcher<S> {
         return build;
     }
 
+	/**
+	* This method unregisteres a previously declared command
+	*
+	* @param The name of the command to remove
+	*/
+	public void unregister(final String name) {
+		this.root.removeChild(name);
+	}
+
+	/**
+	* This method unregisteres a previously declared command
+	*
+	* @param An previously added node
+	*/
+	public void unregister(final LiteralCommandNode<S> node) {
+		this.unregister(node.getName());
+	}
+
     /**
      * Sets a callback to be informed of the result of every command.
      *

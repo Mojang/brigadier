@@ -89,6 +89,12 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
         }
     }
 
+	public void removeChild(String name) {
+		this.children.remove(name);
+		this.literals.remove(name);
+		this.arguments.remove(name);
+	}
+
     public void findAmbiguities(final AmbiguityConsumer<S> consumer) {
         Set<String> matches = new HashSet<>();
 
