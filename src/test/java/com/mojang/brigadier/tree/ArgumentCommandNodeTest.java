@@ -15,8 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.mojang.brigadier.arguments.IntegerArgumentType.integer;
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -85,6 +87,13 @@ public class ArgumentCommandNodeTest extends AbstractCommandNodeTest {
                 ).build()
             )
             .testEquals();
+    }
+
+    @Test
+    public void testNodesWithDifferentRedirectsAreNotEqual() throws Exception {
+        final CommandNode<Object> redirectTarget = argument("baz", integer()).build();
+        assertThat(argument("foo", integer()).redirect(redirectTarget).build(), not(argument("foo", integer()).build()));
+        assertThat(literal("foo").redirect(redirectTarget).build(), not(literal("foo").build()));
     }
 
     @Test

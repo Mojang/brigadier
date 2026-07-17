@@ -125,13 +125,18 @@ public abstract class CommandNode<S> implements Comparable<CommandNode<S>> {
 
         if (!children.equals(that.children)) return false;
         if (command != null ? !command.equals(that.command) : that.command != null) return false;
-
-        return true;
+        // Because the primary use of a redirect is to be able to create commands that effectively loop,
+        // we can't do a standard equality check on them as we could very well end up with a stack overflow
+        // if a branch loops back to this node. However, they are still important here as two nodes that
+        // only differ by where they redirect to should not be considered the same node...
+        //
+        // Hence, we do a reference equality check.
+        return redirect == that.redirect;
     }
 
     @Override
     public int hashCode() {
-        return 31 * children.hashCode() + (command != null ? command.hashCode() : 0);
+        return 31 * children.hashCode() + (command != null ? command.hashCode() : 0) + System.identityHashCode(redirect);
     }
 
     public Predicate<S> getRequirement() {
