@@ -214,9 +214,10 @@ public class StringReaderTest {
 
     @Test
     public void readQuotedString_withEscapedEscapes() throws Exception {
-        final StringReader reader = new StringReader("\"\\\\o/\"");
-        assertThat(reader.readQuotedString(), equalTo("\\o/"));
-        assertThat(reader.getRead(), equalTo("\"\\\\o/\""));
+        final String original = "\"\\n\\\\o/\"";
+        final StringReader reader = new StringReader(original);
+        assertThat(reader.readQuotedString(), equalTo("\n\\o/"));
+        assertThat(reader.getRead(), equalTo(original));
         assertThat(reader.getRemaining(), equalTo(""));
     }
 
