@@ -585,4 +585,16 @@ public class StringReaderTest {
             assertThat(ex.getCursor(), is(0));
         }
     }
+
+    @Test
+    public void readBoolean_quoted() throws Exception {
+        final StringReader reader = new StringReader("\"true\"");
+        try {
+            reader.readBoolean();
+            fail();
+        } catch (final CommandSyntaxException ex) {
+            assertThat(ex.getType(), is(CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedBool()));
+            assertThat(ex.getCursor(), is(0));
+        }
+    }
 }
