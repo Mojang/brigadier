@@ -18,6 +18,8 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private static final Dynamic2CommandExceptionType LONG_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage("Long must not be less than " + min + ", found " + found));
     private static final Dynamic2CommandExceptionType LONG_TOO_BIG = new Dynamic2CommandExceptionType((found, max) -> new LiteralMessage("Long must not be more than " + max + ", found " + found));
 
+    private static final DynamicCommandExceptionType TERM_INVALID = new DynamicCommandExceptionType(term -> new LiteralMessage("Invalid term '" + term + "'"));
+
     private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(expected -> new LiteralMessage("Expected literal " + expected));
 
     private static final SimpleCommandExceptionType READER_EXPECTED_START_OF_QUOTE = new SimpleCommandExceptionType(new LiteralMessage("Expected quote to start a string"));
@@ -78,6 +80,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     @Override
     public Dynamic2CommandExceptionType longTooHigh() {
         return LONG_TOO_BIG;
+    }
+
+    @Override
+    public DynamicCommandExceptionType termInvalid() {
+        return TERM_INVALID;
     }
 
     @Override

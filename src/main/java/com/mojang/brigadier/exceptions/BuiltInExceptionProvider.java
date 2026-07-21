@@ -20,6 +20,8 @@ public interface BuiltInExceptionProvider {
 
     Dynamic2CommandExceptionType longTooHigh();
 
+    DynamicCommandExceptionType termInvalid();
+
     DynamicCommandExceptionType literalIncorrect();
 
     SimpleCommandExceptionType readerExpectedStartOfQuote();
