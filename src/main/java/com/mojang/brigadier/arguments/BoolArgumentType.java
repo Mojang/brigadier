@@ -13,12 +13,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @deprecated {@link BooleanArgumentType}
+ */
+@Deprecated
 public class BoolArgumentType implements ArgumentType<Boolean> {
     private static final Collection<String> EXAMPLES = Arrays.asList("true", "false");
 
     private BoolArgumentType() {
     }
 
+    /**
+     * @deprecated {@link BooleanArgumentType#booleanArg()}
+     */
+    @Deprecated
     public static BoolArgumentType bool() {
         return new BoolArgumentType();
     }

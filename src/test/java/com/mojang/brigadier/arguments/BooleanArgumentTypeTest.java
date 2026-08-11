@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
+import static com.mojang.brigadier.arguments.BooleanArgumentType.booleanArg;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -19,14 +19,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BoolArgumentTypeTest {
-    private BoolArgumentType type;
+public class BooleanArgumentTypeTest {
+    private BooleanArgumentType type;
     @Mock
     private CommandContextBuilder<Object> context;
 
     @Before
     public void setUp() throws Exception {
-        type = bool();
+        type = booleanArg();
     }
 
     @Test
