@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
@@ -93,6 +94,19 @@ public class CommandDispatcherTest {
 
         assertThat(subject.execute("base foo", source), is(42));
         assertThat(subject.execute("base bar", source), is(42));
+        verify(command, times(2)).run(any(CommandContext.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRegisterMergedCommandReturnsNodeInTree() throws Exception {
+        subject.register(literal("base").then(literal("foo").executes(command)));
+        final LiteralCommandNode<Object> base = subject.register(literal("base").then(literal("bar").executes(command)));
+        subject.register(literal("alias").redirect(base));
+
+        assertThat(base, is(sameInstance(subject.getRoot().getChild("base"))));
+        assertThat(subject.execute("alias foo", source), is(42));
+        assertThat(subject.execute("alias bar", source), is(42));
         verify(command, times(2)).run(any(CommandContext.class));
     }
 

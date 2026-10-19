@@ -98,7 +98,8 @@ public class CommandDispatcher<S> {
     public LiteralCommandNode<S> register(final LiteralArgumentBuilder<S> command) {
         final LiteralCommandNode<S> build = command.build();
         root.addChild(build);
-        return build;
+        // addChild merges into an existing node with the same name, so return the node that is actually in the tree
+        return (LiteralCommandNode<S>) root.getChild(build.getName());
     }
 
     /**
